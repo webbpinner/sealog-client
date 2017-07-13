@@ -2,4 +2,5 @@
 npm-debug.log
 .DS_Store
 /dist/bundle.js
+/src/url_config.js
 package-lock.json
