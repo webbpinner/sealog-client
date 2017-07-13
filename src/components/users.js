@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { reduxForm, Field, reset } from 'redux-form';
 import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { ROOT_URL } from '../url_config';
+import { ROOT_PATH } from '../url_config';
 
 import * as actions from '../actions';
 
@@ -22,7 +22,7 @@ class Users extends Component {
     if (!this.props.showform) {
       return (
         <div className="pull-right">
-          <LinkContainer to={`${ROOT_URL}/users/new`}>
+          <LinkContainer to={`${ROOT_PATH}/users/new`}>
             <Button bsStyle="primary" type="button">Add New User</Button>
           </LinkContainer>
         </div>
@@ -38,7 +38,7 @@ class Users extends Component {
             <td>{user.username}</td>
             <td>{user.fullname}</td>
             <td>
-              <Link key={`edit_${user.id}`} to={`${ROOT_URL}/users/${user.id}`}>Edit</Link>
+              <Link key={`edit_${user.id}`} to={`${ROOT_PATH}/users/${user.id}`}>Edit</Link>
               &nbsp;
               {user.id != this.props.userid? <Link key={`delete_${user.id}`} to="#" onClick={ () => this.handleUserDelete(user.id) }>Delete</Link> : <span>Delete</span>}
             </td>
