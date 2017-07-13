@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import fileDownload from 'react-file-download';
-import queryString from 'queryString';
+import queryString from 'querystring';
 import { push } from 'react-router-redux';
 
 import { ROOT_PATH, API_ROOT_URL} from '../url_config';
