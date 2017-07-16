@@ -5,8 +5,10 @@ import { Button, ListGroup, ListGroupItem, Panel } from 'react-bootstrap';
 import * as actions from '../actions';
 import $ from 'jquery';
 import { Client } from 'nes';
+import Cookies from 'universal-cookie';
 import { WS_ROOT_URL } from '../url_config';
 
+const cookies = new Cookies();
 
 class ChatHistory extends Component {
 
@@ -29,19 +31,32 @@ class ChatHistory extends Component {
 
   componentDidMount() {
     
-    this.client.connect((err) => {
-      let handler = (update, flags) => {
-        //console.log(update);
-        this.props.updateChat(update);
-      };
+    this.client.connect(
+      {
+        auth: {
+          headers: {
+            authorization: cookies.get('token')
+          }
+        } 
+      },
+      (err) => {
 
-      this.client.subscribe('/chat/updates', handler, (err) => {
         if(err) {
           console.log(err);
         }
-      })
-    })
 
+        let handler = (update, flags) => {
+          //console.log(update);
+          this.props.updateChat(update);
+        };
+
+        this.client.subscribe('/chat/updates', handler, (err) => {
+          if(err) {
+            console.log(err);
+          }
+        })
+      }
+    )
   }
 
   componentDidUpdate() {
