@@ -41,6 +41,14 @@ class EventFilterForm extends Component {
       filterParams.offset = formProps.offset.split(',');
     }
 
+    if(formProps.startTS){
+      filterParams.startTS = formProps.startTS;
+    }
+
+    if(formProps.stopTS){
+      filterParams.stopTS = formProps.stopTS;
+    }
+
     this.props.fetchFilteredEvents(filterParams);
   }
 
