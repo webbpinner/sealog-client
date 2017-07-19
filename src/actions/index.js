@@ -998,7 +998,7 @@ export function fetchEventDefinitionsForChat() {
 export function fetchFilteredEvents(filterParams={}) {
 
   let params = queryString.stringify(filterParams);
-  console.log(params);
+  //console.log(params);
 
   const request = axios.get(API_ROOT_URL + '/api/v1/events' + '?' + params, {
     headers: {
