@@ -228,8 +228,8 @@ function validate(formProps) {
     errors.startTS = 'Invalid Date Format (YYYY-MM-DDThh:mm:ss.SSSZ)'
   }
 
-  if (formProps.event_export_template_stopTS && !/(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\:(\d{2})\.(\d{3})Z/i.test(formProps.stopTS)) {
-    errors.event_export_template_stopTS = 'Invalid Date Format (YYYY-MM-DDThh:mm:ss.SSSZ)'
+  if (formProps.stopTS && !/(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\:(\d{2})\.(\d{3})Z/i.test(formProps.stopTS)) {
+    errors.stopTS = 'Invalid Date Format (YYYY-MM-DDThh:mm:ss.SSSZ)'
   }
 
   if (!isNaN(+formProps.limit) && +formProps.limit <= 0) {
