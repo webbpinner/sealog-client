@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { Alert } from 'react-bootstrap';
+import EventOptionsModal from './event_options_modal';
 import store from '../store';
 import * as actions from '../actions';
 import $ from 'jquery';
@@ -50,9 +51,14 @@ class EventDefinitionList extends Component {
     $(eventDefinitions).scrollTop(desiredHeight);
   }
 
-  handleEventSubmit(value, text) {
+  handleEventSubmit(event_definition) {
 
-    this.props.createEvent(value, text);
+    if( event_definition.event_options.length > 0 || event_definition.event_free_text_required ) {
+      this.props.showModal('eventOptions', { eventDefinition: event_definition, handleCreateEvent: this.props.createEvent });
+    } else {
+      console.log(event_definition.event_value);
+      this.props.createEvent(event_definition.event_value, '', []);
+    }
   }
 
   renderEventDefinitions() {
@@ -60,7 +66,7 @@ class EventDefinitionList extends Component {
       return this.props.event_definitions.map((event_definition) => {
 
         return (
-          <Link className="btn btn-primary btn-squared" key={event_definition.id} to="#" onClick={ () => this.handleEventSubmit(event_definition.event_value, '') }>{ event_definition.event_value }</Link>
+          <Link className="btn btn-primary btn-squared" key={event_definition.id} to="#" onClick={ () => this.handleEventSubmit(event_definition) }>{ event_definition.event_value }</Link>
         );
       })      
     }
@@ -80,7 +86,10 @@ class EventDefinitionList extends Component {
 
     if (this.props.event_definitions.length > 0) {
       return (
-        <div>{this.renderEventDefinitions()}</div>
+        <div>
+          <EventOptionsModal/>
+          {this.renderEventDefinitions()}
+        </div>
       );
     }
 

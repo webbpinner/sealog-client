@@ -4,6 +4,8 @@ import Cookies from 'universal-cookie';
 import fileDownload from 'react-file-download';
 import queryString from 'querystring';
 import { push } from 'react-router-redux';
+import { bindActionCreators } from 'redux';
+import { show, destroy } from 'redux-modal';
 
 import { ROOT_PATH, API_ROOT_URL} from '../url_config';
 
@@ -202,13 +204,14 @@ export function login({username, password = ''}) {
   }
 }
 
-export function createEvent(eventValue, eventFreeText) {
+export function createEvent(eventValue, eventFreeText = '', eventOptions = []) {
 
   return function (dispatch) {
     axios.post(`${API_ROOT_URL}/api/v1/events`,
     {
       event_value: eventValue,
       event_free_text: eventFreeText,
+      event_options: eventOptions
     },
     {
       headers: {
@@ -787,6 +790,7 @@ export function deleteDefinition(id) {
     )
     .then((response) => {
 
+      console.log(response);
       dispatch(fetchDefinitions());
 //      dispatch(updateUserEditSuccess('Account updated'));
 
@@ -1156,3 +1160,20 @@ export function showEventsFullscreen() {
     dispatch({type: SHOW_EVENTLIST_FULLSCREEN, payload: null})
   }
 }
+
+export function showModal(modal, props) {
+//  console.log(modal, props);
+//  console.log(show(modal, props));
+  return function(dispatch) {
+    dispatch(show(modal, props));
+  }
+}
+
+// export function destroyModal(modal) {
+// //  console.log(modal, props);
+//   console.log(destroy(modal));
+//   return function(dispatch) {
+//     dispatch(destroy(modal));
+//   }
+// }
+

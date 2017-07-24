@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { reduxForm, Field, reset } from 'redux-form';
 import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import DeleteExportModal from './delete_export_modal';
 
 import { ROOT_PATH } from '../url_config';
 
@@ -16,7 +17,7 @@ class Exports extends Component {
   }
 
   handleExportTemplateDelete(id) {
-    this.props.deleteExportTemplate(id);
+    this.props.showModal('deleteExport', { id: id, handleDelete: this.props.deleteExportTemplate });
   }
 
   handleExportTemplateRun(id) {
@@ -83,6 +84,7 @@ class Exports extends Component {
         <Grid fluid>
           <Row>
             <Col sm={6} md={4} lg={4}>
+                <DeleteExportModal />
                 {this.renderExportTemplatesTable()}
                 {this.renderAddExportTemplateButton()}
             </Col>

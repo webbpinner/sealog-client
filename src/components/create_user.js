@@ -26,7 +26,7 @@ class CreateUser extends Component {
     )
   }
 
-  renderCheckboxGroup({ label, required, name, options, input, meta: { dirty, error, warning } }) {    
+  renderCheckboxGroup({ label, name, options, input, meta: { dirty, error, warning } }) {    
 
     let checkboxList = options.map((option, index) => {
       return (

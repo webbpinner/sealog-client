@@ -5,6 +5,7 @@ import { reduxForm, Field, reset } from 'redux-form';
 import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { ROOT_PATH } from '../url_config';
+import DeleteUserModal from './delete_user_modal';
 
 import * as actions from '../actions';
 
@@ -15,7 +16,7 @@ class Users extends Component {
   }
 
   handleUserDelete(id) {
-    this.props.deleteUser(id);
+    this.props.showModal('deleteUser', { id: id, handleDelete: this.props.deleteUser });
   }
 
   renderAddUserButton() {
@@ -85,6 +86,7 @@ class Users extends Component {
         <Grid fluid>
           <Row>
             <Col sm={6} md={4} lg={4}>
+                <DeleteUserModal />
                 {this.renderUserTable()}
                 {this.renderAddUserButton()}
             </Col>

@@ -5,6 +5,7 @@ import { reduxForm, Field, reset } from 'redux-form';
 import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { ROOT_PATH } from '../url_config';
+import DeleteDefinitionModal from './delete_definition_modal';
 import * as actions from '../actions';
 
 class Definitions extends Component {
@@ -14,7 +15,7 @@ class Definitions extends Component {
   }
 
   handleDefinitionDelete(id) {
-    this.props.deleteDefinition(id);
+    this.props.showModal('deleteDefinition', { id: id, handleDelete: this.props.deleteDefinition });
   }
 
   renderAddDefinitionButton() {
@@ -65,19 +66,22 @@ class Definitions extends Component {
   }
 
   render() {
+
     if (!this.props.roles) {
         return (
-          <div>Loading...</div>
+          <div>Loading...
+          </div>
         )
     }
 
     if (this.props.roles.includes("admin") || this.props.roles.includes("event_manager")) {
       return (
         <Grid fluid>
-          <Row>
+            <Row>
             <Col sm={6} md={4} lg={4}>
-                {this.renderDefinitionsTable()}
-                {this.renderAddDefinitionButton()}
+              <DeleteDefinitionModal />
+              {this.renderDefinitionsTable()}
+              {this.renderAddDefinitionButton()}
             </Col>
           </Row>
         </Grid>
@@ -98,7 +102,6 @@ function mapStateToProps(state) {
   return {
     definitions: state.definition.definitions,
     roles: state.user.profile.roles
-
   }
 }
 
