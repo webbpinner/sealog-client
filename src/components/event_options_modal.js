@@ -33,7 +33,7 @@ class EventOptionsModal extends Component {
     //console.log(list);
     //console.log(event_options);
 
-    console.log( {event_value: this.props.eventDefinition.event_value, event_free_text: formProps.event_free_text, event_options: event_options});
+    //console.log( {event_value: this.props.eventDefinition.event_value, event_free_text: formProps.event_free_text, event_options: event_options});
     this.props.handleCreateEvent(this.props.eventDefinition.event_value, formProps.event_free_text, event_options);
     this.props.handleDestroy();
   }
@@ -98,7 +98,7 @@ class EventOptionsModal extends Component {
 
     const { show, handleHide, handleSubmit, eventDefinition, pristine, submitting, valid } = this.props
 
-    console.log(eventDefinition);
+    //console.log(eventDefinition);
 
     return (
       <Modal show={show}>

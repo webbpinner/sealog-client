@@ -56,7 +56,7 @@ class EventDefinitionList extends Component {
     if( event_definition.event_options.length > 0 || event_definition.event_free_text_required ) {
       this.props.showModal('eventOptions', { eventDefinition: event_definition, handleCreateEvent: this.props.createEvent });
     } else {
-      console.log(event_definition.event_value);
+      // console.log(event_definition.event_value);
       this.props.createEvent(event_definition.event_value, '', []);
     }
   }

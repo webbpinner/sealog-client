@@ -790,7 +790,7 @@ export function deleteDefinition(id) {
     )
     .then((response) => {
 
-      console.log(response);
+      // console.log(response);
       dispatch(fetchDefinitions());
 //      dispatch(updateUserEditSuccess('Account updated'));
 
