@@ -59,6 +59,12 @@ class ChatHistory extends Component {
     )
   }
 
+  componentWillUnmount() {
+    if(this.props.authenticated) {
+      this.client.disconnect();
+    }
+  }
+
   componentDidUpdate() {
     this.scrollToBottom();
   }

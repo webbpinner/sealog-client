@@ -28,7 +28,7 @@ class CreateExportTemplate extends Component {
       <FormGroup>
         <label>{label}</label>
         <FormControl {...input} placeholder={label} type={type}/>
-        {touched && ((error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>))}
+        {(error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
       </FormGroup>
     )
   }

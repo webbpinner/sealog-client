@@ -13,6 +13,5 @@ const reactRouterReduxMiddleware = routerMiddleware(history);
 const middleware = [ reduxThunk, reactRouterReduxMiddleware ]
 
 const createStoreWithMiddleware = applyMiddleware(...middleware)(createStore);
-//const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
 
 export default createStoreWithMiddleware(reducers);

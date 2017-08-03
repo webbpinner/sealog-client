@@ -89,7 +89,7 @@ class Profile extends Component {
                 {this.renderMessage()}
                 <div className="pull-right">
                   <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
-                  <Button bsStyle="primary" type="submit" disabled={submitting || !valid}>Update</Button>
+                  <Button bsStyle="primary" type="submit" disabled={pristine || submitting || !valid}>Update</Button>
                 </div>
               </form>
             </Panel>
