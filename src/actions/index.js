@@ -163,6 +163,12 @@ export function initDefinition(id) {
       }
     })
     .then((response) => {
+
+      response.data.event_options = response.data.event_options.map(event_option => {
+        event_option.event_option_values = event_option.event_option_values.join(',');
+        return event_option;
+      })
+
       dispatch({ type: INIT_DEFINITION, payload: response.data })
       //console.log("Initialized event definition data successfully");
     })
@@ -387,12 +393,43 @@ export function createDefinition(formProps) {
   if(!formProps.event_options) {
     fields.event_options = [];
   } else {
+    console.log(formProps.event_options);
     fields.event_options = formProps.event_options;
+    fields.event_options = fields.event_options.map(event_option => {
+
+      if(!event_option.event_option_allow_freeform) {
+        event_option.event_option_allow_freeform = false;
+      } else {
+        event_option.event_option_allow_freeform = event_option.event_option_allow_freeform;
+      }
+
+      if(!event_option.event_option_required) {
+        event_option.event_option_required = false;
+      } else {
+        event_option.event_option_required = event_option.event_option_required;
+      }
+
+      if(event_option.event_option_type == 'dropdown') {
+        event_option.event_option_values = event_option.event_option_values.split(',');
+        event_option.event_option_values = event_option.event_option_values.map(string => {
+          return string.trim();
+        })
+      } else if (event_option.event_option_type == 'text') {
+        event_option.event_option_values = [];
+      }
+
+      return event_option;
+    })
   }
 
   fields.event_value = formProps.event_value;
 
-  //console.log(fields);
+//  valueArray = event_option.event_option_values.split(',');
+//                        valueArray = valueArray.map(string => {
+//              return string.trim()
+//            })
+
+  console.log(fields);
 
   return function (dispatch)
 

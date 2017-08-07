@@ -48,9 +48,11 @@ class EventOptionsModal extends Component {
     )
   }
 
-  renderSelectField({ input, label, type, options, meta: { touched, error, warning } }) {
+  renderSelectField({ input, label, defaultValue, type, options, meta: { touched, error, warning } }) {
 
-    let defaultOption = ( <option key={`${input.name}.default`} value=""></option> );
+    input.value = defaultValue;
+
+    let defaultOption = ( <option key={`${input.name}.event_option_default_value`} value=""></option> );
 
     let optionList = options.map((option, index) => {
       return (
@@ -85,6 +87,19 @@ class EventOptionsModal extends Component {
               type="select"
               component={this.renderSelectField}
               options={option.event_option_values}
+              defaultValue={option.event_option_default_value}
+              label={option.event_option_name}
+              validate={ value => value || !option.event_option_required ? undefined : 'Required' }
+            />
+          </div>
+        )
+      } else if (option.event_option_type == 'text') {
+        return (
+          <div key={`option_${index}`}>
+            <Field
+              name={`option_${index}`}
+              type="select"
+              component={this.renderTextField}
               label={option.event_option_name}
               validate={ value => value || !option.event_option_required ? undefined : 'Required' }
             />
@@ -120,7 +135,7 @@ class EventOptionsModal extends Component {
 
           <Modal.Footer>
             <Button bsStyle="default" type="button" disabled={submitting} onClick={handleHide}>Cancel</Button>
-            <Button bsStyle="primary" type="submit" disabled={pristine || submitting || !valid}>Submit</Button>
+            <Button bsStyle="primary" type="submit" disabled={ submitting || !valid}>Submit</Button>
           </Modal.Footer>
         </form>
       </Modal>
