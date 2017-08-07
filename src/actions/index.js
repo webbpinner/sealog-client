@@ -382,13 +382,14 @@ export function createDefinition(formProps) {
 
   let fields = {};
 
+  fields.event_name = formProps.event_name;
+  fields.event_value = formProps.event_value;
+
   if(!formProps.event_free_text_required) {
     fields.event_free_text_required = false;
   } else {
     fields.event_free_text_required = formProps.event_free_text_required;
   }
-
-  fields.event_name = formProps.event_name;
 
   if(!formProps.event_options) {
     fields.event_options = [];
@@ -421,8 +422,6 @@ export function createDefinition(formProps) {
       return event_option;
     })
   }
-
-  fields.event_value = formProps.event_value;
 
 //  valueArray = event_option.event_option_values.split(',');
 //                        valueArray = valueArray.map(string => {
@@ -671,21 +670,46 @@ export function updateDefinition(formProps) {
 
   let fields = {};
 
+  fields.event_name = formProps.event_name;
+  fields.event_value = formProps.event_value;
+
   if(!formProps.event_free_text_required) {
     fields.event_free_text_required = false;
   } else {
     fields.event_free_text_required = formProps.event_free_text_required;
   }
 
-  fields.event_name = formProps.event_name;
-
   if(!formProps.event_options) {
     fields.event_options = [];
   } else {
+    console.log(formProps.event_options);
     fields.event_options = formProps.event_options;
-  }
+    fields.event_options = fields.event_options.map(event_option => {
 
-  fields.event_value = formProps.event_value;
+      if(!event_option.event_option_allow_freeform) {
+        event_option.event_option_allow_freeform = false;
+      } else {
+        event_option.event_option_allow_freeform = event_option.event_option_allow_freeform;
+      }
+
+      if(!event_option.event_option_required) {
+        event_option.event_option_required = false;
+      } else {
+        event_option.event_option_required = event_option.event_option_required;
+      }
+
+      if(event_option.event_option_type == 'dropdown') {
+        event_option.event_option_values = event_option.event_option_values.split(',');
+        event_option.event_option_values = event_option.event_option_values.map(string => {
+          return string.trim();
+        })
+      } else if (event_option.event_option_type == 'text') {
+        event_option.event_option_values = [];
+      }
+
+      return event_option;
+    })
+  }
 
   //console.log(fields);
 

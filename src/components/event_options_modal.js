@@ -9,6 +9,7 @@ class EventOptionsModal extends Component {
   constructor (props) {
     super(props);
 
+    this.defaultValues = {}
 //    this.handleConfirm = this.handleConfirm.bind(this);
   }
 
@@ -18,22 +19,41 @@ class EventOptionsModal extends Component {
     handleCreateEvent: PropTypes.func.isRequired
   };
 
+  componentWillMount() {
+    this.defaultValues = this.populateDefaultValues();
+  }
+
+  populateDefaultValues() {
+    let eventDefaultValues = {};
+    let hack = this.props.eventDefinition.event_options.map( (option, index) => {
+      if(option.event_option_default_value) {
+        eventDefaultValues[`option_${index}`] = option.event_option_default_value;
+      }
+      return;
+
+    });
+
+    this.props.initialize(eventDefaultValues);
+  }  
+
   handleFormSubmit(formProps) {
 
-    //console.log(formProps);
-
-    let temp = JSON.parse(JSON.stringify(formProps));;
+    let temp = formProps;
 
     delete temp.event_free_text
-    //console.log(temp);
+    console.log(temp);
 
-    let list = Object.keys(temp).map( (k) => {return temp[k]})
-    let event_options = list.map(x => { return ({ event_option_name: this.props.eventDefinition.event_options[list.indexOf(x)].event_option_name, event_option_value: x})});
+    //Convert obecjts to arrays
+    let optionValue = []
+    let optionIndex = Object.keys(temp).sort().map( (value, index) => { optionValue.push(temp[value]); return parseInt(value.split('_')[1])});
 
-    //console.log(list);
-    //console.log(event_options);
+    //Remove empty fields
+    optionValue.map( (value, index) => { if(value == "") { console.log("Index", index, "empty"); optionIndex.splice(index, 1); optionValue.splice(index, 1); } });
 
-    //console.log( {event_value: this.props.eventDefinition.event_value, event_free_text: formProps.event_free_text, event_options: event_options});
+    //Build event_options array
+    let event_options = optionIndex.map( (value, index) => { return ({ event_option_name: this.props.eventDefinition.event_options[value].event_option_name, event_option_value: optionValue[index]}) });
+
+    //Submit event
     this.props.handleCreateEvent(this.props.eventDefinition.event_value, formProps.event_free_text, event_options);
     this.props.handleDestroy();
   }
@@ -48,24 +68,13 @@ class EventOptionsModal extends Component {
     )
   }
 
-  renderSelectField({ input, label, defaultValue, type, options, meta: { touched, error, warning } }) {
-
-    input.value = defaultValue;
-
-    let defaultOption = ( <option key={`${input.name}.event_option_default_value`} value=""></option> );
-
-    let optionList = options.map((option, index) => {
-      return (
-        <option key={`${input.name}.${index}`} value={`${option}`}>{ `${option}`}</option>
-      );
-    });
+  renderSelectField({children, input, label, type, meta: { touched, error, warning } }) {
 
     return (
       <FormGroup controlId="formControlsSelect">
         <ControlLabel>{label}</ControlLabel>
         <FormControl {...input} componentClass={type} placeholder={label}>
-          { defaultOption }
-          { optionList }
+          {children}
         </FormControl>
         {(error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
       </FormGroup>
@@ -80,17 +89,27 @@ class EventOptionsModal extends Component {
     return ( event_options.map((option, index) => {
 
       if (option.event_option_type == 'dropdown') {
+
+        let defaultOption = ( <option key={`${option.event_option_name}.empty_value`}></option> );
+
+        let optionList = option.event_option_values.map((option_value, index) => {
+          return (
+            <option key={`${option.event_option_name}.${index}`} value={`${option_value}`}>{ `${option_value}`}</option>
+          );
+        });
+
         return (
           <div key={`option_${index}`}>
             <Field
               name={`option_${index}`}
               type="select"
               component={this.renderSelectField}
-              options={option.event_option_values}
-              defaultValue={option.event_option_default_value}
               label={option.event_option_name}
               validate={ value => value || !option.event_option_required ? undefined : 'Required' }
-            />
+            >
+              { defaultOption }
+              { optionList }
+            </Field>
           </div>
         )
       } else if (option.event_option_type == 'text') {
@@ -98,7 +117,7 @@ class EventOptionsModal extends Component {
           <div key={`option_${index}`}>
             <Field
               name={`option_${index}`}
-              type="select"
+              type="text"
               component={this.renderTextField}
               label={option.event_option_name}
               validate={ value => value || !option.event_option_required ? undefined : 'Required' }
@@ -112,8 +131,6 @@ class EventOptionsModal extends Component {
   render() {
 
     const { show, handleHide, handleSubmit, eventDefinition, pristine, submitting, valid } = this.props
-
-    //console.log(eventDefinition);
 
     return (
       <Modal show={show}>
@@ -146,7 +163,9 @@ class EventOptionsModal extends Component {
 function validate(formProps) {
   const errors = {};
 
-//  console.log(this.props);
+  //console.log(this);
+
+  //console.log(formProps);
 
 //  if (this.props.eventDefinition.event_free_text_required && !formProps.event_free_text) {
 //    errors.event_free_text = 'Required'
@@ -157,10 +176,12 @@ function validate(formProps) {
 }
 
 EventOptionsModal = reduxForm({
-  form: 'eventOptionsModal',
-  enableReinitialize: true,
-  validate: validate
+  form: 'eventOptionsModal'//,
+  //enableReinitialize: true//,
+  //validate: validate
 })(EventOptionsModal);
+
+//this.defaultValues
 
 
 export default connectModal({ name: 'eventOptions' })(EventOptionsModal)
