@@ -8,7 +8,7 @@ module.exports = {
   output: {
 //    path: __dirname,
     path: path.resolve(__dirname, "dist"),
-    publicPath: '/',
+    publicPath: '/sealog/',
     filename: 'bundle.js'
   },
   module: {
