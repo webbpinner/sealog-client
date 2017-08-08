@@ -46,7 +46,7 @@ if (token) {
 
 ReactDOM.render(
   <Provider store={store}>
-    <ThemeSwitcher themePath="/themes" defaultTheme="yeti" storeThemeKey="theme">
+    <ThemeSwitcher themePath="./themes" defaultTheme="yeti" storeThemeKey="theme">
       <ConnectedRouter history={history}>
           <div>
             <Header />
