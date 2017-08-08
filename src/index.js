@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Cookies from 'universal-cookie';
+import { ThemeSwitcher } from 'react-bootstrap-theme-switcher';
 
 import { AUTH_USER } from './actions/types';
 
@@ -45,33 +46,35 @@ if (token) {
 
 ReactDOM.render(
   <Provider store={store}>
-    <ConnectedRouter history={history}>
-        <div>
-          <Header />
-          <Route path={ `${ROOT_PATH}/` } exact={true} component={RequireAuth(Chat)}/>
-          <Route path={ `${ROOT_PATH}/feature` } exact={true} component={RequireAuth(Feature)} />
-          <Route path={ `${ROOT_PATH}/events` } exact={true} component={RequireAuth(Events)} />
-          <Switch>
-            <Route path={ `${ROOT_PATH}/users` } exact={true} component={RequireAuth(Users)} />
-            <Route path={ `${ROOT_PATH}/users/new` } exact={true} component={RequireAuth(CreateUser)} />
-            <Route path={ `${ROOT_PATH}/users/:id` } exact={true} component={RequireAuth(UpdateUser)} />
-          </Switch>
-          <Route path={ `${ROOT_PATH}/profile` } exact={true} component={RequireAuth(Profile)} />
-          <Switch>
-            <Route path={ `${ROOT_PATH}/exports` } exact={true} component={RequireAuth(Exports)} />
-            <Route path={ `${ROOT_PATH}/exports/new` } exact={true} component={RequireAuth(CreateExportTemplate)} />
-            <Route path={ `${ROOT_PATH}/exports/:id` } exact={true} component={RequireAuth(UpdateExportTemplate)} />
-          </Switch>
-          <Switch>
-            <Route path={ `${ROOT_PATH}/definitions` } exact={true} component={RequireAuth(Definitions)} />
-            <Route path={ `${ROOT_PATH}/definitions/new` } exact={true} component={RequireAuth(CreateDefinition)} />
-            <Route path={ `${ROOT_PATH}/definitions/:id` } exact={true} component={RequireAuth(UpdateDefinition)} />
-          </Switch>
-          <Route path={ `${ROOT_PATH}/login` } exact={true} component={RequireUnauth(Login)} />
-          <Route path={ `${ROOT_PATH}/logout` } exact={true} component={Logout} />
-          <Route path={ `${ROOT_PATH}/register` } exact={true} component={Register} />
-          <Footer />
-        </div>
-    </ConnectedRouter>
+    <ThemeSwitcher themePath="/themes" defaultTheme="yeti" storeThemeKey="theme">
+      <ConnectedRouter history={history}>
+          <div>
+            <Header />
+            <Route path={ `${ROOT_PATH}/` } exact={true} component={RequireAuth(Chat)}/>
+            <Route path={ `${ROOT_PATH}/feature` } exact={true} component={RequireAuth(Feature)} />
+            <Route path={ `${ROOT_PATH}/events` } exact={true} component={RequireAuth(Events)} />
+            <Switch>
+              <Route path={ `${ROOT_PATH}/users` } exact={true} component={RequireAuth(Users)} />
+              <Route path={ `${ROOT_PATH}/users/new` } exact={true} component={RequireAuth(CreateUser)} />
+              <Route path={ `${ROOT_PATH}/users/:id` } exact={true} component={RequireAuth(UpdateUser)} />
+            </Switch>
+            <Route path={ `${ROOT_PATH}/profile` } exact={true} component={RequireAuth(Profile)} />
+            <Switch>
+              <Route path={ `${ROOT_PATH}/exports` } exact={true} component={RequireAuth(Exports)} />
+              <Route path={ `${ROOT_PATH}/exports/new` } exact={true} component={RequireAuth(CreateExportTemplate)} />
+              <Route path={ `${ROOT_PATH}/exports/:id` } exact={true} component={RequireAuth(UpdateExportTemplate)} />
+            </Switch>
+            <Switch>
+              <Route path={ `${ROOT_PATH}/definitions` } exact={true} component={RequireAuth(Definitions)} />
+              <Route path={ `${ROOT_PATH}/definitions/new` } exact={true} component={RequireAuth(CreateDefinition)} />
+              <Route path={ `${ROOT_PATH}/definitions/:id` } exact={true} component={RequireAuth(UpdateDefinition)} />
+            </Switch>
+            <Route path={ `${ROOT_PATH}/login` } exact={true} component={RequireUnauth(Login)} />
+            <Route path={ `${ROOT_PATH}/logout` } exact={true} component={Logout} />
+            <Route path={ `${ROOT_PATH}/register` } exact={true} component={Register} />
+            <Footer />
+          </div>
+      </ConnectedRouter>
+    </ThemeSwitcher>
   </Provider>
   , document.querySelector('.container'));

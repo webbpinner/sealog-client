@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import FontAwesome from 'react-fontawesome';
 import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
 import { Link } from 'react-router-dom';
@@ -40,7 +41,7 @@ class Register extends Component {
             <strong>Success!</strong> {this.props.message}
           </div>
           <div className="text-right">
-            <Link to={ `${ROOT_PATH}/login` }>Proceed to Login --></Link>
+            <Link to={ `${ROOT_PATH}/login` }>Proceed to Login {<FontAwesome name="arrow-right"/>}</Link>
           </div>
         </Panel>
       )
@@ -110,8 +111,8 @@ class Register extends Component {
             </div>
               {this.renderAlert()}
             <div className="pull-right">
-              <button className="btn btn-default" type="button" disabled={pristine || submitting} onClick={reset}>Clear Values</button>
-              <button className="btn btn-primary" type="submit" disabled={submitting || !valid}>Register</button>
+              <Button bsStyle="default" bsSize="small" type="button" disabled={pristine || submitting} onClick={reset}>Clear Values</Button>
+              <Button bsStyle="primary" bsSize="small" type="submit" disabled={submitting || !valid}>Register</Button>
             </div>
           </form>
         </Panel>
