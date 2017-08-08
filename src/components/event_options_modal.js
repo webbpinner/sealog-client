@@ -38,11 +38,10 @@ class EventOptionsModal extends Component {
 
   handleFormSubmit(formProps) {
 
-    let temp = formProps;
+    let temp = JSON.parse(JSON.stringify(formProps));
 
     delete temp.event_free_text
-    console.log(temp);
-
+   
     //Convert obecjts to arrays
     let optionValue = []
     let optionIndex = Object.keys(temp).sort().map( (value, index) => { optionValue.push(temp[value]); return parseInt(value.split('_')[1])});
@@ -151,8 +150,8 @@ class EventOptionsModal extends Component {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button bsStyle="default" type="button" disabled={submitting} onClick={handleHide}>Cancel</Button>
-            <Button bsStyle="primary" type="submit" disabled={ submitting || !valid}>Submit</Button>
+            <Button bsStyle="default" bsSize="small" type="button" disabled={submitting} onClick={handleHide}>Cancel</Button>
+            <Button bsStyle="primary" bsSize="small" type="submit" disabled={ submitting || !valid}>Submit</Button>
           </Modal.Footer>
         </form>
       </Modal>
@@ -162,10 +161,6 @@ class EventOptionsModal extends Component {
 
 function validate(formProps) {
   const errors = {};
-
-  //console.log(this);
-
-  //console.log(formProps);
 
 //  if (this.props.eventDefinition.event_free_text_required && !formProps.event_free_text) {
 //    errors.event_free_text = 'Required'

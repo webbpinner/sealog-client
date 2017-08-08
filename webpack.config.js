@@ -1,3 +1,4 @@
+var CopyWebpackPlugin = require ("copy-webpack-plugin");
 var path = require("path");
 
 module.exports = {
@@ -26,5 +27,12 @@ module.exports = {
     historyApiFallback: true,
     contentBase: './dist',
     port: 9000,
-  }
+  },
+  plugins: [
+    new CopyWebpackPlugin([
+        {context: 'node_modules/react-bootstrap-theme-switcher/themes/', from: '**/*', to: 'themes/'}
+      ],
+      {copyUnmodified: true}
+    )
+  ]
 };
