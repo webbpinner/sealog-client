@@ -130,8 +130,8 @@ class CreateUser extends Component {
                   {this.renderAlert()}
                   {this.renderMessage()}
                   <div className="pull-right">
-                    <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
-                    <Button bsStyle="primary" type="submit" disabled={submitting || !valid}>Create</Button>
+                    <Button bsStyle="default" bsSize="small" type="button" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
+                    <Button bsStyle="primary" bsSize="small" type="submit" disabled={submitting || !valid}>Create</Button>
                   </div>
                 </form>
               </Panel>

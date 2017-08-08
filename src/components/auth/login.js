@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import FontAwesome from 'react-fontawesome';
 import { reduxForm, Field } from 'redux-form';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -67,7 +68,7 @@ class Login extends Component {
               </form>
               <br/>
               <div className="text-right">
-                <Link to={ `${ROOT_PATH}/register` }>Register --></Link>
+                <Link to={ `${ROOT_PATH}/register` }>Register {<FontAwesome name="arrow-right"/>}</Link>
               </div>
             </Panel>
           </Col>

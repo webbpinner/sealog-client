@@ -9,7 +9,11 @@
     margin-bottom: 5px !important;
 }
 
-.chatHistory, .eventList{
+.chatHistory, .eventList {
   overflow-y: scroll;
-  height: 200px
+  height: 200px;
+}
+
+.footer {
+  text-align: right;
 }

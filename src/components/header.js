@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown, NavItem, MenuItem } from 'react-bootstrap';
+import FontAwesome from 'react-fontawesome'
 import { LinkContainer } from 'react-router-bootstrap';
 import * as actions from '../actions';
 import { ROOT_PATH } from '../url_config';
@@ -69,7 +70,7 @@ class Header extends Component {
   renderUserDropdown() {
     if(this.props.fullname){
       return (
-      <NavDropdown eventKey={3} title={this.props.fullname} id="basic-nav-dropdown">
+      <NavDropdown eventKey={3} title={<FontAwesome name='user' />} id="basic-nav-dropdown">
         <LinkContainer to={ `${ROOT_PATH}/profile` }>
           <MenuItem key="profile" eventKey={3.1} >User Profile</MenuItem>
         </LinkContainer>

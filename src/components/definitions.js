@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import FontAwesome from 'react-fontawesome';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { reduxForm, Field, reset } from 'redux-form';
-import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table } from 'react-bootstrap';
+import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { ROOT_PATH } from '../url_config';
 import DeleteDefinitionModal from './delete_definition_modal';
@@ -23,7 +24,7 @@ class Definitions extends Component {
       return (
         <div className="pull-right">
           <LinkContainer to={`${ROOT_PATH}/definitions/new`}>
-            <Button bsStyle="primary" type="button">Add New Definition</Button>
+            <Button bsStyle="primary" bsSize="small" type="button">Add Definition</Button>
           </LinkContainer>
         </div>
       );
@@ -31,14 +32,18 @@ class Definitions extends Component {
   }
 
   renderDefinitions() {
+
+    const editTooltip = (<Tooltip id="editTooltip">Edit this definition.</Tooltip>)
+    const deleteTooltip = (<Tooltip id="deleteTooltip">Delete this definition.</Tooltip>)
+
     return this.props.definitions.map((definition) => {
       //console.log(definition);
       return (
         <tr key={definition.id}>
           <td>{definition.event_name}</td>
           <td>
-            <Link to={`${ROOT_PATH}/definitions/${definition.id}`}>Edit</Link>&nbsp;
-            <Link to="#" onClick={ () => this.handleDefinitionDelete(definition.id) }>Delete</Link>
+            <Link className="btn-default" to={`${ROOT_PATH}/definitions/${definition.id}`}><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>&nbsp;
+            <Link className="btn-default" to="#" onClick={ () => this.handleDefinitionDelete(definition.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link>
           </td>
         </tr>
       );

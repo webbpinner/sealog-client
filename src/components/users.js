@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
+import FontAwesome from 'react-fontawesome';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { reduxForm, Field, reset } from 'redux-form';
-import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table } from 'react-bootstrap';
+import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { ROOT_PATH } from '../url_config';
 import DeleteUserModal from './delete_user_modal';
-
 import * as actions from '../actions';
 
 class Users extends Component {
@@ -24,7 +24,7 @@ class Users extends Component {
       return (
         <div className="pull-right">
           <LinkContainer to={`${ROOT_PATH}/users/new`}>
-            <Button bsStyle="primary" type="button">Add New User</Button>
+            <Button bsStyle="primary" bsSize="small" type="button">Add User</Button>
           </LinkContainer>
         </div>
       );
@@ -32,6 +32,10 @@ class Users extends Component {
   }
 
   renderUsers() {
+
+    const editTooltip = (<Tooltip id="editTooltip">Edit this user.</Tooltip>)
+    const deleteTooltip = (<Tooltip id="deleteTooltip">Delete this user.</Tooltip>)
+
     if(this.props.users){
       return this.props.users.map((user) => {
         return (
@@ -39,9 +43,9 @@ class Users extends Component {
             <td>{user.username}</td>
             <td>{user.fullname}</td>
             <td>
-              <Link key={`edit_${user.id}`} to={`${ROOT_PATH}/users/${user.id}`}>Edit</Link>
+              <Link className="btn-default" key={`edit_${user.id}`} to={`${ROOT_PATH}/users/${user.id}`}><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>
               &nbsp;
-              {user.id != this.props.userid? <Link key={`delete_${user.id}`} to="#" onClick={ () => this.handleUserDelete(user.id) }>Delete</Link> : <span>Delete</span>}
+              {user.id != this.props.userid? <Link className="btn-default" key={`delete_${user.id}`} to="#" onClick={ () => this.handleUserDelete(user.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link> : ''}
             </td>
           </tr>
         );

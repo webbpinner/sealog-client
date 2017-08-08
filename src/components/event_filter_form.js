@@ -205,8 +205,8 @@ class EventFilterForm extends Component {
             {this.renderAlert()}
             {this.renderMessage()}
             <div className="pull-right">
-              <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Clear Values</Button>
-              <Button bsStyle="primary" type="submit" disabled={submitting || !valid}>Apply Filter</Button>
+              <Button bsStyle="default" bsSize="small" type="button" disabled={pristine || submitting} onClick={reset}>Clear Values</Button>
+              <Button bsStyle="primary" bsSize="small" disabled={submitting || !valid}>Apply Filter</Button>
             </div>
           </form>
         </Panel>

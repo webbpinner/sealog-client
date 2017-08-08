@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import FontAwesome from 'react-fontawesome';
 import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
-import { Button, ListGroup, ListGroupItem, Panel } from 'react-bootstrap';
+import { Button, ListGroup, ListGroupItem, Panel, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import * as actions from '../actions';
 import $ from 'jquery';
 import { Client } from 'nes';
@@ -72,14 +73,18 @@ class ChatHistory extends Component {
   renderChatHistoryHeader() {
 
     const Label = "Event History"
+    const expandTooltip = (<Tooltip id="editTooltip">Expand this panel</Tooltip>)
+    const compressTooltip = (<Tooltip id="editTooltip">Compress this panel</Tooltip>)
+    const showTooltip = (<Tooltip id="editTooltip">Show this panel</Tooltip>)
+    const hideTooltip = (<Tooltip id="editTooltip">Hide this panel</Tooltip>)
 
     if(this.props.showChatHistory && !this.props.showChatHistoryFullscreen) {
       return (
         <div>
           { Label }
           <div className="pull-right">
-            <Button bsStyle="primary" bsSize="xs" type="button" onClick={ this.handleShowChatFullscreen }>Expand</Button>
-            <Button bsStyle="primary" bsSize="xs" type="button" onClick={ this.handleHideChat }>Hide</Button>
+            <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleShowChatFullscreen }><OverlayTrigger placement="top" overlay={expandTooltip}><FontAwesome name='expand' fixedWidth/></OverlayTrigger></Button>
+            <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleHideChat }><OverlayTrigger placement="top" overlay={hideTooltip}><FontAwesome name='eye-slash' fixedWidth/></OverlayTrigger></Button>
           </div>
         </div>
       );
@@ -90,8 +95,8 @@ class ChatHistory extends Component {
         <div>
           { Label }
           <div className="pull-right">
-            <Button bsStyle="primary" bsSize="xs" type="button" onClick={ this.handleShowChat }>Shrink</Button>
-            <Button bsStyle="primary" bsSize="xs" type="button" onClick={ this.handleHideChat }>Hide</Button>
+            <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleShowChat }><OverlayTrigger placement="top" overlay={compressTooltip}><FontAwesome name='compress' fixedWidth/></OverlayTrigger></Button>
+            <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleHideChat }><OverlayTrigger placement="top" overlay={hideTooltip}><FontAwesome name='eye-slash' fixedWidth/></OverlayTrigger></Button>
           </div>
         </div>
       );
@@ -101,7 +106,7 @@ class ChatHistory extends Component {
       <div>
         { Label }
         <div className="pull-right">
-          <Button bsStyle="primary" bsSize="xs" type="button" onClick={ this.handleShowChat }>Show</Button>
+          <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleShowChat }><OverlayTrigger placement="top" overlay={showTooltip}><FontAwesome name='eye' fixedWidth/></OverlayTrigger></Button>
         </div>
       </div>
     );
