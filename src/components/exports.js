@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
+import FontAwesome from 'react-fontawesome';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { reduxForm, Field, reset } from 'redux-form';
-import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table } from 'react-bootstrap';
+import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import DeleteExportModal from './delete_export_modal';
-
 import { ROOT_PATH } from '../url_config';
-
+import DeleteExportModal from './delete_export_modal';
 import * as actions from '../actions';
 
 class Exports extends Component {
@@ -29,7 +28,7 @@ class Exports extends Component {
       return (
         <div className="pull-right">
           <LinkContainer to={`${ROOT_PATH}/exports/new`}>
-            <Button bsStyle="primary" type="button">Add New Export</Button>
+            <Button bsStyle="primary" bsSize="small" type="button">Add Export</Button>
           </LinkContainer>
         </div>
       );
@@ -37,15 +36,20 @@ class Exports extends Component {
   }
 
   renderExportTemplates() {
+
+    const editTooltip = (<Tooltip id="editTooltip">Edit this export.</Tooltip>)
+    const deleteTooltip = (<Tooltip id="deleteTooltip">Delete this export.</Tooltip>)
+    const runTooltip = (<Tooltip id="deleteTooltip">Run this export.</Tooltip>)
+
     return this.props.exports.map((exportTemplate) => {
       //console.log(exportTemplate);
       return (
         <tr key={exportTemplate.id}>
           <td>{exportTemplate.event_export_template_name}</td>
           <td>
-            <Link to={`${ROOT_PATH}/exports/${exportTemplate.id}`}>Edit</Link>&nbsp;
-            <Link to="#" onClick={ () => this.handleExportTemplateDelete(exportTemplate.id) }>Delete</Link>&nbsp;
-            <Link to="#" onClick={ () => this.handleExportTemplateRun(exportTemplate.id) }>Run</Link> 
+            <Link className="btn-default" to={`${ROOT_PATH}/exports/${exportTemplate.id}`}><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>
+            <Link className="btn-default" to="#" onClick={ () => this.handleExportTemplateDelete(exportTemplate.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link>
+            <Link className="btn-default" to="#" onClick={ () => this.handleExportTemplateRun(exportTemplate.id) }><OverlayTrigger placement="top" overlay={runTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger></Link> 
           </td>
         </tr>
       );

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import FontAwesome from 'react-fontawesome';
 import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
-import { Button, ListGroup, ListGroupItem, Panel } from 'react-bootstrap';
+import { Button, ListGroup, ListGroupItem, Panel, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import * as actions from '../actions';
 import fileDownload from 'react-file-download';
 
@@ -27,23 +28,6 @@ class EventList extends Component {
     }
   }
 
-  componentDidMount() {
-    
-    // this.client.connect((err) => {
-    //   let handler = (update, flags) => {
-    //     //console.log(update);
-    //     this.props.updateChat(update);
-    //   };
-
-    //   this.client.subscribe('/chat/updates', handler, (err) => {
-    //     if(err) {
-    //       console.log(err);
-    //     }
-    //   })
-    // })
-
-  }
-
   componentDidUpdate() {
     this.scrollToBottom();
   }
@@ -51,14 +35,18 @@ class EventList extends Component {
   renderEventListHeader() {
 
     const Label = "Events"
+    const expandTooltip = (<Tooltip id="editTooltip">Expand this panel</Tooltip>)
+    const shrinkTooltip = (<Tooltip id="deleteTooltip">Shrink this panel</Tooltip>)
+    const exportTooltip = (<Tooltip id="deleteTooltip">Export these events</Tooltip>)
+
 
     if(this.props.showEventListFullscreen) {
       return (
         <div>
           { Label }
           <div className="pull-right">
-            <Button bsStyle="primary" bsSize="xs" type="button" onClick={ this.handleShowEventList }>Shrink</Button>
-            <Button bsStyle="primary" bsSize="xs" type="button" onClick={ this.handleExportEventList }>Export</Button>
+            <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleShowEventList }><OverlayTrigger placement="top" overlay={shrinkTooltip}><FontAwesome name='compress' fixedWidth/></OverlayTrigger></Button>
+            <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleExportEventList }><OverlayTrigger placement="top" overlay={exportTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger></Button>
           </div>
         </div>
       );
@@ -68,8 +56,8 @@ class EventList extends Component {
       <div>
         { Label }
         <div className="pull-right">
-          <Button bsStyle="primary" bsSize="xs" type="button" onClick={ this.handleShowEventListFullscreen }>Expand</Button>
-          <Button bsStyle="primary" bsSize="xs" type="button" onClick={ this.handleExportEventList }>Export</Button>
+          <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleShowEventListFullscreen }><OverlayTrigger placement="top" overlay={expandTooltip}><FontAwesome name='expand' fixedWidth/></OverlayTrigger></Button>
+          <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleExportEventList }><OverlayTrigger placement="top" overlay={exportTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger></Button>
         </div>
       </div>
     );

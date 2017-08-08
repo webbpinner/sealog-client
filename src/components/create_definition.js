@@ -184,13 +184,13 @@ class CreateDefinition extends Component {
                     />
                   </div>
 
-                  <label>Event Options:</label>
                   <FieldArray name="event_options" component={this.renderEventOptions}/>
+                  <br/>
                   {this.renderAlert()}
                   {this.renderMessage()}
                   <div className="pull-right">
-                    <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
-                    <Button bsStyle="primary" type="submit" disabled={pristine || submitting || !valid}>Create</Button>
+                    <Button bsStyle="default" type="button" bsSize="small" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
+                    <Button bsStyle="primary" type="submit" bsSize="small" disabled={pristine || submitting || !valid}>Create</Button>
                   </div>
                 </form>
               </Panel>

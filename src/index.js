@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-//import { createStore, applyMiddleware } from 'redux';
-//import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import { ConnectedRouter } from 'react-router-redux';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Cookies from 'universal-cookie';
@@ -10,6 +8,7 @@ import Cookies from 'universal-cookie';
 import { AUTH_USER } from './actions/types';
 
 import Header from './components/header';
+import Footer from './components/footer';
 import Feature from './components/feature';
 import Login from './components/auth/login';
 import Logout from './components/auth/logout';
@@ -71,6 +70,7 @@ ReactDOM.render(
           <Route path={ `${ROOT_PATH}/login` } exact={true} component={RequireUnauth(Login)} />
           <Route path={ `${ROOT_PATH}/logout` } exact={true} component={Logout} />
           <Route path={ `${ROOT_PATH}/register` } exact={true} component={Register} />
+          <Footer />
         </div>
     </ConnectedRouter>
   </Provider>

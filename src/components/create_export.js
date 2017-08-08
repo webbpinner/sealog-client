@@ -196,8 +196,8 @@ class CreateExportTemplate extends Component {
                   {this.renderAlert()}
                   {this.renderMessage()}
                   <div className="pull-right">
-                    <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Clear Values</Button>
-                    <Button bsStyle="primary" type="submit" disabled={pristine || submitting || !valid}>Create</Button>
+                    <Button bsStyle="default" bsSize="small" type="button" disabled={pristine || submitting} onClick={reset}>Clear Values</Button>
+                    <Button bsStyle="primary" bsSize="small" type="submit" disabled={pristine || submitting || !valid}>Create</Button>
                   </div>
                 </form>
               </Panel>
