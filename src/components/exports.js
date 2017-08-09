@@ -47,9 +47,9 @@ class Exports extends Component {
         <tr key={exportTemplate.id}>
           <td>{exportTemplate.event_export_template_name}</td>
           <td>
-            <Link className="btn-default" to={`${ROOT_PATH}/exports/${exportTemplate.id}`}><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>
-            <Link className="btn-default" to="#" onClick={ () => this.handleExportTemplateDelete(exportTemplate.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link>
-            <Link className="btn-default" to="#" onClick={ () => this.handleExportTemplateRun(exportTemplate.id) }><OverlayTrigger placement="top" overlay={runTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger></Link> 
+            <Link to={`${ROOT_PATH}/exports/${exportTemplate.id}`}><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>
+            <Link to="#" onClick={ () => this.handleExportTemplateDelete(exportTemplate.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link>
+            <Link to="#" onClick={ () => this.handleExportTemplateRun(exportTemplate.id) }><OverlayTrigger placement="top" overlay={runTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger></Link> 
           </td>
         </tr>
       );

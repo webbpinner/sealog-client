@@ -43,9 +43,9 @@ class Users extends Component {
             <td>{user.username}</td>
             <td>{user.fullname}</td>
             <td>
-              <Link className="btn-default" key={`edit_${user.id}`} to={`${ROOT_PATH}/users/${user.id}`}><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>
+              <Link key={`edit_${user.id}`} to={`${ROOT_PATH}/users/${user.id}`}><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>
               &nbsp;
-              {user.id != this.props.userid? <Link className="btn-default" key={`delete_${user.id}`} to="#" onClick={ () => this.handleUserDelete(user.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link> : ''}
+              {user.id != this.props.userid? <Link key={`delete_${user.id}`} to="#" onClick={ () => this.handleUserDelete(user.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link> : ''}
             </td>
           </tr>
         );

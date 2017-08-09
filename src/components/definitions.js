@@ -42,8 +42,8 @@ class Definitions extends Component {
         <tr key={definition.id}>
           <td>{definition.event_name}</td>
           <td>
-            <Link className="btn-default" to={`${ROOT_PATH}/definitions/${definition.id}`}><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>&nbsp;
-            <Link className="btn-default" to="#" onClick={ () => this.handleDefinitionDelete(definition.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link>
+            <Link to={`${ROOT_PATH}/definitions/${definition.id}`}><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>&nbsp;
+            <Link to="#" onClick={ () => this.handleDefinitionDelete(definition.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link>
           </td>
         </tr>
       );

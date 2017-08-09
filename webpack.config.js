@@ -1,7 +1,7 @@
-var CopyWebpackPlugin = require ("copy-webpack-plugin");
-var path = require("path");
+let CopyWebpackPlugin = require ("copy-webpack-plugin");
+let path = require("path");
 
-var publicPath = '/sealog/'
+var ROOT_PATH = '/';
 
 module.exports = {
   entry: [
@@ -10,7 +10,7 @@ module.exports = {
   output: {
 //    path: __dirname,
     path: path.resolve(__dirname, "dist"),
-    publicPath: publicPath,
+    publicPath: ROOT_PATH,
     filename: 'bundle.js'
   },
   module: {

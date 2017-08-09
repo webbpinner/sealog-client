@@ -206,7 +206,7 @@ class EventFilterForm extends Component {
             {this.renderMessage()}
             <div className="pull-right">
               <Button bsStyle="default" bsSize="small" type="button" disabled={pristine || submitting} onClick={reset}>Clear Values</Button>
-              <Button bsStyle="primary" bsSize="small" disabled={submitting || !valid}>Apply Filter</Button>
+              <Button bsStyle="primary" bsSize="small" type="submit" disabled={submitting || !valid}>Apply Filter</Button>
             </div>
           </form>
         </Panel>
@@ -222,6 +222,7 @@ class EventFilterForm extends Component {
 }
 
 function validate(formProps) {
+
   const errors = {};
 
   if (formProps.startTS && !/(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\:(\d{2})\.(\d{3})Z/i.test(formProps.startTS)) {
@@ -240,7 +241,6 @@ function validate(formProps) {
     errors.offset = 'Offset must be an integer 0 or greater'
   }
 
-  //console.log(errors);
   return errors;
 
 }
