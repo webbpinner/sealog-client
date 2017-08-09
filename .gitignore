@@ -5,3 +5,4 @@ npm-debug.log
 /dist/bundle.js
 /src/url_config.js
 package-lock.json
+webpack.config.js
