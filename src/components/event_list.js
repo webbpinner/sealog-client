@@ -88,10 +88,18 @@ class EventList extends Component {
       return this.props.list.map((message) => {
 
         let freeText = '';
-        message.event_free_text ? freeText = ' --> ' + message.event_free_text : freeText = '';
+        message.event_free_text ? freeText = ` --> "${message.event_free_text}"` : freeText = '';
 
+        let eventOptions = '';
+        if (message.event_options.length > 0 ) {
+          let eventOptionsObj = {};
+          message.event_options.map((option) => {
+            eventOptionsObj[option.event_option_name] = option.event_option_value;
+          })
+          eventOptions = JSON.stringify(eventOptionsObj)
+        }
 
-        return (<ListGroupItem key={message.id}>{message.ts}: {message.user_name} - {message.event_value} {freeText}</ListGroupItem>);
+        return (<ListGroupItem key={message.id}>{message.ts} {`<${message.user_name}>`}: {message.event_value} {eventOptions} {freeText}</ListGroupItem>);
       })      
     }
 

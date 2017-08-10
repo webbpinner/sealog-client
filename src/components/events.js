@@ -22,7 +22,7 @@ class Events extends Component {
           <Col sm={6} md={5} lg={4}>
             <EventFilterForm />
           </Col>
-          <Col sm={6} md={7} lg={6}>
+          <Col sm={6} md={7} lg={8}>
             <EventList />
           </Col>
         </Row>
