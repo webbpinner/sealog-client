@@ -39,7 +39,7 @@ cp ./src/webpack.js.dist ./src/webpack.js
 
 Set the `ROOT_PATH` values in the `./sealog-client/webpack.js` file to meet your specific installation requirements.
 
-The default configuration file also assumes the client will be available from the root of the webserver.  If you want the webclient available at: `http://<serverIP>/sealog` you need to set `ROOT_PATH` to `/sealog/` (notice there is a starting `/` **AND** a trailing `/`)..
+The default configuration file also assumes the client will be available from the root of the webserver.  If you want the webclient available at: `http://<serverIP>/sealog` you need to set `ROOT_PATH` to `/sealog/` (notice there is a starting `/` **AND** a trailing `/`).
 
 ### Install the nodeJS modules
 
