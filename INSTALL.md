@@ -26,7 +26,7 @@ cp ./src/url_config.js.dist ./src/url_config.js
 
 Set the `API_ROOT_URL`, `WS_ROOT_URL` and `ROOT_PATH` values in the `./sealog-client/src/url_config.js` file to meet your specific installation requirements.
 
-By default the file assumes the sealog-server is available on ports 8000/8001 on the same server that is hosting the sealog-server.  The default configuration file also assumes the client will be available from the root of the webserver.  If you want the webclient available at: `http://<serverIP>/sealog` you need to set `ROOT_PATH` to `/sealog` (notice there is a starting `/` but no trailing `/`).
+By default the file assumes the sealog-server is available on ports 8000/8001 on the same server that is hosting the sealog-server.  The default configuration file also assumes the client will be available from the root of the webserver.  If you want the webclient available at: `http://<serverIP>/sealog` you need to set `ROOT_PATH` to `/sealog` (notice there is a starting `/` but **NO** trailing `/`).
 
 ### Create a deployment file
 
@@ -39,7 +39,7 @@ cp ./src/webpack.js.dist ./src/webpack.js
 
 Set the `ROOT_PATH` values in the `./sealog-client/webpack.js` file to meet your specific installation requirements.
 
-The default configuration file also assumes the client will be available from the root of the webserver.  If you want the webclient available at: `http://<serverIP>/sealog` you need to set `ROOT_PATH` to `/sealog` (notice there is a starting `/` but no trailing `/`)..
+The default configuration file also assumes the client will be available from the root of the webserver.  If you want the webclient available at: `http://<serverIP>/sealog` you need to set `ROOT_PATH` to `/sealog/` (notice there is a starting `/` **AND** a trailing `/`)..
 
 ### Install the nodeJS modules
 
