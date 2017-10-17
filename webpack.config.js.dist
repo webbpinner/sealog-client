@@ -32,7 +32,8 @@ module.exports = {
   },
   plugins: [
     new CopyWebpackPlugin([
-        {context: 'node_modules/react-bootstrap-theme-switcher/themes/', from: '**/*', to: 'themes/'}
+        {context: 'node_modules/react-bootstrap-theme-switcher/themes/', from: '**/*', to: 'themes/'},
+        {context: 'src/assets/', from: '**/*', to: ''}
       ],
       {copyUnmodified: true}
     )

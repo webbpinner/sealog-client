@@ -7,9 +7,18 @@ import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table, OverlayTrigger,
 import { LinkContainer } from 'react-router-bootstrap';
 import { ROOT_PATH } from '../url_config';
 import DeleteUserModal from './delete_user_modal';
+import ImportUsersModal from './import_users_modal';
+import fileDownload from 'react-file-download';
 import * as actions from '../actions';
 
 class Users extends Component {
+
+  constructor (props) {
+    super(props);
+
+    this.handleExportUserList = this.handleExportUserList.bind(this);
+    this.handleImportUserList = this.handleImportUserList.bind(this);
+  }
 
   componentWillMount() {
       this.props.fetchUsers();
@@ -17,6 +26,27 @@ class Users extends Component {
 
   handleUserDelete(id) {
     this.props.showModal('deleteUser', { id: id, handleDelete: this.props.deleteUser });
+  }
+
+  handleExportUserList() {
+    fileDownload(JSON.stringify(this.props.users, null, "\t"), 'export.json');
+  }
+
+  handleImportUserList() {
+    this.props.showModal('importUsers', { });
+
+    // const options = {
+    //   baseUrl: 'http://127.0.0.1',
+    //   query: {
+    //     warrior: 'fight'
+    //   }
+    // }
+
+    // /* Use ReactUploadFile with options */
+    // /* Custom your buttons */
+    // return (
+    //   <ReactUploadFile options={options} uploadFileButton={<FontAwesome name='upload' fixedWidth/>} />
+    // );
   }
 
   renderAddUserButton() {
@@ -78,6 +108,25 @@ class Users extends Component {
     )
   }
 
+  renderUserHeader() {
+
+    const Label = "Users"
+
+    // const importTooltip = (<Tooltip id="importTooltip">Import Users</Tooltip>)
+    const exportTooltip = (<Tooltip id="exportTooltip">Export Users</Tooltip>)
+
+    // <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleImportUserList }><OverlayTrigger placement="top" overlay={importTooltip}><FontAwesome name='upload' fixedWidth/></OverlayTrigger></Button>
+
+    return (
+      <div>
+        { Label }
+        <div className="pull-right">
+          <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleExportUserList }><OverlayTrigger placement="top" overlay={exportTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger></Button>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     if (!this.props.roles) {
         return (
@@ -91,8 +140,11 @@ class Users extends Component {
           <Row>
             <Col sm={6} md={4} lg={4}>
                 <DeleteUserModal />
-                {this.renderUserTable()}
-                {this.renderAddUserButton()}
+                <ImportUsersModal />
+                <Panel header={this.renderUserHeader()}>
+                  {this.renderUserTable()}
+                  {this.renderAddUserButton()}
+                </Panel>
             </Col>
           </Row>
         </Grid>

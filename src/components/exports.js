@@ -7,15 +7,30 @@ import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table, OverlayTrigger,
 import { LinkContainer } from 'react-router-bootstrap';
 import { ROOT_PATH } from '../url_config';
 import DeleteExportModal from './delete_export_modal';
+import fileDownload from 'react-file-download';
 import * as actions from '../actions';
 
 class Exports extends Component {
+
+
+  constructor (props) {
+    super(props);
+
+    this.handleExportExportList = this.handleExportExportList.bind(this);
+//    this.handleImportExportList = this.handleImportExportList.bind(this);
+  }
 
   componentWillMount() {
       this.props.fetchExportTemplates();
   }
 
+  handleExportExportList() {
+    fileDownload(JSON.stringify(this.props.exports, null, "\t"), 'export.json');
+  }
+
   handleExportTemplateDelete(id) {
+
+
     this.props.showModal('deleteExport', { id: id, handleDelete: this.props.deleteExportTemplate });
   }
 
@@ -76,6 +91,26 @@ class Exports extends Component {
     }
   }
 
+  renderExportHeader() {
+
+    const Label = "Exports"
+
+    // const importTooltip = (<Tooltip id="importTooltip">Import Users</Tooltip>)
+    const exportTooltip = (<Tooltip id="exportTooltip">Export Exports</Tooltip>)
+
+    // <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleImportUserList }><OverlayTrigger placement="top" overlay={importTooltip}><FontAwesome name='upload' fixedWidth/></OverlayTrigger></Button>
+
+    return (
+      <div>
+        { Label }
+        <div className="pull-right">
+          <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleExportExportList }><OverlayTrigger placement="top" overlay={exportTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger></Button>
+        </div>
+      </div>
+    );
+  }
+
+
   render() {
     if (!this.props.roles) {
         return (
@@ -89,8 +124,10 @@ class Exports extends Component {
           <Row>
             <Col sm={6} md={4} lg={4}>
                 <DeleteExportModal />
-                {this.renderExportTemplatesTable()}
-                {this.renderAddExportTemplateButton()}
+                <Panel header={this.renderExportHeader()}>
+                  {this.renderExportTemplatesTable()}
+                  {this.renderAddExportTemplateButton()}
+                </Panel>
             </Col>
           </Row>
         </Grid>
