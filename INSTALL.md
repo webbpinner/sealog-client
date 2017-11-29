@@ -32,7 +32,7 @@ By default the file assumes the sealog-server is available on ports 8000/8001 on
 
 ```
 cd ./sealog-client
-cp ./src/webpack.js.dist ./src/webpack.js
+cp ./webpack.js.dist ./webpack.js
 ```
 
 ### Modify the configuration file
