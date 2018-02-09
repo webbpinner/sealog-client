@@ -84,3 +84,13 @@ Add the following to your Apache vhosts file:
 You will need to tweak this configuration to match your exact installation.  This example assumes the client will live at `http://<serverIP>/sealog` and the git repo is located at: `/var/www/sealog-client`
 
 **Be sure to reload Apache for these changes to take affect.**
+
+### Running in development mode ###
+Optionally you can run the client using node's development web-server.  This removes the need to run Apache.
+
+To run the client using development mode run the following commands in terminal:
+```
+cd
+cd sealog-client
+npm start
+```
