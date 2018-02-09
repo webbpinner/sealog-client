@@ -90,7 +90,6 @@ Optionally you can run the client using node's development web-server.  This rem
 
 To run the client using development mode run the following commands in terminal:
 ```
-cd
-cd sealog-client
+cd <path_to>/sealog-client
 npm start
 ```
