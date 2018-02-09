@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import EventDefinistionList from './event_definition_list';
-import ChatHistory from './chat_history';
-import ChatInput from './chat_input';
+import EventTemplateList from './event_template_list';
+import EventHistory from './event_history';
+import EventInput from './event_input';
 import { Panel, Grid, Row, Col } from 'react-bootstrap';
 
 import * as actions from '../actions';
 
-class Chat extends Component {
+class Main extends Component {
 
   constructor (props) {
     super(props);
@@ -21,19 +21,19 @@ class Chat extends Component {
       <Grid fluid>
         <Row>
           <Col>
-            <EventDefinistionList />
+            <EventTemplateList />
           </Col>
         </Row>
         <br />
         <Row>
           <Col>
-            <ChatInput />
+            <EventInput />
           </Col>
         </Row>
         <br />
         <Row>
           <Col>
-            <ChatHistory />
+            <EventHistory />
           </Col>
         </Row>
       </Grid>
@@ -46,4 +46,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps, actions)(Chat);
+export default connect(mapStateToProps, actions)(Main);

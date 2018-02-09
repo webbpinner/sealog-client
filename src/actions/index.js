@@ -26,43 +26,44 @@ import {
   LEAVE_UPDATE_USER_FORM,
   DELETE_USER,
   FETCH_USERS,
-  FETCH_EVENT_DEFINITIONS_FOR_CHAT,
+  FETCH_EVENT_TEMPLATES_FOR_MAIN,
   FETCH_EVENTS,
   FETCH_FILTERED_EVENTS,
   CREATE_EVENT,
   LEAVE_AUTH_LOGIN_FORM,
-  UPDATE_CHAT,
-  HIDE_CHAT,
-  SHOW_CHAT,
-  SHOW_CHAT_FULLSCREEN,
-  HIDE_EVENTLIST,
-  SHOW_EVENTLIST,
-  SHOW_EVENTLIST_FULLSCREEN,
+  FETCH_EVENT_HISTORY,
+  UPDATE_EVENT_HISTORY,
+  HIDE_EVENT_HISTORY,
+  SHOW_EVENT_HISTORY,
+  SHOW_EVENT_HISTORY_FULLSCREEN,
+  HIDE_EVENTS,
+  SHOW_EVENTS,
+  SHOW_EVENTS_FULLSCREEN,
   INIT_PROFILE,
   UPDATE_PROFILE,
   UPDATE_PROFILE_SUCCESS,
   UPDATE_PROFILE_ERROR,
   LEAVE_UPDATE_PROFILE_FORM,
-  INIT_EXPORT_TEMPLATE,
-  UPDATE_EXPORT_TEMPLATE,
-  UPDATE_EXPORT_TEMPLATE_SUCCESS,
-  UPDATE_EXPORT_TEMPLATE_ERROR,
-  LEAVE_UPDATE_EXPORT_TEMPLATE_FORM,
-  CREATE_EXPORT_TEMPLATE,
-  CREATE_EXPORT_TEMPLATE_SUCCESS,
-  CREATE_EXPORT_TEMPLATE_ERROR,
-  LEAVE_CREATE_EXPORT_TEMPLATE_FORM,
-  FETCH_EXPORT_TEMPLATES,
-  INIT_DEFINITION,
-  UPDATE_DEFINITION,
-  UPDATE_DEFINITION_SUCCESS,
-  UPDATE_DEFINITION_ERROR,
-  LEAVE_UPDATE_DEFINITION_FORM,
-  CREATE_DEFINITION,
-  CREATE_DEFINITION_SUCCESS,
-  CREATE_DEFINITION_ERROR,
-  LEAVE_CREATE_DEFINITION_FORM,
-  FETCH_DEFINITIONS,
+  INIT_EVENT_EXPORT_TEMPLATE,
+  UPDATE_EVENT_EXPORT_TEMPLATE,
+  UPDATE_EVENT_EXPORT_TEMPLATE_SUCCESS,
+  UPDATE_EVENT_EXPORT_TEMPLATE_ERROR,
+  LEAVE_UPDATE_EVENT_EXPORT_TEMPLATE_FORM,
+  CREATE_EVENT_EXPORT_TEMPLATE,
+  CREATE_EVENT_EXPORT_TEMPLATE_SUCCESS,
+  CREATE_EVENT_EXPORT_TEMPLATE_ERROR,
+  LEAVE_CREATE_EVENT_EXPORT_TEMPLATE_FORM,
+  FETCH_EVENT_EXPORT_TEMPLATES,
+  INIT_EVENT_TEMPLATE,
+  FETCH_EVENT_TEMPLATES,
+  UPDATE_EVENT_TEMPLATE,
+  UPDATE_EVENT_TEMPLATE_SUCCESS,
+  UPDATE_EVENT_TEMPLATE_ERROR,
+  LEAVE_UPDATE_EVENT_TEMPLATE_FORM,
+  CREATE_EVENT_TEMPLATE,
+  CREATE_EVENT_TEMPLATE_SUCCESS,
+  CREATE_EVENT_TEMPLATE_ERROR,
+  LEAVE_CREATE_EVENT_TEMPLATE_FORM,
 
 } from './types';
 
@@ -82,7 +83,7 @@ export function validateJWT() {
   }
 
   return function (dispatch) {
-    axios.get(`${API_ROOT_URL}/validate`,
+    axios.get(`${API_ROOT_URL}/api/v1/validate`,
     {
       headers: {
         authorization: token
@@ -136,7 +137,7 @@ export function initUser(id) {
   }
 }
 
-export function initExportTemplate(id) {
+export function initEventExportTemplate(id) {
   return function (dispatch) {
     axios.get(`${API_ROOT_URL}/api/v1/event_export_templates/${id}`,
     {
@@ -145,7 +146,7 @@ export function initExportTemplate(id) {
       }
     })
     .then((response) => {
-      dispatch({ type: INIT_EXPORT_TEMPLATE, payload: response.data })
+      dispatch({ type: INIT_EVENT_EXPORT_TEMPLATE, payload: response.data })
       //console.log("Initialized export template data successfully");
     })
     .catch((error)=>{
@@ -154,9 +155,9 @@ export function initExportTemplate(id) {
   }
 }
 
-export function initDefinition(id) {
+export function initEventTemplate(id) {
   return function (dispatch) {
-    axios.get(`${API_ROOT_URL}/api/v1/event_definitions/${id}`,
+    axios.get(`${API_ROOT_URL}/api/v1/event_templates/${id}`,
     {
       headers: {
         authorization: cookies.get('token')
@@ -169,8 +170,8 @@ export function initDefinition(id) {
         return event_option;
       })
 
-      dispatch({ type: INIT_DEFINITION, payload: response.data })
-      //console.log("Initialized event definition data successfully");
+      dispatch({ type: INIT_EVENT_TEMPLATE, payload: response.data })
+      //console.log("Initialized event template data successfully");
     })
     .catch((error)=>{
       console.log(error);
@@ -181,14 +182,10 @@ export function initDefinition(id) {
 export function login({username, password = ''}) {
 
   return function (dispatch) {
-    axios.post(`${API_ROOT_URL}/login`, {username, password})
+    axios.post(`${API_ROOT_URL}/api/v1/login`, {username, password})
     .then(response => {
 
-      //console.log(response.data);
-
-      // If request is good
-
-      // Save the JWT token to LocalStorage
+      // If request is good save the JWT token to a cookie
       cookies.set('token', response.data.token, { path: '/' });
       cookies.set('id', response.data.id, { path: '/' });
 
@@ -235,7 +232,7 @@ export function createEvent(eventValue, eventFreeText = '', eventOptions = []) {
 
 export function registerUser({username, fullname, password = '', email}) {
   return function (dispatch) {
-    axios.post(`${API_ROOT_URL}/register`, {username, fullname, password, email})
+    axios.post(`${API_ROOT_URL}/api/v1/register`, {username, fullname, password, email})
     .then((response) => {
 
       //console.log("New user successfully created");
@@ -286,7 +283,7 @@ export function createUser({username, fullname, password = '', email, roles}) {
   }
 }
 
-export function createExportTemplate(formProps) {
+export function createEventExportTemplate(formProps) {
 
   let fields = {}
 
@@ -361,8 +358,8 @@ export function createExportTemplate(formProps) {
     .then((response) => {
 
       //console.log("New export template successfully created");
-      dispatch(createExportTemplateSuccess('Template created'));
-      dispatch(fetchExportTemplates());
+      dispatch(createEventExportTemplateSuccess('Event Export Template created'));
+      dispatch(fetchEventExportTemplates());
 //      dispatch(hideAddNewUserForm());
 
       // Redirect to login
@@ -372,13 +369,13 @@ export function createExportTemplate(formProps) {
 
       // If request is unauthenticated
       console.log(error);
-      dispatch(createExportTemplateError(error.response.data.message));
+      dispatch(createEventExportTemplateError(error.response.data.message));
 
     });
   }
 }
 
-export function createDefinition(formProps) {
+export function createEventTemplate(formProps) {
 
   let fields = {};
 
@@ -394,7 +391,6 @@ export function createDefinition(formProps) {
   if(!formProps.event_options) {
     fields.event_options = [];
   } else {
-    console.log(formProps.event_options);
     fields.event_options = formProps.event_options;
     fields.event_options = fields.event_options.map(event_option => {
 
@@ -423,17 +419,10 @@ export function createDefinition(formProps) {
     })
   }
 
-//  valueArray = event_option.event_option_values.split(',');
-//                        valueArray = valueArray.map(string => {
-//              return string.trim()
-//            })
-
-  console.log(fields);
-
   return function (dispatch)
 
    {
-    axios.post(`${API_ROOT_URL}/api/v1/event_definitions`,
+    axios.post(`${API_ROOT_URL}/api/v1/event_templates`,
       fields,
       {
         headers: {
@@ -443,8 +432,8 @@ export function createDefinition(formProps) {
     )
     .then((response) => {
 
-      dispatch(fetchDefinitions());
-      dispatch(createDefinitionSuccess('Definition created'));
+      dispatch(fetchEventTemplates());
+      dispatch(createEventTemplateSuccess('Event Template created'));
 
       // if you change yourself, you have to re-login
       //if(cookies.get('id') === formProps.id) {
@@ -459,7 +448,7 @@ export function createDefinition(formProps) {
       console.log(error);
 
       // If request is unauthenticated
-      dispatch(createDefinitionError(error.response.data.message));
+      dispatch(createEventTemplateError(error.response.data.message));
 
     });
   }
@@ -568,7 +557,7 @@ export function updateUser(formProps) {
   }
 }
 
-export function updateExportTemplate(formProps) {
+export function updateEventExportTemplate(formProps) {
 
   let fields = {}
   //console.log(formProps);
@@ -644,8 +633,8 @@ export function updateExportTemplate(formProps) {
     )
     .then((response) => {
 
-      dispatch(fetchExportTemplates());
-      dispatch(updateExportTemplateSuccess('Template updated'));
+      dispatch(fetchEventExportTemplates());
+      dispatch(updateEventExportTemplateSuccess('Event Export Template updated'));
 
       // if you change yourself, you have to re-login
       //if(cookies.get('id') === formProps.id) {
@@ -660,13 +649,13 @@ export function updateExportTemplate(formProps) {
       console.log(error);
 
       // If request is unauthenticated
-      dispatch(updateExportTemplateError(error.response.data.message));
+      dispatch(updateEventExportTemplateError(error.response.data.message));
 
     });
   }
 }
 
-export function updateDefinition(formProps) {
+export function updateEventTemplate(formProps) {
 
   let fields = {};
 
@@ -682,7 +671,6 @@ export function updateDefinition(formProps) {
   if(!formProps.event_options) {
     fields.event_options = [];
   } else {
-    console.log(formProps.event_options);
     fields.event_options = formProps.event_options;
     fields.event_options = fields.event_options.map(event_option => {
 
@@ -716,7 +704,7 @@ export function updateDefinition(formProps) {
   return function (dispatch)
 
    {
-    axios.patch(`${API_ROOT_URL}/api/v1/event_definitions/${formProps.id}`,
+    axios.patch(`${API_ROOT_URL}/api/v1/event_templates/${formProps.id}`,
       fields,
       {
         headers: {
@@ -726,8 +714,8 @@ export function updateDefinition(formProps) {
     )
     .then((response) => {
 
-      dispatch(fetchDefinitions());
-      dispatch(updateDefinitionSuccess('Definition updated'));
+      dispatch(fetchEventTemplates());
+      dispatch(updateEventTemplateSuccess('Event template updated'));
 
       // if you change yourself, you have to re-login
       //if(cookies.get('id') === formProps.id) {
@@ -742,7 +730,7 @@ export function updateDefinition(formProps) {
       console.log(error);
 
       // If request is unauthenticated
-      dispatch(updateDefinitionError(error.response.data.message));
+      dispatch(updateEventTemplateError(error.response.data.message));
 
     });
   }
@@ -777,7 +765,7 @@ export function deleteUser(id) {
   }
 }
 
-export function runExportTemplate(id) {
+export function runEventExportTemplate(id) {
 
   return function (dispatch) {
     axios.get(`${API_ROOT_URL}/api/v1/event_export_templates/${id}/run`,
@@ -810,7 +798,7 @@ export function runExportTemplate(id) {
   }
 }
 
-export function deleteExportTemplate(id) {
+export function deleteEventExportTemplate(id) {
 
   return function (dispatch) {
     axios.delete(`${API_ROOT_URL}/api/v1/event_export_templates/${id}`,
@@ -822,7 +810,7 @@ export function deleteExportTemplate(id) {
     )
     .then((response) => {
 
-      dispatch(fetchExportTemplates());
+      dispatch(fetchEventExportTemplates());
 //      dispatch(updateUserEditSuccess('Account updated'));
 
       // Redirect to login
@@ -839,10 +827,10 @@ export function deleteExportTemplate(id) {
   }
 }
 
-export function deleteDefinition(id) {
+export function deleteEventTemplate(id) {
 
   return function (dispatch) {
-    axios.delete(`${API_ROOT_URL}/api/v1/event_definitions/${id}`,
+    axios.delete(`${API_ROOT_URL}/api/v1/event_templates/${id}`,
       {
         headers: {
         authorization: cookies.get('token')
@@ -852,7 +840,7 @@ export function deleteDefinition(id) {
     .then((response) => {
 
       // console.log(response);
-      dispatch(fetchDefinitions());
+      dispatch(fetchEventTemplates());
 //      dispatch(updateUserEditSuccess('Account updated'));
 
       // Redirect to login
@@ -899,30 +887,30 @@ export function createUserError(message) {
   }
 }
 
-export function createDefinitionSuccess(message) {
+export function createEventTemplateSuccess(message) {
   return {
-    type: CREATE_DEFINITION_SUCCESS,
+    type: CREATE_EVENT_TEMPLATE_SUCCESS,
     payload: message
   }
 }
 
-export function createDefinitionError(message) {
+export function createEventTemplateError(message) {
   return {
-    type: CREATE_DEFINITION_ERROR,
+    type: CREATE_EVENT_TEMPLATE_ERROR,
     payload: message
   }
 }
 
-export function createExportTemplateSuccess(message) {
+export function createEventExportTemplateSuccess(message) {
   return {
-    type: CREATE_EXPORT_TEMPLATE_SUCCESS,
+    type: CREATE_EVENT_EXPORT_TEMPLATE_SUCCESS,
     payload: message
   }
 }
 
-export function createExportTemplateError(message) {
+export function createEventExportTemplateError(message) {
   return {
-    type: CREATE_EXPORT_TEMPLATE_ERROR,
+    type: CREATE_EVENT_EXPORT_TEMPLATE_ERROR,
     payload: message
   }
 }
@@ -988,21 +976,21 @@ export function fetchUsers() {
   }
 }
 
-export function updateExportTemplateSuccess(message) {
+export function updateEventExportTemplateSuccess(message) {
   return {
-    type: UPDATE_EXPORT_TEMPLATE_SUCCESS,
+    type: UPDATE_EVENT_EXPORT_TEMPLATE_SUCCESS,
     payload: message
   }
 }
 
-export function updateExportTemplateError(message) {
+export function updateEventExportTemplateError(message) {
   return {
-    type: UPDATE_EXPORT_TEMPLATE_ERROR,
+    type: UPDATE_EVENT_EXPORT_TEMPLATE_ERROR,
     payload: message
   }
 }
 
-export function fetchExportTemplates() {
+export function fetchEventExportTemplates() {
 
   const request = axios.get(API_ROOT_URL + '/api/v1/event_export_templates', {
     headers: {
@@ -1013,36 +1001,36 @@ export function fetchExportTemplates() {
   return function (dispatch) {
     
     request.then(({data}) => {
-      dispatch({type: FETCH_EXPORT_TEMPLATES, payload: data});
+      dispatch({type: FETCH_EVENT_EXPORT_TEMPLATES, payload: data});
     })
     .catch((error) => {
       if(error.response.status !== 404) {
         console.log(error);
       } else {
-        dispatch({type: FETCH_EXPORT_TEMPLATES, payload: []});
+        dispatch({type: FETCH_EVENT_EXPORT_TEMPLATES, payload: []});
       }
     });
   }
 }
 
-export function updateDefinitionSuccess(message) {
+export function updateEventTemplateSuccess(message) {
   return {
-    type: UPDATE_DEFINITION_SUCCESS,
+    type: UPDATE_EVENT_TEMPLATE_SUCCESS,
     payload: message
   }
 }
 
-export function updateDefinitionError(message) {
+export function updateEventTemplateError(message) {
   return {
-    type: UPDATE_DEFINITION_ERROR,
+    type: UPDATE_EVENT_TEMPLATE_ERROR,
     payload: message
   }
 }
 
 
-export function fetchEventDefinitionsForChat() {
+export function fetchEventTemplatesForMain() {
 
-  const request = axios.get(API_ROOT_URL + '/api/v1/event_definitions', {
+  const request = axios.get(API_ROOT_URL + '/api/v1/event_templates', {
     headers: {
       authorization: cookies.get('token')
     }
@@ -1052,7 +1040,7 @@ export function fetchEventDefinitionsForChat() {
     
     request.then(({data}) => {
       //console.log(data);
-      dispatch({type: FETCH_EVENT_DEFINITIONS_FOR_CHAT, payload: data})
+      dispatch({type: FETCH_EVENT_TEMPLATES_FOR_MAIN, payload: data})
     })
     .catch((error) => {
       console.log(error);
@@ -1105,9 +1093,29 @@ export function fetchEvents() {
   }
 }
 
-export function fetchDefinitions() {
+export function fetchEventHistory() {
 
-  const request = axios.get(API_ROOT_URL + '/api/v1/event_definitions', {
+  const request = axios.get(API_ROOT_URL + '/api/v1/events', {
+    headers: {
+      authorization: cookies.get('token')
+    },
+  });
+
+  return function (dispatch) {
+    
+    request.then(({data}) => {
+      dispatch({type: FETCH_EVENT_HISTORY, payload: data})
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+}
+
+
+export function fetchEventTemplates() {
+
+  const request = axios.get(API_ROOT_URL + '/api/v1/event_templates', {
     headers: {
       authorization: cookies.get('token')
     }
@@ -1116,7 +1124,7 @@ export function fetchDefinitions() {
   return function (dispatch) {
     
     request.then(({data}) => {
-      dispatch({type: FETCH_DEFINITIONS, payload: data})
+      dispatch({type: FETCH_EVENT_TEMPLATES, payload: data})
     })
     .catch((error) => {
       console.log(error);
@@ -1124,11 +1132,11 @@ export function fetchDefinitions() {
   }
 }
 
-export function updateChat(update) {
+export function updateEventHistory(update) {
   //console.log(update);
 
   return function (dispatch) {
-    dispatch({type: UPDATE_CHAT, payload: update})
+    dispatch({type: UPDATE_EVENT_HISTORY, payload: update})
   }
 }
 
@@ -1162,79 +1170,68 @@ export function leaveRegisterForm() {
   }
 }
 
-export function leaveUpdateExportTemplateForm() {
+export function leaveUpdateEventExportTemplateForm() {
   return function (dispatch) {
-    dispatch({type: LEAVE_UPDATE_EXPORT_TEMPLATE_FORM, payload: null})
+    dispatch({type: LEAVE_UPDATE_EVENT_EXPORT_TEMPLATE_FORM, payload: null})
   }
 }
 
-export function leaveCreateExportTemplateForm() {
+export function leaveCreateEventExportTemplateForm() {
   return function (dispatch) {
-    dispatch({type: LEAVE_CREATE_EXPORT_TEMPLATE_FORM, payload: null})
+    dispatch({type: LEAVE_CREATE_EVENT_EXPORT_TEMPLATE_FORM, payload: null})
   }
 }
 
-export function leaveUpdateDefinitionForm() {
+export function leaveUpdateEventTemplateForm() {
   return function (dispatch) {
-    dispatch({type: LEAVE_UPDATE_DEFINITION_FORM, payload: null})
+    dispatch({type: LEAVE_UPDATE_EVENT_TEMPLATE_FORM, payload: null})
   }
 }
 
-export function leaveCreateDefinitionForm() {
+export function leaveCreateEventTemplateForm() {
   return function (dispatch) {
-    dispatch({type: LEAVE_CREATE_DEFINITION_FORM, payload: null})
+    dispatch({type: LEAVE_CREATE_EVENT_TEMPLATE_FORM, payload: null})
   }
 }
 
-export function hideChat() {
+export function hideEventHistory() {
   return function (dispatch) {
-    dispatch({type: HIDE_CHAT, payload: null})
+    dispatch({type: HIDE_EVENT_HISTORY, payload: null})
   }
 }
 
-export function showChat() {
+export function showEventHistory() {
   return function (dispatch) {
-    dispatch({type: SHOW_CHAT, payload: null})
+    dispatch({type: SHOW_EVENT_HISTORY, payload: null})
   }
 }
 
-export function showChatFullscreen() {
+export function showEventHistoryFullscreen() {
   return function (dispatch) {
-    dispatch({type: SHOW_CHAT_FULLSCREEN, payload: null})
+    dispatch({type: SHOW_EVENT_HISTORY_FULLSCREEN, payload: null})
   }
 }
 
 export function hideEvents() {
   return function (dispatch) {
-    dispatch({type: HIDE_EVENTLIST, payload: null})
+    dispatch({type: HIDE_EVENTS, payload: null})
   }
 }
 
 export function showEvents() {
   return function (dispatch) {
-    dispatch({type: SHOW_EVENTLIST, payload: null})
+    dispatch({type: SHOW_EVENTS, payload: null})
   }
 }
 
 export function showEventsFullscreen() {
   return function (dispatch) {
-    dispatch({type: SHOW_EVENTLIST_FULLSCREEN, payload: null})
+    dispatch({type: SHOW_EVENTS_FULLSCREEN, payload: null})
   }
 }
 
 export function showModal(modal, props) {
-//  console.log(modal, props);
-//  console.log(show(modal, props));
   return function(dispatch) {
     dispatch(show(modal, props));
   }
 }
-
-// export function destroyModal(modal) {
-// //  console.log(modal, props);
-//   console.log(destroy(modal));
-//   return function(dispatch) {
-//     dispatch(destroy(modal));
-//   }
-// }
-

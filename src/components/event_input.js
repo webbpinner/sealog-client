@@ -4,7 +4,7 @@ import { reduxForm, Field, reset } from 'redux-form';
 import { Button, InputGroup } from 'react-bootstrap';
 import * as actions from '../actions';
 
-class ChatInput extends Component {
+class EventInput extends Component {
 
   handleFormSubmit({eventFreeText}) {
     this.props.createEvent('free form', eventFreeText);
@@ -39,7 +39,7 @@ function mapStateToProps(state) {
 }
 
 function afterSubmit(result, dispatch) {
-    dispatch(reset('chatInput'));
+    dispatch(reset('eventInput'));
 }
 
 function validate(formProps) {
@@ -53,10 +53,10 @@ function validate(formProps) {
 
 }
 
-ChatInput = reduxForm({
-  form: 'chatInput',
+EventInput = reduxForm({
+  form: 'eventInput',
   onSubmitSuccess: afterSubmit,
   validate: validate
-})(ChatInput);
+})(EventInput);
 
-export default connect(mapStateToProps, actions)(ChatInput);
+export default connect(mapStateToProps, actions)(EventInput);

@@ -18,17 +18,17 @@ import Register from './components/auth/register';
 import RequireAuth from './components/auth/require_auth';
 import RequireUnauth from './components/auth/require_unauth';
 import Welcome from './components/welcome';
-import Chat from './components/chat';
+import Main from './components/main';
 import Users from './components/users';
 import Events from './components/events';
 import UpdateUser from './components/update_user';
 import CreateUser from './components/create_user';
-import Exports from './components/exports';
-import UpdateExportTemplate from './components/update_export';
-import CreateExportTemplate from './components/create_export';
-import Definitions from './components/definitions';
-import UpdateDefinition from './components/update_definition';
-import CreateDefinition from './components/create_definition';
+import EventExports from './components/event_exports';
+import UpdateEventExportTemplate from './components/update_event_export';
+import CreateEventExportTemplate from './components/create_event_export';
+import EventTemplates from './components/event_templates';
+import UpdateEventTemplate from './components/update_event_template';
+import CreateEventTemplate from './components/create_event_template';
 
 import { ROOT_PATH } from './url_config';
 
@@ -50,7 +50,9 @@ ReactDOM.render(
       <ConnectedRouter history={history}>
           <div>
             <Header />
-            <Route path={ `${ROOT_PATH}/` } exact={true} component={RequireAuth(Chat)}/>
+            <Route path='/github' component={() => window.location = 'https://github.com/webbpinner/sealog-client'}/>
+            <Route path='/license' component={() => window.location = 'http://www.gnu.org/licenses/gpl-3.0.html'}/>
+            <Route path={ `${ROOT_PATH}/` } exact={true} component={RequireAuth(Main)}/>
             <Route path={ `${ROOT_PATH}/feature` } exact={true} component={RequireAuth(Feature)} />
             <Route path={ `${ROOT_PATH}/events` } exact={true} component={RequireAuth(Events)} />
             <Switch>
@@ -60,14 +62,14 @@ ReactDOM.render(
             </Switch>
             <Route path={ `${ROOT_PATH}/profile` } exact={true} component={RequireAuth(Profile)} />
             <Switch>
-              <Route path={ `${ROOT_PATH}/exports` } exact={true} component={RequireAuth(Exports)} />
-              <Route path={ `${ROOT_PATH}/exports/new` } exact={true} component={RequireAuth(CreateExportTemplate)} />
-              <Route path={ `${ROOT_PATH}/exports/:id` } exact={true} component={RequireAuth(UpdateExportTemplate)} />
+              <Route path={ `${ROOT_PATH}/event_exports` } exact={true} component={RequireAuth(EventExports)} />
+              <Route path={ `${ROOT_PATH}/event_exports/new` } exact={true} component={RequireAuth(CreateEventExportTemplate)} />
+              <Route path={ `${ROOT_PATH}/event_exports/:id` } exact={true} component={RequireAuth(UpdateEventExportTemplate)} />
             </Switch>
             <Switch>
-              <Route path={ `${ROOT_PATH}/definitions` } exact={true} component={RequireAuth(Definitions)} />
-              <Route path={ `${ROOT_PATH}/definitions/new` } exact={true} component={RequireAuth(CreateDefinition)} />
-              <Route path={ `${ROOT_PATH}/definitions/:id` } exact={true} component={RequireAuth(UpdateDefinition)} />
+              <Route path={ `${ROOT_PATH}/event_templates` } exact={true} component={RequireAuth(EventTemplates)} />
+              <Route path={ `${ROOT_PATH}/event_templates/new` } exact={true} component={RequireAuth(CreateEventTemplate)} />
+              <Route path={ `${ROOT_PATH}/event_templates/:id` } exact={true} component={RequireAuth(UpdateEventTemplate)} />
             </Switch>
             <Route path={ `${ROOT_PATH}/login` } exact={true} component={RequireUnauth(Login)} />
             <Route path={ `${ROOT_PATH}/logout` } exact={true} component={Logout} />

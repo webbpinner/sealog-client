@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { reduxForm, Field, FieldArray, initialize, formValueSelector } from 'redux-form';
 import { Alert, Button, Checkbox, Col, ControlLabel, FormGroup, FormControl, FormGroupItem, Grid, Panel, Row } from 'react-bootstrap';
 import * as actions from '../actions';
-import { EventOptionTypes } from '../event_option_types';
+import { EventTemplateOptionTypes } from '../event_template_option_types';
 
-class UpdateDefinition extends Component {
+class UpdateEventTemplate extends Component {
 
   constructor (props) {
     super(props);
@@ -16,16 +16,16 @@ class UpdateDefinition extends Component {
 
   componentWillMount() {
     //console.log(this.props.match);
-    this.props.initDefinition(this.props.match.params.id);
+    this.props.initEventTemplate(this.props.match.params.id);
   }
 
   componentWillUnmount() {
-    this.props.leaveUpdateDefinitionForm();
+    this.props.leaveUpdateEventTemplateForm();
   }
 
   handleFormSubmit(formProps) {
     //console.log(formProps);
-    this.props.updateDefinition(formProps);
+    this.props.updateEventTemplate(formProps);
   }
 
   renderField({ input, label, type, meta: { touched, error, warning } }) {
@@ -38,7 +38,7 @@ class UpdateDefinition extends Component {
     )
   }
 
-renderSelectField({ input, label, type, options, meta: { touched, error, warning } }) {
+  renderSelectField({ input, label, type, options, meta: { touched, error, warning } }) {
 
     let defaultOption = ( <option key={`${input.name}.default`} value=""></option> );
 
@@ -109,7 +109,7 @@ renderSelectField({ input, label, type, options, meta: { touched, error, warning
                 name={`${options}.event_option_type`}
                 type="select"
                 component={this.renderSelectField}
-                options={EventOptionTypes}
+                options={EventTemplateOptionTypes}
                 label="Type"
               />
               { this.renderEventOptionsDropdown(options, index) }
@@ -156,7 +156,7 @@ renderSelectField({ input, label, type, options, meta: { touched, error, warning
   render() {
 
     const { handleSubmit, pristine, reset, submitting, valid } = this.props;
-    const formHeader = (<h3>Event Definition Profile</h3>);
+    const formHeader = (<h3>Event EventTemplate Profile</h3>);
 
 
     if (this.props.roles && (this.props.roles.includes("admin") || this.props.roles.includes("event_manager"))) {
@@ -287,7 +287,7 @@ function validate(formProps) {
     }
   }
 
-  console.log(errors);
+  // console.log(errors);
   return errors;
 
 }
@@ -296,21 +296,21 @@ function validate(formProps) {
 function mapStateToProps(state) {
 
   return {
-    errorMessage: state.definition.definition_error,
-    message: state.definition.definition_message,
-    initialValues: state.definition.definition,
+    errorMessage: state.event_template.event_template_error,
+    message: state.event_template.event_template_message,
+    initialValues: state.event_template.event_template,
     roles: state.user.profile.roles,
     event_options: selector(state, 'event_options')
   };
 
 }
 
-UpdateDefinition = reduxForm({
-  form: 'editDefinition',
+UpdateEventTemplate = reduxForm({
+  form: 'editEventTemplate',
   enableReinitialize: true,
   validate: validate
-})(UpdateDefinition);
+})(UpdateEventTemplate);
 
-const selector = formValueSelector('editDefinition');
+const selector = formValueSelector('editEventTemplate');
 
-export default connect(mapStateToProps, actions)(UpdateDefinition);
+export default connect(mapStateToProps, actions)(UpdateEventTemplate);

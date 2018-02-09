@@ -1,4 +1,4 @@
-export const roleOptions = [
+export const userRoleOptions = [
   { value: 'admin', label: 'Admin' },
   { value: 'event_manager', label: 'Event Manager' },
   { value: 'event_logger', label: 'Event Logger' },

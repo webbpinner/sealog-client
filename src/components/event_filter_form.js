@@ -23,14 +23,16 @@ class EventFilterForm extends Component {
 
     if(formProps.value){
       filterParams.value = formProps.value.split(',');
+      filterParams.value = filterParams.value.map(value => value.trim());
     }
 
     if(formProps.freetext){
       filterParams.freetext = formProps.freetext;
     }
 
-    if(formProps.user){
-      filterParams.user = formProps.user.split(',');
+    if(formProps.author){
+      filterParams.author = formProps.author.split(',');
+      filterParams.author = filterParams.author.map(author => author.trim());
     }
 
     if(formProps.limit){
@@ -173,7 +175,7 @@ class EventFilterForm extends Component {
               label="Free text Filter"
             />
             <Field
-              name="user"
+              name="author"
               component={this.renderField}
               type="text"
               label="User Filter"

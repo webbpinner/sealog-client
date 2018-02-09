@@ -1,5 +1,5 @@
 import store from './store';
-import { fetchEvents, fetchEventDefinitionsForChat } from './actions';
+import { fetchEvents, fetchEventTemplatesForChat } from './actions';
 
 export function onChatEnter() {
   console.log("onChatEnter");

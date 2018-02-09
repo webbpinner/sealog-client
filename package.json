@@ -54,7 +54,8 @@
     "redux-form": "^6.6.3",
     "redux-modal": "^1.4.1",
     "redux-promise": "^0.5.3",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "universal-cookie": "^2.1.2"
   },
   "devDependencies": {
     "babel-core": "^6.2.1",

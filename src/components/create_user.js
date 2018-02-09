@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, Field, initialize } from 'redux-form';
 import { Alert, Button, Checkbox, Col, FormGroup, FormControl, FormGroupItem, Grid, Panel, Row } from 'react-bootstrap';
 import * as actions from '../actions';
-import { roleOptions } from '../role_options';
+import { userRoleOptions } from '../user_role_options';
 
 class CreateUser extends Component {
 
@@ -125,7 +125,7 @@ class CreateUser extends Component {
                     name="roles"
                     component={this.renderCheckboxGroup}
                     label="Roles"
-                    options={roleOptions}
+                    options={userRoleOptions}
                   />
                   {this.renderAlert()}
                   {this.renderMessage()}

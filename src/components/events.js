@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import EventList from './event_list';
+import EventFilteredList from './event_filtered_list';
 import EventFilterForm from './event_filter_form';
 import { Panel, Grid, Row, Col } from 'react-bootstrap';
 
@@ -23,7 +23,7 @@ class Events extends Component {
             <EventFilterForm />
           </Col>
           <Col sm={6} md={7} lg={8}>
-            <EventList />
+            <EventFilteredList />
           </Col>
         </Row>
       </Grid>

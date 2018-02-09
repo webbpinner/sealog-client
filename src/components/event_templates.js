@@ -6,53 +6,53 @@ import { reduxForm, Field, reset } from 'redux-form';
 import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { ROOT_PATH } from '../url_config';
-import DeleteDefinitionModal from './delete_definition_modal';
+import DeleteEventTemplateModal from './delete_event_template_modal';
 import fileDownload from 'react-file-download';
 import * as actions from '../actions';
 
-class Definitions extends Component {
+class EventTemplates extends Component {
 
   componentWillMount() {
-      this.props.fetchDefinitions();
+      this.props.fetchEventTemplates();
   }
 
-  handleDefinitionDelete(id) {
-    this.props.showModal('deleteDefinition', { id: id, handleDelete: this.props.deleteDefinition });
+  handleEventTemplateDelete(id) {
+    this.props.showModal('deleteEventTemplate', { id: id, handleDelete: this.props.deleteEventTemplate });
   }
 
-  renderAddDefinitionButton() {
+  renderAddEventTemplateButton() {
     if (!this.props.showform) {
       return (
         <div className="pull-right">
-          <LinkContainer to={`${ROOT_PATH}/definitions/new`}>
-            <Button bsStyle="primary" bsSize="small" type="button">Add Definition</Button>
+          <LinkContainer to={`${ROOT_PATH}/event_templates/new`}>
+            <Button bsStyle="primary" bsSize="small" type="button">Add Event Template</Button>
           </LinkContainer>
         </div>
       );
     }
   }
 
-  renderDefinitions() {
+  renderEventTemplates() {
 
-    const editTooltip = (<Tooltip id="editTooltip">Edit this definition.</Tooltip>)
-    const deleteTooltip = (<Tooltip id="deleteTooltip">Delete this definition.</Tooltip>)
+    const editTooltip = (<Tooltip id="editTooltip">Edit this template.</Tooltip>)
+    const deleteTooltip = (<Tooltip id="deleteTooltip">Delete this template.</Tooltip>)
 
-    return this.props.definitions.map((definition) => {
+    return this.props.event_templates.map((template) => {
       //console.log(definition);
       return (
-        <tr key={definition.id}>
-          <td>{definition.event_name}</td>
+        <tr key={template.id}>
+          <td>{template.event_name}</td>
           <td>
-            <Link to={`${ROOT_PATH}/definitions/${definition.id}`}><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>&nbsp;
-            <Link to="#" onClick={ () => this.handleDefinitionDelete(definition.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link>
+            <Link to={`${ROOT_PATH}/event_templates/${template.id}`}><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>&nbsp;
+            <Link to="#" onClick={ () => this.handleEventTemplateDelete(template.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link>
           </td>
         </tr>
       );
     })      
   }
 
-  renderDefinitionsTable() {
-    if(this.props.definitions.length > 0){
+  renderEventTemplatesTable() {
+    if(this.props.event_templates.length > 0){
       return (
         <Panel>
           <Table responsive bordered striped fill>
@@ -63,7 +63,7 @@ class Definitions extends Component {
               </tr>
             </thead>
             <tbody>
-              {this.renderDefinitions()}
+              {this.renderEventTemplates()}
             </tbody>
           </Table>
         </Panel>
@@ -85,9 +85,9 @@ class Definitions extends Component {
         <Grid fluid>
             <Row>
             <Col sm={6} md={4} lg={4}>
-              <DeleteDefinitionModal />
-              {this.renderDefinitionsTable()}
-              {this.renderAddDefinitionButton()}
+              <DeleteEventTemplateModal />
+              {this.renderEventTemplatesTable()}
+              {this.renderAddEventTemplateButton()}
             </Col>
           </Row>
         </Grid>
@@ -104,11 +104,10 @@ class Definitions extends Component {
 }
 
 function mapStateToProps(state) {
-  //console.log(state.definition);
   return {
-    definitions: state.definition.definitions,
+    event_templates: state.event_template.event_templates,
     roles: state.user.profile.roles
   }
 }
 
-export default connect(mapStateToProps, actions)(Definitions);
+export default connect(mapStateToProps, actions)(EventTemplates);

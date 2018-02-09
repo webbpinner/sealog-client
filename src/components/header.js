@@ -43,11 +43,11 @@ class Header extends Component {
     }
   }
 
-  renderExportOptions() {
+  renderEventExportOptions() {
     if(this.props.roles) {
       if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_logger') || this.props.roles.includes('event_watcher')) {
         return (
-          <LinkContainer to={ `${ROOT_PATH}/exports` }>
+          <LinkContainer to={ `${ROOT_PATH}/event_exports` }>
             <NavItem>Exports</NavItem>
           </LinkContainer>
         );
@@ -55,12 +55,12 @@ class Header extends Component {
     }
   }
 
-  renderEventDefinitionOptions() {
+  renderEventTemplateOptions() {
     if(this.props.roles) {
       if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager')) {
         return (
-          <LinkContainer to={ `${ROOT_PATH}/definitions` }>
-            <NavItem>Definitions</NavItem>
+          <LinkContainer to={ `${ROOT_PATH}/event_templates` }>
+            <NavItem>Templates</NavItem>
           </LinkContainer>
         );
       }
@@ -104,8 +104,8 @@ class Header extends Component {
           <Nav pullRight>
             {this.renderUserOptions()}
             {this.renderEventOptions()}
-            {this.renderExportOptions()}
-            {this.renderEventDefinitionOptions()}
+            {this.renderEventExportOptions()}
+            {this.renderEventTemplateOptions()}
             {this.renderUserDropdown()}
           </Nav>
         </Navbar.Collapse>

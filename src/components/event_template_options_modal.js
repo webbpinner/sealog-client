@@ -4,7 +4,7 @@ import { Button, Checkbox, ControlLabel, FormGroup, FormControl, FormGroupItem, 
 import { connectModal } from 'redux-modal';
 import { reduxForm, Field, initialize, formValueSelector } from 'redux-form';
 
-class EventOptionsModal extends Component {
+class EventTemplateOptionsModal extends Component {
 
   constructor (props) {
     super(props);
@@ -14,7 +14,7 @@ class EventOptionsModal extends Component {
   }
 
   static propTypes = {
-    eventDefinition: PropTypes.object.isRequired,
+    eventTemplate: PropTypes.object.isRequired,
     handleHide: PropTypes.func.isRequired,
     handleCreateEvent: PropTypes.func.isRequired
   };
@@ -25,7 +25,7 @@ class EventOptionsModal extends Component {
 
   populateDefaultValues() {
     let eventDefaultValues = {};
-    let hack = this.props.eventDefinition.event_options.map( (option, index) => {
+    let hack = this.props.eventTemplate.event_options.map( (option, index) => {
       if(option.event_option_default_value) {
         eventDefaultValues[`option_${index}`] = option.event_option_default_value;
       }
@@ -50,10 +50,10 @@ class EventOptionsModal extends Component {
     optionValue.map( (value, index) => { if(value == "") { console.log("Index", index, "empty"); optionIndex.splice(index, 1); optionValue.splice(index, 1); } });
 
     //Build event_options array
-    let event_options = optionIndex.map( (value, index) => { return ({ event_option_name: this.props.eventDefinition.event_options[value].event_option_name, event_option_value: optionValue[index]}) });
+    let event_options = optionIndex.map( (value, index) => { return ({ event_option_name: this.props.eventTemplate.event_options[value].event_option_name, event_option_value: optionValue[index]}) });
 
     //Submit event
-    this.props.handleCreateEvent(this.props.eventDefinition.event_value, formProps.event_free_text, event_options);
+    this.props.handleCreateEvent(this.props.eventTemplate.event_value, formProps.event_free_text, event_options);
     this.props.handleDestroy();
   }
 
@@ -82,8 +82,8 @@ class EventOptionsModal extends Component {
 
   renderEventOptions() {
 
-    const {eventDefinition} = this.props;
-    const {event_options} = eventDefinition;
+    const {eventTemplate} = this.props;
+    const {event_options} = eventTemplate;
 
     return ( event_options.map((option, index) => {
 
@@ -129,7 +129,7 @@ class EventOptionsModal extends Component {
 
   render() {
 
-    const { show, handleHide, handleSubmit, eventDefinition, pristine, submitting, valid } = this.props
+    const { show, handleHide, handleSubmit, eventTemplate, pristine, submitting, valid } = this.props
 
     return (
       <Modal show={show}>
@@ -145,7 +145,7 @@ class EventOptionsModal extends Component {
               component={this.renderTextField}
               type="text"
               label="Additional Text"
-              validate={ value => value || !eventDefinition.event_free_text_required ? undefined : 'Required' }
+              validate={ value => value || !eventTemplate.event_free_text_required ? undefined : 'Required' }
             />
           </Modal.Body>
 
@@ -162,7 +162,7 @@ class EventOptionsModal extends Component {
 function validate(formProps) {
   const errors = {};
 
-//  if (this.props.eventDefinition.event_free_text_required && !formProps.event_free_text) {
+//  if (this.props.eventTemplate.event_free_text_required && !formProps.event_free_text) {
 //    errors.event_free_text = 'Required'
 //  }
 
@@ -170,13 +170,13 @@ function validate(formProps) {
 
 }
 
-EventOptionsModal = reduxForm({
-  form: 'eventOptionsModal'//,
+EventTemplateOptionsModal = reduxForm({
+  form: 'eventTemplateOptionsModal'//,
   //enableReinitialize: true//,
   //validate: validate
-})(EventOptionsModal);
+})(EventTemplateOptionsModal);
 
 //this.defaultValues
 
 
-export default connectModal({ name: 'eventOptions' })(EventOptionsModal)
+export default connectModal({ name: 'eventOptions' })(EventTemplateOptionsModal)

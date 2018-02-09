@@ -3,25 +3,25 @@ import { connect } from 'react-redux';
 import { reduxForm, Field, FieldArray, initialize, formValueSelector } from 'redux-form';
 import { Alert, Button, Checkbox, Col, ControlLabel, FormGroup, FormControl, FormGroupItem, Grid, Panel, Row } from 'react-bootstrap';
 import * as actions from '../actions';
-import { EventOptionTypes } from '../event_option_types';
+import { EventTemplateOptionTypes } from '../event_template_option_types';
 
 
-class CreateDefinition extends Component {
+class CreateEventTemplate extends Component {
 
   constructor (props) {
     super(props);
 
-    this.renderEventOptions = this.renderEventOptions.bind(this);
-    this.renderEventOptionsDropdown = this.renderEventOptionsDropdown.bind(this);
+    this.renderOptions = this.renderOptions.bind(this);
+    this.renderOptionsDropdown = this.renderOptionsDropdown.bind(this);
   }
 
   componentWillUnmount() {
-    this.props.leaveCreateDefinitionForm();
+    this.props.leaveCreateEventTemplateForm();
   }
 
   handleFormSubmit(formProps) {
     //console.log(formProps);
-    this.props.createDefinition(formProps);
+    this.props.createEventTemplate(formProps);
   }
 
   renderField({ input, label, type, meta: { touched, error, warning } }) {
@@ -58,7 +58,7 @@ class CreateDefinition extends Component {
 
 //  { fields, meta: { touched, error } }
 
-  renderEventOptionsDropdown(prefix, index) {
+  renderOptionsDropdown(prefix, index) {
     //console.log(this.props.event_options[index]);
 
     if(this.props.event_options[index].event_option_type == 'dropdown') {
@@ -84,7 +84,7 @@ class CreateDefinition extends Component {
     }
   }
 
-  renderEventOptions({ fields, meta: { touched, error } }) {
+  renderOptions({ fields, meta: { touched, error } }) {
     return (
       <div>
         <ul>
@@ -105,10 +105,10 @@ class CreateDefinition extends Component {
                 name={`${options}.event_option_type`}
                 type="select"
                 component={this.renderSelectField}
-                options={EventOptionTypes}
+                options={EventTemplateOptionTypes}
                 label="Type"
               />
-              { this.renderEventOptionsDropdown(options, index) }
+              { this.renderOptionsDropdown(options, index) }
               <div>
                 <label>Required?</label>
                 <span>&nbsp;&nbsp;</span>
@@ -184,7 +184,7 @@ class CreateDefinition extends Component {
                     />
                   </div>
 
-                  <FieldArray name="event_options" component={this.renderEventOptions}/>
+                  <FieldArray name="event_options" component={this.renderOptions}/>
                   <br/>
                   {this.renderAlert()}
                   {this.renderMessage()}
@@ -291,20 +291,20 @@ function validate(formProps) {
 function mapStateToProps(state) {
 
   return {
-    errorMessage: state.definition.definition_error,
-    message: state.definition.definition_message,
+    errorMessage: state.event_template.event_template_error,
+    message: state.event_template.event_template_message,
     roles: state.user.profile.roles,
     event_options: selector(state, 'event_options')
   };
 
 }
 
-CreateDefinition = reduxForm({
-  form: 'createDefinition',
+CreateEventTemplate = reduxForm({
+  form: 'createEventTemplate',
   enableReinitialize: true,
   validate: validate
-})(CreateDefinition);
+})(CreateEventTemplate);
 
-const selector = formValueSelector('createDefinition');
+const selector = formValueSelector('createEventTemplate');
 
-export default connect(mapStateToProps, actions)(CreateDefinition);
+export default connect(mapStateToProps, actions)(CreateEventTemplate);

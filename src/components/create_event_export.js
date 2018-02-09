@@ -3,9 +3,10 @@ import { connect } from 'react-redux';
 import { reduxForm, Field, initialize, formValueSelector } from 'redux-form';
 import { Alert, Button, Checkbox, Col, FormGroup, FormControl, FormGroupItem, Grid, Panel, Row } from 'react-bootstrap';
 import * as actions from '../actions';
-import { roleOptions } from '../role_options';
 
-class UpdateExportTemplate extends Component {
+const trueFalseOptions = { value: true, label: 'True' };
+
+class CreateEventExportTemplate extends Component {
 
   constructor (props) {
     super(props);
@@ -13,18 +14,13 @@ class UpdateExportTemplate extends Component {
     this.renderDataSourceFilter = this.renderDataSourceFilter.bind(this);
   }
 
-  componentWillMount() {
-    //console.log(this.props.match);
-    this.props.initExportTemplate(this.props.match.params.id);
-  }
-
   componentWillUnmount() {
-    this.props.leaveUpdateExportTemplateForm();
+    this.props.leaveCreateEventExportTemplateForm();
   }
 
   handleFormSubmit(formProps) {
     //console.log(formProps);
-    this.props.updateExportTemplate(formProps);
+    this.props.createEventExportTemplate(formProps);
   }
 
   renderField({ input, label, type, meta: { touched, error, warning } }) {
@@ -32,7 +28,7 @@ class UpdateExportTemplate extends Component {
       <FormGroup>
         <label>{label}</label>
         <FormControl {...input} placeholder={label} type={type}/>
-        {touched && ((error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>))}
+        {(error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
       </FormGroup>
     )
   }
@@ -129,8 +125,7 @@ class UpdateExportTemplate extends Component {
   render() {
 
     const { handleSubmit, pristine, reset, submitting, valid } = this.props;
-    const formHeader = (<h3>Export Template Profile</h3>);
-
+    const formHeader = (<h3>Export Template</h3>);
 
     if (this.props.roles && (this.props.roles.includes("admin") || this.props.roles.includes("event_manager") || this.props.roles.includes("event_logger") || this.props.roles.includes("event_watcher"))) {
       return (
@@ -158,7 +153,7 @@ class UpdateExportTemplate extends Component {
                     label="Free text Filter"
                   />
                   <Field
-                    name="event_export_template_user_filter"
+                    name="event_export_template_author_filter"
                     component={this.renderField}
                     type="text"
                     label="User Filter"
@@ -201,8 +196,8 @@ class UpdateExportTemplate extends Component {
                   {this.renderAlert()}
                   {this.renderMessage()}
                   <div className="pull-right">
-                    <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
-                    <Button bsStyle="primary" type="submit" disabled={pristine || submitting || !valid}>Update</Button>
+                    <Button bsStyle="default" bsSize="small" type="button" disabled={pristine || submitting} onClick={reset}>Clear Values</Button>
+                    <Button bsStyle="primary" bsSize="small" type="submit" disabled={pristine || submitting || !valid}>Create</Button>
                   </div>
                 </form>
               </Panel>
@@ -213,7 +208,7 @@ class UpdateExportTemplate extends Component {
     } else {
       return (
         <div>
-          What are YOU doing here?
+          Loading...
         </div>
       )
     }
@@ -253,21 +248,24 @@ function validate(formProps) {
 function mapStateToProps(state) {
 
   return {
-    errorMessage: state.export.export_error,
-    message: state.export.export_message,
-    initialValues: state.export.export,
+    errorMessage: state.event_export.event_export_error,
+    message: state.event_export.event_export_message,
     roles: state.user.profile.roles,
+    initialValues: { 
+      event_export_template_limit: '0',
+      event_export_template_offset: '0',
+    },
     showDataSourceFilter: selector(state, 'event_export_template_include_aux_data')
   };
 
 }
 
-UpdateExportTemplate = reduxForm({
-  form: 'editExportTemplate',
+CreateEventExportTemplate = reduxForm({
+  form: 'createExportTemplate',
   enableReinitialize: true,
   validate: validate
-})(UpdateExportTemplate);
+})(CreateEventExportTemplate);
 
-const selector = formValueSelector('editExportTemplate');
+const selector = formValueSelector('createEventExportTemplate');
 
-export default connect(mapStateToProps, actions)(UpdateExportTemplate);
+export default connect(mapStateToProps, actions)(CreateEventExportTemplate);

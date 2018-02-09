@@ -3,22 +3,22 @@ import { reducer as reduxFormReducer } from 'redux-form';
 import { routerReducer } from 'react-router-redux';
 import { reducer as modalReducer } from 'redux-modal';
 import authReducer from './auth_reducer';
-import chatReducer from './chat_reducer';
+import eventHistoryReducer from './event_history_reducer';
 import userReducer from './user_reducer';
 import eventReducer from './event_reducer';
-import exportReducer from './export_reducer';
-import definitionReducer from './definition_reducer';
+import eventExportReducer from './event_export_reducer';
+import eventTemplateReducer from './event_template_reducer';
 
 const rootReducer = combineReducers({
   form: reduxFormReducer,
   routing: routerReducer,
   modal: modalReducer,
   auth: authReducer,
-  chat: chatReducer,
+  event_history: eventHistoryReducer,
   user: userReducer,
   event: eventReducer,
-  export: exportReducer,
-  definition: definitionReducer,
+  event_export: eventExportReducer,
+  event_template: eventTemplateReducer,
 });
 
 export default rootReducer;

@@ -2,8 +2,7 @@ import React, {Component} from 'react';
 import { ThemeChooser } from 'react-bootstrap-theme-switcher';
 
 import { connect } from 'react-redux';
-import { Grid, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Grid } from 'react-bootstrap';
 import { ROOT_PATH } from '../url_config';
 
 class Footer extends Component {
@@ -13,11 +12,14 @@ class Footer extends Component {
   }
 
   render () {
+
+    const github = "https://github.com/webbpinner/sealog-client";
+    const license = "http://www.gnu.org/licenses/gpl-3.0.html";
     return (
       <Grid fluid>
         <hr/>
         <div className="pull-right">
-          <a href="https://github.com/webbpinner/sealog-client" target="_blank">Sea Log Client</a> is licensed under the <a target="_blank" href="http://www.gnu.org/licenses/gpl-3.0.html">GPLv3</a> public license
+          <a href={github} target="_blank">Sea Log Client</a> is licensed under the <a href={license} target="_blank">GPLv3</a> public license
         </div>
         <ThemeChooser/>
       </Grid>

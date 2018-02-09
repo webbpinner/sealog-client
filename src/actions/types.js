@@ -28,49 +28,49 @@ export const LEAVE_UPDATE_USER_FORM = 'leave_update_user_form';
 
 export const FETCH_USERS = 'fetch_users';
 
-export const FETCH_EVENT_DEFINITIONS_FOR_CHAT = 'fetch_event_definitions_for_chat';
+export const FETCH_EVENT_TEMPLATES_FOR_MAIN = 'fetch_event_templates_for_main';
 
 export const FETCH_EVENTS = 'fetch_events';
 export const FETCH_FILTERED_EVENTS = 'fetch_filtered_events';
 
-export const UPDATE_CHAT = 'update_chat';
+export const SHOW_EVENTS_FULLSCREEN = 'show_events_fullscreen';
+export const SHOW_EVENTS = 'show_events';
+export const HIDE_EVENTS = 'hide_events';
 
-export const SHOW_EVENTLIST_FULLSCREEN = 'show_event_list_fullscreen';
-export const SHOW_EVENTLIST = 'show_event_list';
-export const HIDE_EVENTLIST = 'hide_event_list';
-
-export const SHOW_CHAT_FULLSCREEN = 'show_chat_fullscreen';
-export const SHOW_CHAT = 'show_chat';
-export const HIDE_CHAT = 'hide_chat';
+export const FETCH_EVENT_HISTORY = 'fetch_event_history';
+export const UPDATE_EVENT_HISTORY = 'update_event_history';
+export const SHOW_EVENT_HISTORY_FULLSCREEN = 'show_event_history_fullscreen';
+export const SHOW_EVENT_HISTORY = 'show_event_history';
+export const HIDE_EVENT_HISTORY = 'hide_event_history';
 
 export const DELETE_USER = 'destory_user';
 
-export const INIT_EXPORT_TEMPLATE = 'init_export_template';
-export const UPDATE_EXPORT_TEMPLATE = 'update_export_template';
-export const UPDATE_EXPORT_TEMPLATE_SUCCESS = 'update_export_template_success';
-export const UPDATE_EXPORT_TEMPLATE_ERROR = 'update_export_template_error';
-export const LEAVE_UPDATE_EXPORT_TEMPLATE_FORM = 'leave_update_export_template_form';
+export const INIT_EVENT_EXPORT_TEMPLATE = 'init_event_export_template';
+export const UPDATE_EVENT_EXPORT_TEMPLATE = 'update_event_export_template';
+export const UPDATE_EVENT_EXPORT_TEMPLATE_SUCCESS = 'update_event_export_template_success';
+export const UPDATE_EVENT_EXPORT_TEMPLATE_ERROR = 'update_event_export_template_error';
+export const LEAVE_UPDATE_EVENT_EXPORT_TEMPLATE_FORM = 'leave_update_event_export_template_form';
 
-export const CREATE_EXPORT_TEMPLATE = 'create_export_template';
-export const CREATE_EXPORT_TEMPLATE_SUCCESS = 'create_export_template_success';
-export const CREATE_EXPORT_TEMPLATE_ERROR = 'create_export_template_error';
-export const LEAVE_CREATE_EXPORT_TEMPLATE_FORM = 'leave_create_export_template_form';
+export const CREATE_EVENT_EXPORT_TEMPLATE = 'create_event_export_template';
+export const CREATE_EVENT_EXPORT_TEMPLATE_SUCCESS = 'create_event_export_template_success';
+export const CREATE_EVENT_EXPORT_TEMPLATE_ERROR = 'create_event_export_template_error';
+export const LEAVE_CREATE_EVENT_EXPORT_TEMPLATE_FORM = 'leave_create_event_export_template_form';
 
-export const FETCH_EXPORT_TEMPLATES = 'fetch_export_templates';
+export const FETCH_EVENT_EXPORT_TEMPLATES = 'fetch_event_export_templates';
 
-export const DELETE_EXPORT_TEMPLATE = 'destory_export_template';
+export const DELETE_EVENT_EXPORT_TEMPLATE = 'destory_event_export_template';
 
-export const INIT_DEFINITION = 'init_definition';
-export const UPDATE_DEFINITION = 'update_definition';
-export const UPDATE_DEFINITION_SUCCESS = 'update_definition_success';
-export const UPDATE_DEFINITION_ERROR = 'update_definition_error';
-export const LEAVE_UPDATE_DEFINITION_FORM = 'leave_update_definition_form';
+export const INIT_EVENT_TEMPLATE = 'init_event_template';
+export const UPDATE_EVENT_TEMPLATE = 'update_event_template';
+export const UPDATE_EVENT_TEMPLATE_SUCCESS = 'update_event_template_success';
+export const UPDATE_EVENT_TEMPLATE_ERROR = 'update_event_template_error';
+export const LEAVE_UPDATE_EVENT_TEMPLATE_FORM = 'leave_update_event_template_form';
 
-export const CREATE_DEFINITION = 'create_definition';
-export const CREATE_DEFINITION_SUCCESS = 'create_definition_success';
-export const CREATE_DEFINITION_ERROR = 'create_definition_error';
-export const LEAVE_CREATE_DEFINITION_FORM = 'leave_create_definition_form';
+export const CREATE_EVENT_TEMPLATE = 'create_event_template';
+export const CREATE_EVENT_TEMPLATE_SUCCESS = 'create_event_template_success';
+export const CREATE_EVENT_TEMPLATE_ERROR = 'create_event_template_error';
+export const LEAVE_CREATE_EVENT_TEMPLATE_FORM = 'leave_create_event_template_form';
 
-export const FETCH_DEFINITIONS = 'fetch_definitions';
+export const FETCH_EVENT_TEMPLATES = 'fetch_event_templates';
 
-export const DELETE_DEFINITION = 'destory_definition';
+export const DELETE_DEFINITION = 'destory_event_template';

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import { connectModal } from 'redux-modal';
 
-class DeleteDefinitionModal extends Component {
+class DeleteEventExportModal extends Component {
 
   constructor (props) {
     super(props);
@@ -33,7 +33,7 @@ class DeleteDefinitionModal extends Component {
         </Modal.Header>
 
         <Modal.Body>
-          { 'Are you sure you want to delete this event definition?' }
+          { 'Are you sure you want to delete this event export?' }
         </Modal.Body>
 
         <Modal.Footer>
@@ -45,4 +45,4 @@ class DeleteDefinitionModal extends Component {
   }
 }
 
-export default connectModal({ name: 'deleteDefinition' })(DeleteDefinitionModal)
+export default connectModal({ name: 'deleteExport' })(DeleteEventExportModal)

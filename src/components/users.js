@@ -138,7 +138,7 @@ class Users extends Component {
       return (
         <Grid fluid>
           <Row>
-            <Col sm={6} md={4} lg={4}>
+            <Col sm={6} md={5} lg={4}>
                 <DeleteUserModal />
                 <ImportUsersModal />
                 <Panel header={this.renderUserHeader()}>
@@ -165,7 +165,6 @@ function mapStateToProps(state) {
     users: state.user.users,
     userid: state.user.profile.id,
     roles: state.user.profile.roles
-
   }
 }
 

@@ -9,7 +9,7 @@ import fileDownload from 'react-file-download';
 import $ from 'jquery';
 //import { Client } from 'nes';
 
-class EventList extends Component {
+class EventFilteredList extends Component {
 
   constructor (props) {
     super(props);
@@ -84,22 +84,22 @@ class EventList extends Component {
 
   renderEventList() {
 
-    if(this.props.list && this.props.list.length > 0){
-      return this.props.list.map((message) => {
+    if(this.props.eventList && this.props.eventList.length > 0){
+      return this.props.eventList.map((event) => {
 
         let freeText = '';
-        message.event_free_text ? freeText = ` --> "${message.event_free_text}"` : freeText = '';
+        event.event_free_text ? freeText = ` --> "${event.event_free_text}"` : freeText = '';
 
         let eventOptions = '';
-        if (message.event_options.length > 0 ) {
+        if (event.event_options.length > 0 ) {
           let eventOptionsObj = {};
-          message.event_options.map((option) => {
+          event.event_options.map((option) => {
             eventOptionsObj[option.event_option_name] = option.event_option_value;
           })
           eventOptions = JSON.stringify(eventOptionsObj)
         }
 
-        return (<ListGroupItem key={message.id}>{message.ts} {`<${message.user_name}>`}: {message.event_value} {eventOptions} {freeText}</ListGroupItem>);
+        return (<ListGroupItem key={event.id}>{event.ts} {`<${event.event_author}>`}: {event.event_value} {eventOptions} {freeText}</ListGroupItem>);
       })      
     }
 
@@ -108,7 +108,7 @@ class EventList extends Component {
 
   render() {
 
-    if (!this.props.list) {
+    if (!this.props.eventList) {
       return (
         <Panel header={ this.renderEventListHeader() }>
           <div>Loading...</div>
@@ -147,10 +147,10 @@ function mapStateToProps(state) {
 
   return {
     authenticated: state.auth.authenticated,
-    list: state.event.list,
-    showEventList: state.event.showEventList,
-    showEventListFullscreen: state.event.showEventListFullscreen
+    eventList: state.event.events,
+    showEventList: state.event.showEvents,
+    showEventListFullscreen: state.event.showEventsFullscreen
   }
 }
 
-export default connect(mapStateToProps, actions)(EventList);
+export default connect(mapStateToProps, actions)(EventFilteredList);
