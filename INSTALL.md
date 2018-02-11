@@ -31,7 +31,7 @@ This should clone the repo to a directory called `sealog-client`
 ### Create a new configuration file
 
 ```
-cd ./sealog-client
+cd ~/sealog-client
 cp ./src/url_config.js.dist ./src/url_config.js
 ```
 
@@ -44,7 +44,7 @@ By default the file assumes the sealog-server is available on ports 8000/8001 on
 ### Create a deployment file
 
 ```
-cd ./sealog-client
+cd ~/sealog-client
 cp ./webpack.js.dist ./webpack.js
 ```
 
@@ -58,7 +58,7 @@ The default configuration file also assumes the client will be available from th
 
 From a terminal run:
 ```
-cd ./sealog-client
+cd ~/sealog-client
 npm install
 ```
 
