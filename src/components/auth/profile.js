@@ -52,7 +52,7 @@ class Profile extends Component {
     return (
       <Grid fluid>
         <Row>
-          <Col sm={4} smOffset={4} md={4} mdOffset={4}>
+          <Col sm={6} smOffset={3} md={4} mdOffset={4}>
             <Panel header={ profileFormHeader }>
               <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
                 <Field

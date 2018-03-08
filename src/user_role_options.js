@@ -1,8 +1,8 @@
 export const userRoleOptions = [
-  { value: 'admin', label: 'Admin' },
-  { value: 'event_manager', label: 'Event Manager' },
-  { value: 'event_logger', label: 'Event Logger' },
-  { value: 'event_watcher', label: 'Event Watcher' }
+  { value: 'admin', label: 'Admin', description: 'Basically God-like', },
+  { value: 'event_manager', label: 'Event Manager', description: 'Ability to add/edit/remove event templates.' },
+  { value: 'event_logger', label: 'Event Logger', description: 'Abiltiy to submit new events.' },
+  { value: 'event_watcher', label: 'Event Watcher', description: 'Abilty to view events.' }
 ];
 
 export const ADMIN = 'admin';

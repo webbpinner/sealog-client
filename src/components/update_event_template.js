@@ -16,7 +16,9 @@ class UpdateEventTemplate extends Component {
 
   componentWillMount() {
     //console.log(this.props.match);
-    this.props.initEventTemplate(this.props.match.params.id);
+    if(this.props.eventTemplateID) {
+      this.props.initEventTemplate(this.props.eventTemplateID);
+    }
   }
 
   componentWillUnmount() {
@@ -64,7 +66,7 @@ class UpdateEventTemplate extends Component {
   renderEventOptionsDropdown(prefix, index) {
     //console.log(this.props.event_options[index]);
 
-    if(this.props.event_options[index].event_option_type == 'dropdown') {
+    if(this.props.initialValues.event_options[index].event_option_type == 'dropdown') {
       return (
         <ul>
           <li>
@@ -89,6 +91,7 @@ class UpdateEventTemplate extends Component {
 
 
   renderEventOptions({ fields, meta: { touched, error } }) {
+  
     return (
       <div>
         <ul>
@@ -156,51 +159,44 @@ class UpdateEventTemplate extends Component {
   render() {
 
     const { handleSubmit, pristine, reset, submitting, valid } = this.props;
-    const formHeader = (<h3>Event EventTemplate Profile</h3>);
-
+    const formHeader = (<div>Event EventTemplate Profile</div>);
 
     if (this.props.roles && (this.props.roles.includes("admin") || this.props.roles.includes("event_manager"))) {
       return (
-        <Grid fluid>
-          <Row>
-            <Col sm={8} smOffset={2} md={6} mdOffset={3} lg={4} lgOffset={4}>
-              <Panel bsStyle="default" header={formHeader}>
-                <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
-                  <Field
-                    name="event_name"
-                    component={this.renderField}
-                    type="text"
-                    label="Name"
-                  />
-                  <Field
-                    name="event_value"
-                    type="text"
-                    component={this.renderField}
-                    label="Event Value"
-                  />
-                  <div>
-                    <label>Free text Required?</label>
-                    <span>&nbsp;&nbsp;</span>
-                    <Field
-                      name='event_free_text_required'
-                      id='event_free_text_required'
-                      component="input"
-                      type="checkbox"
-                    />
-                  </div>
-                  <label>Event Options:</label>
-                  <FieldArray name="event_options" component={this.renderEventOptions}/>
-                  {this.renderAlert()}
-                  {this.renderMessage()}
-                  <div className="pull-right">
-                    <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
-                    <Button bsStyle="primary" type="submit" disabled={pristine || submitting || !valid}>Update</Button>
-                  </div>
-                </form>
-              </Panel>
-            </Col>
-          </Row>
-        </Grid>
+        <Panel bsStyle="default" header={formHeader}>
+          <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
+            <Field
+              name="event_name"
+              component={this.renderField}
+              type="text"
+              label="Name"
+            />
+            <Field
+              name="event_value"
+              type="text"
+              component={this.renderField}
+              label="Event Value"
+            />
+            <div>
+              <label>Free text Required?</label>
+              <span>&nbsp;&nbsp;</span>
+              <Field
+                name='event_free_text_required'
+                id='event_free_text_required'
+                component="input"
+                type="checkbox"
+              />
+            </div>
+            <label>Event Options:</label>
+            <FieldArray name="event_options" component={this.renderEventOptions}/>
+            {this.renderAlert()}
+            {this.renderMessage()}
+            <div className="pull-right">
+              <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
+              <Button bsStyle="primary" type="submit" disabled={pristine || submitting || !valid}>Update</Button>
+            </div>
+          </form>
+        </Panel>
       )
     } else {
       return (

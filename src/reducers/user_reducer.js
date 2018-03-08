@@ -65,7 +65,7 @@ export default function(state={ profile: {}, user: {}, users: [] }, action) {
       return { ...state, user_error: action.payload, user_message: '' }
 
     case LEAVE_CREATE_USER_FORM:
-      return { ...state, user: {}, user_error: '', user_message: '' }
+      return { ...state, user_error: '', user_message: '' }
 
     case REGISTER_USER_SUCCESS:
       return { ...state, register_error: '', register_message: action.payload }

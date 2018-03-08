@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, Field, initialize } from 'redux-form';
-import { Alert, Button, Checkbox, Col, FormGroup, FormControl, FormGroupItem, Grid, Panel, Row } from 'react-bootstrap';
+import { Alert, Button, Checkbox, Col, FormGroup, FormControl, FormGroupItem, Grid, Panel, Row, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import * as actions from '../actions';
 import { userRoleOptions } from '../user_role_options';
 
@@ -9,7 +9,9 @@ class UpdateUser extends Component {
 
   componentWillMount() {
     //console.log(this.props.match);
-    this.props.initUser(this.props.match.params.id);
+    if(this.props.userID) {
+      this.props.initUser(this.props.userID);
+    }
   }
 
   componentWillUnmount() {
@@ -34,6 +36,10 @@ class UpdateUser extends Component {
   renderCheckboxGroup({ label, required, name, options, input, meta: { dirty, error, warning } }) {    
 
     let checkboxList = options.map((option, index) => {
+
+      let tooltip = (option.description)? (<Tooltip id={`${option.value}_Tooltip`}>{option.description}</Tooltip>) : null
+      let overlay = (tooltip != null)? (<OverlayTrigger placement="right" overlay={tooltip}><span>{option.label}</span></OverlayTrigger>) : option.label
+
       return (
           <Checkbox
             name={`${option.label}[${index}]`}
@@ -50,7 +56,7 @@ class UpdateUser extends Component {
               return input.onChange(newValue);
             }}
           >
-            { option.label }
+            { overlay }
           </Checkbox>
       );
     });
@@ -87,63 +93,57 @@ class UpdateUser extends Component {
   render() {
 
     const { handleSubmit, pristine, reset, submitting, valid } = this.props;
-    const updateUserFormHeader = (<h3>User Profile</h3>);
+    const updateUserFormHeader = (<div>User Profile</div>);
 
 
     if (this.props.roles && this.props.roles.includes("admin")) {
       return (
-        <Grid fluid>
-          <Row>
-            <Col sm={8} smOffset={2} md={6} mdOffset={3} lg={4} lgOffset={4}>
-              <Panel bsStyle="default" header={updateUserFormHeader}>
-                <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
-                  <Field
-                    name="username"
-                    component={this.renderField}
-                    type="text"
-                    label="Username"
-                  />
-                  <Field
-                    name="fullname"
-                    type="text"
-                    component={this.renderField}
-                    label="Full Name"
-                  />
-                  <Field
-                    name="email"
-                    component={this.renderField}
-                    type="text"
-                    label="Email"
-                  />
-                  <Field
-                    name="password"
-                    component={this.renderField}
-                    type="password"
-                    label="Password"
-                  />
-                  <Field
-                    name="confirmPassword"
-                    component={this.renderField}
-                    type="password"
-                    label="Confirm Password"
-                  />
-                  <Field
-                    name="roles"
-                    component={this.renderCheckboxGroup}
-                    label="Roles"
-                    options={userRoleOptions}
-                  />
-                  {this.renderAlert()}
-                  {this.renderMessage()}
-                  <div className="pull-right">
-                    <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
-                    <Button bsStyle="primary" type="submit" disabled={submitting || !valid}>Update</Button>
-                  </div>
-                </form>
-              </Panel>
-            </Col>
-          </Row>
-        </Grid>
+        <Panel bsStyle="default" header={updateUserFormHeader}>
+          <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
+            <Field
+              name="username"
+              component={this.renderField}
+              type="text"
+              label="Username"
+            />
+            <Field
+              name="fullname"
+              type="text"
+              component={this.renderField}
+              label="Full Name"
+            />
+            <Field
+              name="email"
+              component={this.renderField}
+              type="text"
+              label="Email"
+            />
+            <Field
+              name="password"
+              component={this.renderField}
+              type="password"
+              label="Password"
+            />
+            <Field
+              name="confirmPassword"
+              component={this.renderField}
+              type="password"
+              label="Confirm Password"
+            />
+            <Field
+              name="roles"
+              component={this.renderCheckboxGroup}
+              label="Roles"
+              options={userRoleOptions}
+            />
+            {this.renderAlert()}
+            {this.renderMessage()}
+            <div className="pull-right">
+              <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
+              <Button bsStyle="primary" type="submit" disabled={submitting || !valid}>Update</Button>
+            </div>
+          </form>
+        </Panel>
       )
     } else {
       return (

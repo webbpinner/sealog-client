@@ -55,22 +55,14 @@ ReactDOM.render(
             <Route path={ `${ROOT_PATH}/` } exact={true} component={RequireAuth(Main)}/>
             <Route path={ `${ROOT_PATH}/feature` } exact={true} component={RequireAuth(Feature)} />
             <Route path={ `${ROOT_PATH}/events` } exact={true} component={RequireAuth(Events)} />
-            <Switch>
-              <Route path={ `${ROOT_PATH}/users` } exact={true} component={RequireAuth(Users)} />
-              <Route path={ `${ROOT_PATH}/users/new` } exact={true} component={RequireAuth(CreateUser)} />
-              <Route path={ `${ROOT_PATH}/users/:id` } exact={true} component={RequireAuth(UpdateUser)} />
-            </Switch>
+            <Route path={ `${ROOT_PATH}/users` } exact={true} component={RequireAuth(Users)} />
             <Route path={ `${ROOT_PATH}/profile` } exact={true} component={RequireAuth(Profile)} />
             <Switch>
               <Route path={ `${ROOT_PATH}/event_exports` } exact={true} component={RequireAuth(EventExports)} />
               <Route path={ `${ROOT_PATH}/event_exports/new` } exact={true} component={RequireAuth(CreateEventExportTemplate)} />
               <Route path={ `${ROOT_PATH}/event_exports/:id` } exact={true} component={RequireAuth(UpdateEventExportTemplate)} />
             </Switch>
-            <Switch>
-              <Route path={ `${ROOT_PATH}/event_templates` } exact={true} component={RequireAuth(EventTemplates)} />
-              <Route path={ `${ROOT_PATH}/event_templates/new` } exact={true} component={RequireAuth(CreateEventTemplate)} />
-              <Route path={ `${ROOT_PATH}/event_templates/:id` } exact={true} component={RequireAuth(UpdateEventTemplate)} />
-            </Switch>
+            <Route path={ `${ROOT_PATH}/event_templates` } exact={true} component={RequireAuth(EventTemplates)} />
             <Route path={ `${ROOT_PATH}/login` } exact={true} component={RequireUnauth(Login)} />
             <Route path={ `${ROOT_PATH}/logout` } exact={true} component={Logout} />
             <Route path={ `${ROOT_PATH}/register` } exact={true} component={Register} />

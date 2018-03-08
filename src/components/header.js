@@ -20,50 +20,65 @@ class Header extends Component {
   }
 
   renderUserOptions() {
-    if(this.props.authenticated && this.props.roles) {
-      if(this.props.roles.includes('admin')) {
-        return (
-          <LinkContainer to={ `${ROOT_PATH}/users` }>
-            <NavItem>Users</NavItem>
-          </LinkContainer>
-        );
-      }
+    if(this.props.roles.includes('admin')) {
+      return (
+        <LinkContainer to={ `${ROOT_PATH}/users` }>
+          <NavItem>Users</NavItem>
+        </LinkContainer>
+      );
     }
   }
 
   renderEventOptions() {
-    if(this.props.authenticated && this.props.roles) {
-      if(this.props.roles.includes('event_watcher')) {
-        return (
-          <LinkContainer to={ `${ROOT_PATH}/events` }>
-            <NavItem>Events</NavItem>
-          </LinkContainer>
-        );
-      }
+    if(this.props.roles.includes('event_watcher')) {
+      return (
+        <LinkContainer to={ `${ROOT_PATH}/events` }>
+          <NavItem>Events</NavItem>
+        </LinkContainer>
+      );
     }
   }
 
   renderEventExportOptions() {
-    if(this.props.roles) {
-      if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_logger') || this.props.roles.includes('event_watcher')) {
-        return (
-          <LinkContainer to={ `${ROOT_PATH}/event_exports` }>
-            <NavItem>Exports</NavItem>
-          </LinkContainer>
-        );
-      }
+    if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_logger') || this.props.roles.includes('event_watcher')) {
+      return (
+        <LinkContainer to={ `${ROOT_PATH}/event_exports` }>
+          <NavItem>Exports</NavItem>
+        </LinkContainer>
+      );
     }
   }
 
   renderEventTemplateOptions() {
-    if(this.props.roles) {
-      if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager')) {
-        return (
-          <LinkContainer to={ `${ROOT_PATH}/event_templates` }>
-            <NavItem>Templates</NavItem>
-          </LinkContainer>
-        );
-      }
+    if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager')) {
+      return (
+        <LinkContainer to={ `${ROOT_PATH}/event_templates` }>
+          <NavItem>Templates</NavItem>
+        </LinkContainer>
+      );
+    }
+  }
+
+  renderTaskOptions() {
+    if(this.props.roles.includes('admin')) {
+      return (
+        <LinkContainer to={ `${ROOT_PATH}/tasks` }>
+          <MenuItem>Tasks</MenuItem>
+        </LinkContainer>
+      );
+    }
+  }
+
+  renderSystemManagerDropdown() {
+    if(this.props.roles && (this.props.roles.includes('admin'))) {
+      return (
+        <NavDropdown eventKey={3} title={'System Management'} id="basic-nav-dropdown">
+          {this.renderEventExportOptions()}
+          {this.renderEventTemplateOptions()}
+          {this.renderTaskOptions()}
+          {this.renderUserOptions()}
+        </NavDropdown>
+      );
     }
   }
 
@@ -96,16 +111,13 @@ class Header extends Component {
       <Navbar fluid collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <Link to={ `${ROOT_PATH}/` }>Sea Log</Link>
+            <Link to={ `${ROOT_PATH}/` }>Sealog</Link>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav pullRight>
-            {this.renderUserOptions()}
-            {this.renderEventOptions()}
-            {this.renderEventExportOptions()}
-            {this.renderEventTemplateOptions()}
+            {this.renderSystemManagerDropdown()}
             {this.renderUserDropdown()}
           </Nav>
         </Navbar.Collapse>

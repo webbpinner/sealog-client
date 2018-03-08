@@ -24,11 +24,12 @@ class CreateEventTemplate extends Component {
     this.props.createEventTemplate(formProps);
   }
 
-  renderField({ input, label, type, meta: { touched, error, warning } }) {
+  renderField({ input, label, placeholder, type, meta: { touched, error, warning } }) {
+    let placeholder_txt = (placeholder)? placeholder: label
     return (
       <FormGroup>
         <label>{label}</label>
-        <FormControl {...input} placeholder={label} type={type}/>
+        <FormControl {...input} placeholder={placeholder_txt} type={type}/>
         {(error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
       </FormGroup>
     )
@@ -156,47 +157,41 @@ class CreateEventTemplate extends Component {
 
     if (this.props.roles && (this.props.roles.includes("admin") || this.props.roles.includes("event_manager"))) {
       return (
-        <Grid fluid>
-          <Row>
-            <Col sm={8} smOffset={2} md={6} mdOffset={3} lg={4} lgOffset={4}>
-              <Panel bsStyle="default" header={formHeader}>
-                <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
-                  <Field
-                    name="event_name"
-                    component={this.renderField}
-                    type="text"
-                    label="Name"
-                  />
-                  <Field
-                    name="event_value"
-                    type="text"
-                    component={this.renderField}
-                    label="Event Value"
-                  />
-                  <div>
-                    <label>Free text Required?</label>
-                    <span>&nbsp;&nbsp;</span>
-                    <Field
-                      name='event_free_text_required'
-                      id='event_free_text_required'
-                      component="input"
-                      type="checkbox"
-                    />
-                  </div>
+        <Panel bsStyle="default" header={formHeader}>
+          <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
+            <Field
+              name="event_name"
+              component={this.renderField}
+              type="text"
+              label="Name"
+            />
+            <Field
+              name="event_value"
+              type="text"
+              component={this.renderField}
+              label="Event Value"
+            />
+            <div>
+              <label>Free text Required?</label>
+              <span>&nbsp;&nbsp;</span>
+              <Field
+                name='event_free_text_required'
+                id='event_free_text_required'
+                component="input"
+                type="checkbox"
+              />
+            </div>
 
-                  <FieldArray name="event_options" component={this.renderOptions}/>
-                  <br/>
-                  {this.renderAlert()}
-                  {this.renderMessage()}
-                  <div className="pull-right">
-                    <Button bsStyle="default" type="button" bsSize="small" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
-                    <Button bsStyle="primary" type="submit" bsSize="small" disabled={pristine || submitting || !valid}>Create</Button>
-                  </div>
-                </form>
-              </Panel>
-            </Col>
-          </Row>
-        </Grid>
+            <FieldArray name="event_options" component={this.renderOptions}/>
+            <br/>
+            {this.renderAlert()}
+            {this.renderMessage()}
+            <div className="pull-right">
+              <Button bsStyle="default" type="button" bsSize="small" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
+              <Button bsStyle="primary" type="submit" bsSize="small" disabled={pristine || submitting || !valid}>Create</Button>
+            </div>
+          </form>
+        </Panel>
       )
     } else {
       return (

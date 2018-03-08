@@ -6,9 +6,11 @@ import { reduxForm, Field, reset } from 'redux-form';
 import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { ROOT_PATH } from '../url_config';
+import CreateUser from './create_user';
+import UpdateUser from './update_user';
 import DeleteUserModal from './delete_user_modal';
 import ImportUsersModal from './import_users_modal';
-import fileDownload from 'react-file-download';
+// import fileDownload from 'react-file-download';
 import * as actions from '../actions';
 
 class Users extends Component {
@@ -26,6 +28,16 @@ class Users extends Component {
 
   handleUserDelete(id) {
     this.props.showModal('deleteUser', { id: id, handleDelete: this.props.deleteUser });
+  }
+
+  handleUserSelect(id) {
+    // console.log("Set User:", id)
+    this.props.initUser(id);
+  }
+
+  handleUserCreate() {
+    // console.log("Clear");
+    this.props.leaveUpdateUserForm()
   }
 
   handleExportUserList() {
@@ -53,9 +65,7 @@ class Users extends Component {
     if (!this.props.showform) {
       return (
         <div className="pull-right">
-          <LinkContainer to={`${ROOT_PATH}/users/new`}>
-            <Button bsStyle="primary" bsSize="small" type="button">Add User</Button>
-          </LinkContainer>
+          <Button bsStyle="primary" bsSize="small" type="button" onClick={ () => this.handleUserCreate()}>Add User</Button>
         </div>
       );
     }
@@ -73,9 +83,9 @@ class Users extends Component {
             <td>{user.username}</td>
             <td>{user.fullname}</td>
             <td>
-              <Link key={`edit_${user.id}`} to={`${ROOT_PATH}/users/${user.id}`}><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>
+              <Link key={`edit_${user.id}`} to="#" onClick={ () => this.handleUserSelect(user.id) }><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>
               &nbsp;
-              {user.id != this.props.userid? <Link key={`delete_${user.id}`} to="#" onClick={ () => this.handleUserDelete(user.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link> : ''}
+              {user.id != this.props.profileid? <Link key={`delete_${user.id}`} to="#" onClick={ () => this.handleUserDelete(user.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link> : ''}
             </td>
           </tr>
         );
@@ -120,9 +130,6 @@ class Users extends Component {
     return (
       <div>
         { Label }
-        <div className="pull-right">
-          <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleExportUserList }><OverlayTrigger placement="top" overlay={exportTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger></Button>
-        </div>
       </div>
     );
   }
@@ -135,16 +142,24 @@ class Users extends Component {
     }
 
     if (this.props.roles.includes("admin")) {
+
+      // console.log("userid:", this.props.userid)
+
+      let userForm = (this.props.userid)? <UpdateUser /> : <CreateUser />
+
       return (
         <Grid fluid>
+          <DeleteUserModal />
+          <ImportUsersModal />
           <Row>
+            <Col sm={6} mdOffset= {1} md={5} lgOffset= {2} lg={4}>
+              <Panel header={this.renderUserHeader()}>
+                {this.renderUserTable()}
+              </Panel>
+              {this.renderAddUserButton()}
+            </Col>
             <Col sm={6} md={5} lg={4}>
-                <DeleteUserModal />
-                <ImportUsersModal />
-                <Panel header={this.renderUserHeader()}>
-                  {this.renderUserTable()}
-                  {this.renderAddUserButton()}
-                </Panel>
+              { userForm }
             </Col>
           </Row>
         </Grid>
@@ -163,7 +178,8 @@ class Users extends Component {
 function mapStateToProps(state) {
   return {
     users: state.user.users,
-    userid: state.user.profile.id,
+    userid: state.user.user.id,
+    profileid: state.user.profile.id,
     roles: state.user.profile.roles
   }
 }
