@@ -6,6 +6,19 @@
  - [nodeJS](https://nodejs.org)
  - [npm](https://www.npmjs.com)
  - [git](https://git-scm.com)
+ 
+#### Installing NodeJS/npm on Ubuntu 16.04LTS
+The standard Ubuntu repositories for Ubuntu 16.04 only provide install packages for NodeJS v4.  Sealog-client (and Sealog-Server) require nodeJS >= v8.7
+ 
+To install nodeJS v8.7 on Ubuntu 16.04LTS run the following commands:
+ ```
+sudo apt-get install curl build-essential
+cd ~
+curl -sL https://deb.nodesource.com/setup_8.x -o nodesource_setup.sh
+sudo bash nodesource_setup.sh
+sudo apt-get install nodejs
+
+ ```
 
 ### Clone the repository
 
@@ -18,7 +31,7 @@ This should clone the repo to a directory called `sealog-client`
 ### Create a new configuration file
 
 ```
-cd ./sealog-client
+cd ~/sealog-client
 cp ./src/url_config.js.dist ./src/url_config.js
 ```
 
@@ -31,7 +44,7 @@ By default the file assumes the sealog-server is available on ports 8000/8001 on
 ### Create a deployment file
 
 ```
-cd ./sealog-client
+cd ~/sealog-client
 cp ./webpack.js.dist ./webpack.js
 ```
 
@@ -45,7 +58,7 @@ The default configuration file also assumes the client will be available from th
 
 From a terminal run:
 ```
-cd ./sealog-client
+cd ~/sealog-client
 npm install
 ```
 
@@ -71,3 +84,12 @@ Add the following to your Apache vhosts file:
 You will need to tweak this configuration to match your exact installation.  This example assumes the client will live at `http://<serverIP>/sealog` and the git repo is located at: `/var/www/sealog-client`
 
 **Be sure to reload Apache for these changes to take affect.**
+
+### Running in development mode ###
+Optionally you can run the client using node's development web-server.  This removes the need to run Apache.
+
+To run the client using development mode run the following commands in terminal:
+```
+cd <path_to>/sealog-client
+npm start
+```
