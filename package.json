@@ -29,6 +29,7 @@
     "axios": "^0.16.1",
     "babel-preset-stage-1": "^6.1.18",
     "bootstrap": "^3.3.7",
+    "font-awesome": "^4.7.0",
     "history": "^4.6.3",
     "lodash": "^4.17.4",
     "nes": "^6.4.2",
@@ -58,6 +59,7 @@
     "universal-cookie": "^2.1.2"
   },
   "devDependencies": {
+    "ajv": "^6.2.1",
     "babel-core": "^6.2.1",
     "babel-loader": "^6.2.0",
     "babel-preset-es2015": "^6.1.18",
@@ -65,11 +67,18 @@
     "chai": "^3.5.0",
     "chai-jquery": "^2.0.0",
     "copy-webpack-plugin": "^4.0.1",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.11",
+    "font-awesome-webpack": "0.0.5-beta.2",
     "jquery": "^3.2.1",
     "jsdom": "^9.12.0",
+    "less": "^3.0.1",
+    "less-loader": "^4.1.0",
     "mocha": "^3.2.0",
     "react-addons-test-utils": "^15.5.1",
-    "webpack": "^2.4.1",
+    "style-loader": "^0.20.2",
+    "url-loader": "^1.0.1",
+    "webpack": "^2.7.0",
     "webpack-dev-server": "^2.4.2"
   }
 }

@@ -30,6 +30,8 @@ import EventTemplates from './components/event_templates';
 import UpdateEventTemplate from './components/update_event_template';
 import CreateEventTemplate from './components/create_event_template';
 
+require("font-awesome-webpack");
+
 import { ROOT_PATH } from './url_config';
 
 import store from './store';
@@ -52,20 +54,20 @@ ReactDOM.render(
             <Header />
             <Route path='/github' component={() => window.location = 'https://github.com/webbpinner/sealog-client'}/>
             <Route path='/license' component={() => window.location = 'http://www.gnu.org/licenses/gpl-3.0.html'}/>
-            <Route path={ `${ROOT_PATH}/` } exact={true} component={RequireAuth(Main)}/>
-            <Route path={ `${ROOT_PATH}/feature` } exact={true} component={RequireAuth(Feature)} />
-            <Route path={ `${ROOT_PATH}/events` } exact={true} component={RequireAuth(Events)} />
-            <Route path={ `${ROOT_PATH}/users` } exact={true} component={RequireAuth(Users)} />
-            <Route path={ `${ROOT_PATH}/profile` } exact={true} component={RequireAuth(Profile)} />
+            <Route path={ `/` } exact={true} component={RequireAuth(Main)}/>
+            <Route path={ `/feature` } exact={true} component={RequireAuth(Feature)} />
+            <Route path={ `/events` } exact={true} component={RequireAuth(Events)} />
+            <Route path={ `/users` } exact={true} component={RequireAuth(Users)} />
+            <Route path={ `/profile` } exact={true} component={RequireAuth(Profile)} />
             <Switch>
-              <Route path={ `${ROOT_PATH}/event_exports` } exact={true} component={RequireAuth(EventExports)} />
-              <Route path={ `${ROOT_PATH}/event_exports/new` } exact={true} component={RequireAuth(CreateEventExportTemplate)} />
-              <Route path={ `${ROOT_PATH}/event_exports/:id` } exact={true} component={RequireAuth(UpdateEventExportTemplate)} />
+              <Route path={ `/event_exports` } exact={true} component={RequireAuth(EventExports)} />
+              <Route path={ `/event_exports/new` } exact={true} component={RequireAuth(CreateEventExportTemplate)} />
+              <Route path={ `/event_exports/:id` } exact={true} component={RequireAuth(UpdateEventExportTemplate)} />
             </Switch>
-            <Route path={ `${ROOT_PATH}/event_templates` } exact={true} component={RequireAuth(EventTemplates)} />
-            <Route path={ `${ROOT_PATH}/login` } exact={true} component={RequireUnauth(Login)} />
-            <Route path={ `${ROOT_PATH}/logout` } exact={true} component={Logout} />
-            <Route path={ `${ROOT_PATH}/register` } exact={true} component={Register} />
+            <Route path={ `/event_templates` } exact={true} component={RequireAuth(EventTemplates)} />
+            <Route path={ `/login` } exact={true} component={RequireUnauth(Login)} />
+            <Route path={ `/logout` } exact={true} component={Logout} />
+            <Route path={ `/register` } exact={true} component={Register} />
             <Footer />
           </div>
       </ConnectedRouter>

@@ -3,7 +3,6 @@ import { ThemeChooser } from 'react-bootstrap-theme-switcher';
 
 import { connect } from 'react-redux';
 import { Grid } from 'react-bootstrap';
-import { ROOT_PATH } from '../url_config';
 
 class Footer extends Component {
 

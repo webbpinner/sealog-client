@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Grid, Row, Col, FormGroup, Panel, Button, Alert } from 'react-bootstrap';
 import * as actions from '../../actions';
-import { ROOT_PATH } from '../../url_config';
 
 
 class Login extends Component {
@@ -68,7 +67,7 @@ class Login extends Component {
               </form>
               <br/>
               <div className="text-right">
-                <Link to={ `${ROOT_PATH}/register` }>Register {<FontAwesome name="arrow-right"/>}</Link>
+                <Link to={ `/register` }>Register {<FontAwesome name="arrow-right"/>}</Link>
               </div>
             </Panel>
           </Col>

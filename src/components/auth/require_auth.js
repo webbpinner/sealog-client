@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as actions from '../../actions';
-import { ROOT_PATH } from '../../url_config';
 
 export default function(ComposedComponent) {
   class Authentication extends Component {
@@ -17,14 +16,14 @@ export default function(ComposedComponent) {
     componentWillMount() {
       this.props.validateJWT();
       if (!this.props.authenticated) {
-        this.context.router.history.push(`${ROOT_PATH}/login`);
+        this.context.router.history.push(`/login`);
       }
     }
 
     componentWillUpdate(nextProps) {
       this.props.validateJWT();
       if (!nextProps.authenticated) {
-        this.context.router.history.push(`${ROOT_PATH}/login`);
+        this.context.router.history.push(`/login`);
       }
     }
 

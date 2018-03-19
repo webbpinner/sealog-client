@@ -1,7 +1,6 @@
 let CopyWebpackPlugin = require ("copy-webpack-plugin");
+//let HtmlWebpackPlugin = require('html-webpack-plugin')
 let path = require("path");
-
-var ROOT_PATH = '/';
 
 module.exports = {
   entry: [
@@ -10,32 +9,68 @@ module.exports = {
   output: {
 //    path: __dirname,
     path: path.resolve(__dirname, "dist"),
-    publicPath: ROOT_PATH,
+    publicPath: '/sealog/',
     filename: 'bundle.js'
   },
   module: {
-    loaders: [{
-      exclude: /node_modules/,
-      loader: 'babel-loader',
-      query: {
-        presets: ['react', 'es2015', 'stage-1']
+    loaders: [
+      { 
+        test: /\.css$/,
+        use: [
+          { loader: "style-loader" },
+          { loader: "css-loader" }
+        ]
+      },
+      {
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        query: {
+          presets: ['react', 'es2015', 'stage-1']
+        }
+      },
+      {
+        test: /\.(jpe?g|png|gif)$/i,
+        loader: "file-loader",
+        options: {
+          publicPath: 'images/',
+          outputPath: 'images/'
+        }
+      },
+      {
+        test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: "url-loader?limit=10000&mimetype=application/font-woff",
+        options: {
+          publicPath: 'fonts/',
+          outputPath: 'fonts/'
+        }
+      },
+      {
+        test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: "file-loader",
+        options: {
+          publicPath: 'fonts/',
+          outputPath: 'fonts/'
+        }
       }
-    }]
+    ]
   },
   resolve: {
     extensions: ['.js', '.jsx']
   },
   devServer: {
-    historyApiFallback: true,
+    historyApiFallback: {
+      index:'/index.html'
+    },
     contentBase: './dist',
     port: 9000,
   },
   plugins: [
     new CopyWebpackPlugin([
         {context: 'node_modules/react-bootstrap-theme-switcher/themes/', from: '**/*', to: 'themes/'},
-        {context: 'src/assets/', from: '**/*', to: ''}
+        {context: 'src/assets/style', from: '**/*', to: 'style/'}
       ],
       {copyUnmodified: true}
-    )
+    ),
+//    new HtmlWebpackPlugin()
   ]
 };

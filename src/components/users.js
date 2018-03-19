@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import { reduxForm, Field, reset } from 'redux-form';
 import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { ROOT_PATH } from '../url_config';
 import CreateUser from './create_user';
 import UpdateUser from './update_user';
 import DeleteUserModal from './delete_user_modal';

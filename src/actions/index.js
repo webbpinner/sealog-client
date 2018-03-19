@@ -7,7 +7,7 @@ import { push } from 'react-router-redux';
 import { bindActionCreators } from 'redux';
 import { show, destroy } from 'redux-modal';
 
-import { ROOT_PATH, API_ROOT_URL} from '../url_config';
+import { API_ROOT_URL} from '../url_config';
 
 import {
   AUTH_USER,

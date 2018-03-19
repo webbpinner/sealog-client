@@ -5,7 +5,6 @@ import { Navbar, Nav, NavDropdown, NavItem, MenuItem } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome'
 import { LinkContainer } from 'react-router-bootstrap';
 import * as actions from '../actions';
-import { ROOT_PATH } from '../url_config';
 
 class Header extends Component {
 
@@ -22,7 +21,7 @@ class Header extends Component {
   renderUserOptions() {
     if(this.props.roles.includes('admin')) {
       return (
-        <LinkContainer to={ `${ROOT_PATH}/users` }>
+        <LinkContainer to={ `/users` }>
           <NavItem>Users</NavItem>
         </LinkContainer>
       );
@@ -32,7 +31,7 @@ class Header extends Component {
   renderEventOptions() {
     if(this.props.roles.includes('event_watcher')) {
       return (
-        <LinkContainer to={ `${ROOT_PATH}/events` }>
+        <LinkContainer to={ `/events` }>
           <NavItem>Events</NavItem>
         </LinkContainer>
       );
@@ -42,7 +41,7 @@ class Header extends Component {
   renderEventExportOptions() {
     if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_logger') || this.props.roles.includes('event_watcher')) {
       return (
-        <LinkContainer to={ `${ROOT_PATH}/event_exports` }>
+        <LinkContainer to={ `/event_exports` }>
           <NavItem>Exports</NavItem>
         </LinkContainer>
       );
@@ -52,7 +51,7 @@ class Header extends Component {
   renderEventTemplateOptions() {
     if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager')) {
       return (
-        <LinkContainer to={ `${ROOT_PATH}/event_templates` }>
+        <LinkContainer to={ `/event_templates` }>
           <NavItem>Templates</NavItem>
         </LinkContainer>
       );
@@ -62,7 +61,7 @@ class Header extends Component {
   renderTaskOptions() {
     if(this.props.roles.includes('admin')) {
       return (
-        <LinkContainer to={ `${ROOT_PATH}/tasks` }>
+        <LinkContainer to={ `/tasks` }>
           <MenuItem>Tasks</MenuItem>
         </LinkContainer>
       );
@@ -86,7 +85,7 @@ class Header extends Component {
     if(this.props.fullname){
       return (
       <NavDropdown eventKey={3} title={<FontAwesome name='user' />} id="basic-nav-dropdown">
-        <LinkContainer to={ `${ROOT_PATH}/profile` }>
+        <LinkContainer to={ `/profile` }>
           <MenuItem key="profile" eventKey={3.1} >User Profile</MenuItem>
         </LinkContainer>
         <MenuItem key="logout" eventKey={3.2} onClick={ () => this.handleLogout() } >Log Out</MenuItem>
@@ -95,7 +94,7 @@ class Header extends Component {
     } else {
       // show a link to sign in or sign up
       return (
-        <LinkContainer to={ `${ROOT_PATH}/login` }>
+        <LinkContainer to={ `/login` }>
           <NavItem>Login</NavItem>
         </LinkContainer>
       );
@@ -111,7 +110,7 @@ class Header extends Component {
       <Navbar fluid collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <Link to={ `${ROOT_PATH}/` }>Sealog</Link>
+            <Link to={ `/` }>Sealog</Link>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { ROOT_PATH } from '../../url_config';
 
 export default function(ComposedComponent) {
   class Unauthentication extends Component {
@@ -15,13 +14,13 @@ export default function(ComposedComponent) {
 
     componentWillMount() {
       if (this.props.authenticated) {
-        this.context.router.history.push(`${ROOT_PATH}/`);
+        this.context.router.history.push(`/`);
       }
     }
 
     componentWillUpdate(nextProps) {
       if (nextProps.authenticated) {
-        this.context.router.history.push(`${ROOT_PATH}/`);
+        this.context.router.history.push(`/`);
       }
     }
 
