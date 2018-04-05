@@ -191,7 +191,7 @@ class UpdateEventExportTemplate extends Component {
                   />
                   <div>
                     <label>Include Auxilary Data?</label>
-                    <span>&nbsp;&nbsp;</span>
+                    <span>{'  '}</span>
                     <Field
                       name="event_export_template_include_aux_data"
                       id="event_export_template_include_aux_data"

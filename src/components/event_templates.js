@@ -65,7 +65,7 @@ class EventTemplates extends Component {
             <td>{template.event_name}</td>
             <td>{template.event_value}</td>
             <td>
-              <Link to="#" onClick={ () => this.handleEventTemplateSelect(template.id) }><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>&nbsp;
+              <Link to="#" onClick={ () => this.handleEventTemplateSelect(template.id) }><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>{' '}
               <Link to="#" onClick={ () => this.handleEventTemplateDelete(template.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link>
             </td>
           </tr>

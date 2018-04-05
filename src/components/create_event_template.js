@@ -112,7 +112,7 @@ class CreateEventTemplate extends Component {
               { this.renderOptionsDropdown(options, index) }
               <div>
                 <label>Required?</label>
-                <span>&nbsp;&nbsp;</span>
+                <span>{'  '}</span>
                 <Field
                   name={`${options}.event_option_required`}
                   id={`${options}.event_option_required`}
@@ -173,7 +173,7 @@ class CreateEventTemplate extends Component {
             />
             <div>
               <label>Free text Required?</label>
-              <span>&nbsp;&nbsp;</span>
+              <span>{'  '}</span>
               <Field
                 name='event_free_text_required'
                 id='event_free_text_required'
