@@ -9,10 +9,16 @@ import { ROOT_PATH } from '../url_config';
 import CreateEventTemplate from './create_event_template';
 import UpdateEventTemplate from './update_event_template';
 import DeleteEventTemplateModal from './delete_event_template_modal';
-import fileDownload from 'react-file-download';
 import * as actions from '../actions';
 
+let fileDownload = require('js-file-download');
+
 class EventTemplates extends Component {
+
+  constructor (props) {
+    super(props);
+
+  }
 
   componentWillMount() {
       this.props.fetchEventTemplates();
@@ -30,6 +36,10 @@ class EventTemplates extends Component {
   handleEventTemplateCreate() {
     // console.log("Clear");
     this.props.leaveUpdateEventTemplateForm()
+  }
+
+  exportTemplatesToJSON() {
+    fileDownload(JSON.stringify(this.props.event_templates, null, 2), 'sealog_eventTemplateExport.json');
   }
 
   renderAddEventTemplateButton() {
@@ -100,14 +110,12 @@ class EventTemplates extends Component {
 
     // <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleImportEventTemplateList }><OverlayTrigger placement="top" overlay={importTooltip}><FontAwesome name='upload' fixedWidth/></OverlayTrigger></Button>
 
-        // <div className="pull-right">
-          // <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleExportEventTemplateList }><OverlayTrigger placement="top" overlay={exportTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger></Button>
-        // </div>
-
-
     return (
       <div>
         { Label }
+        <div className="pull-right">
+          <Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.exportTemplatesToJSON() }><OverlayTrigger placement="top" overlay={exportTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger></Button>
+        </div>
       </div>
     );
   }

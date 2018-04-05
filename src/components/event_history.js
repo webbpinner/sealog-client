@@ -67,7 +67,7 @@ class EventHistory extends Component {
   }
 
   componentDidUpdate() {
-    this.scrollToBottom();
+    // this.scrollToBottom();
   }
 
   renderEventHistoryHeader() {
@@ -132,9 +132,13 @@ class EventHistory extends Component {
   }
 
   renderEventHistory() {
-    if(this.props.history){
-      return this.props.history.map((message) => {
+    if(this.props.history && this.props.history.length > 0){
 
+      let messageArray = []
+
+      for (let i = this.props.history.length; i > 0; i--) {
+
+        let message = this.props.history[i-1]
         let freeText = '';
         message.event_free_text ? freeText = ` --> "${message.event_free_text}"` : freeText = '';
 
@@ -147,11 +151,12 @@ class EventHistory extends Component {
           eventOptions = JSON.stringify(eventOptionsObj)
         }
 
-        return (<ListGroupItem key={message.id}>{message.ts} {`<${message.event_author}>`}: {message.event_value} {eventOptions} {freeText}</ListGroupItem>);
-      })      
+        messageArray.push(<ListGroupItem key={message.id}>{message.ts} {`<${message.event_author}>`}: {message.event_value} {eventOptions} {freeText}</ListGroupItem>);
+      }
+      return messageArray
     }
 
-    return <ListGroupItem key="emptyHistory" >No events found</ListGroupItem>
+    return (<ListGroupItem key="emptyHistory" >No events found</ListGroupItem>)
   }
 
   render() {

@@ -41,7 +41,7 @@ class Register extends Component {
             <strong>Success!</strong> {this.props.message}
           </div>
           <div className="text-right">
-            <Link to={ `${ROOT_PATH}/login` }>Proceed to Login {<FontAwesome name="arrow-right"/>}</Link>
+            <Link to={ `/login` }>Proceed to Login {<FontAwesome name="arrow-right"/>}</Link>
           </div>
         </Panel>
       )

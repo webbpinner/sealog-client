@@ -28,21 +28,13 @@ class Header extends Component {
     }
   }
 
-  renderEventOptions() {
-    if(this.props.roles.includes('event_watcher')) {
-      return (
-        <LinkContainer to={ `/events` }>
-          <NavItem>Events</NavItem>
-        </LinkContainer>
-      );
-    }
-  }
-
   renderEventExportOptions() {
-    if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_logger') || this.props.roles.includes('event_watcher')) {
+
+    // console.log(this.props.roles)
+    if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_logger') || this.props.roles.includes('event_watcher'))) {
       return (
         <LinkContainer to={ `/event_exports` }>
-          <NavItem>Exports</NavItem>
+          <NavItem>Event Export</NavItem>
         </LinkContainer>
       );
     }
@@ -52,7 +44,7 @@ class Header extends Component {
     if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager')) {
       return (
         <LinkContainer to={ `/event_templates` }>
-          <NavItem>Templates</NavItem>
+          <NavItem>Event Templates</NavItem>
         </LinkContainer>
       );
     }
@@ -72,7 +64,6 @@ class Header extends Component {
     if(this.props.roles && (this.props.roles.includes('admin'))) {
       return (
         <NavDropdown eventKey={3} title={'System Management'} id="basic-nav-dropdown">
-          {this.renderEventExportOptions()}
           {this.renderEventTemplateOptions()}
           {this.renderTaskOptions()}
           {this.renderUserOptions()}
@@ -88,7 +79,7 @@ class Header extends Component {
         <LinkContainer to={ `/profile` }>
           <MenuItem key="profile" eventKey={3.1} >User Profile</MenuItem>
         </LinkContainer>
-        <MenuItem key="logout" eventKey={3.2} onClick={ () => this.handleLogout() } >Log Out</MenuItem>
+        <MenuItem key="logout" eventKey={3.3} onClick={ () => this.handleLogout() } >Log Out</MenuItem>
       </NavDropdown>
       );
     } else {
@@ -116,6 +107,7 @@ class Header extends Component {
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav pullRight>
+            {this.renderEventExportOptions()}
             {this.renderSystemManagerDropdown()}
             {this.renderUserDropdown()}
           </Nav>

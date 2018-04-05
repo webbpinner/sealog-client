@@ -11,7 +11,7 @@ import { API_ROOT_URL } from '../url_config';
 
 const cookies = new Cookies();
 
-class ImportUsersModal extends Component {
+class ImportEventTemplatesModal extends Component {
 
   constructor (props) {
     super(props);
@@ -36,7 +36,7 @@ class ImportUsersModal extends Component {
     this.props.handleDestroy();
   }
 
-  importUsersFromFile = (e) => {
+  importEventTemplatesFromFile = (e) => {
     try {
       let json = JSON.parse(e.target.result);
         this.setState( prevState => (
@@ -48,8 +48,8 @@ class ImportUsersModal extends Component {
           }
         ))
       // console.log(json);
-      let promises = json.map(({id, username, fullname, email, password = '', roles = []}) => {
-        return axios.get(`${API_ROOT_URL}/api/v1/users/${id}`,
+      let promises = json.map(({id, event_name, event_value, event_free_text_required = false, event_options = []}) => {
+        return axios.get(`${API_ROOT_URL}/api/v1/event_templates/${id}`,
         {
           headers: {
             authorization: cookies.get('token'),
@@ -58,7 +58,7 @@ class ImportUsersModal extends Component {
         })
         .then((response) => {
 
-          // console.log("User Already Exists");
+          // console.log("Event Already Exists");
           this.setState( prevState => (
             {
               skipped: prevState.skipped + 1,
@@ -71,8 +71,8 @@ class ImportUsersModal extends Component {
           if(error.response.data.statusCode == 404) {
             // console.log("Attempting to add event")
 
-            axios.post(`${API_ROOT_URL}/api/v1/users`,
-            {id, username, fullname, email, password, roles},
+            axios.post(`${API_ROOT_URL}/api/v1/event_templates`,
+            {id, event_name, event_value, event_free_text_required, event_options},
             {
               headers: {
                 authorization: cookies.get('token'),
@@ -80,7 +80,7 @@ class ImportUsersModal extends Component {
               }
             })
             .then((response) => {
-              // console.log("User Imported");
+              // console.log("Event Imported");
               this.setState( prevState => (
                 {
                   imported: prevState.imported + 1,
@@ -92,7 +92,7 @@ class ImportUsersModal extends Component {
             .catch((error) => {
               
               if(error.response.data.statusCode == 400) {
-                // console.log("User Data malformed or incomplete");
+                // console.log("Event Data malformed or incomplete");
               } else {
                 console.log(error);  
               }
@@ -129,10 +129,10 @@ class ImportUsersModal extends Component {
     }
   }
 
-  handleUserRecordImport = files => {
+  handleEventTemplateImport = files => {
 
     let reader = new FileReader();
-    reader.onload = this.importUsersFromFile
+    reader.onload = this.importEventTemplatesFromFile
     reader.readAsText(files[0]);
   }
 
@@ -149,14 +149,14 @@ class ImportUsersModal extends Component {
     return (
       <Modal show={show}>
         <Modal.Header>
-          <Modal.Title>Import Users</Modal.Title>
+          <Modal.Title>Import Event Templates</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Grid fluid>
             <Row>
               <Col xs={6}>
-                <ReactFileReader fileTypes={[".json"]} handleFiles={this.handleUserRecordImport}>
+                <ReactFileReader fileTypes={[".json"]} handleFiles={this.handleEventTemplateImport}>
                     <Button>Select File</Button>
                 </ReactFileReader>
               </Col>
@@ -179,4 +179,4 @@ class ImportUsersModal extends Component {
   }
 }
 
-export default connectModal({ name: 'importUsers' })(ImportUsersModal)
+export default connectModal({ name: 'importEventTemplates' })(ImportEventTemplatesModal)

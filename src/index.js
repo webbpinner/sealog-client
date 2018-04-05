@@ -20,6 +20,7 @@ import RequireUnauth from './components/auth/require_unauth';
 import Welcome from './components/welcome';
 import Main from './components/main';
 import Users from './components/users';
+import Tasks from './components/tasks';
 import Events from './components/events';
 import UpdateUser from './components/update_user';
 import CreateUser from './components/create_user';
@@ -57,13 +58,10 @@ ReactDOM.render(
             <Route path={ `/` } exact={true} component={RequireAuth(Main)}/>
             <Route path={ `/feature` } exact={true} component={RequireAuth(Feature)} />
             <Route path={ `/events` } exact={true} component={RequireAuth(Events)} />
+            <Route path={ `/tasks` } exact={true} component={RequireAuth(Tasks)} />
             <Route path={ `/users` } exact={true} component={RequireAuth(Users)} />
             <Route path={ `/profile` } exact={true} component={RequireAuth(Profile)} />
-            <Switch>
-              <Route path={ `/event_exports` } exact={true} component={RequireAuth(EventExports)} />
-              <Route path={ `/event_exports/new` } exact={true} component={RequireAuth(CreateEventExportTemplate)} />
-              <Route path={ `/event_exports/:id` } exact={true} component={RequireAuth(UpdateEventExportTemplate)} />
-            </Switch>
+            <Route path={ `/event_exports` } exact={true} component={RequireAuth(EventExports)} />
             <Route path={ `/event_templates` } exact={true} component={RequireAuth(EventTemplates)} />
             <Route path={ `/login` } exact={true} component={RequireUnauth(Login)} />
             <Route path={ `/logout` } exact={true} component={Logout} />

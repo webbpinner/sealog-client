@@ -5,20 +5,19 @@ import { Link } from 'react-router-dom';
 import { reduxForm, Field, reset } from 'redux-form';
 import { FormGroup, Grid, Row, Button, Col, Panel, Alert, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import { ROOT_PATH } from '../url_config';
 import CreateUser from './create_user';
 import UpdateUser from './update_user';
 import DeleteUserModal from './delete_user_modal';
-import ImportUsersModal from './import_users_modal';
-// import fileDownload from 'react-file-download';
 import * as actions from '../actions';
+
+let fileDownload = require('js-file-download');
 
 class Users extends Component {
 
   constructor (props) {
     super(props);
 
-    this.handleExportUserList = this.handleExportUserList.bind(this);
-    this.handleImportUserList = this.handleImportUserList.bind(this);
   }
 
   componentWillMount() {
@@ -39,25 +38,8 @@ class Users extends Component {
     this.props.leaveUpdateUserForm()
   }
 
-  handleExportUserList() {
-    fileDownload(JSON.stringify(this.props.users, null, "\t"), 'export.json');
-  }
-
-  handleImportUserList() {
-    this.props.showModal('importUsers', { });
-
-    // const options = {
-    //   baseUrl: 'http://127.0.0.1',
-    //   query: {
-    //     warrior: 'fight'
-    //   }
-    // }
-
-    // /* Use ReactUploadFile with options */
-    // /* Custom your buttons */
-    // return (
-    //   <ReactUploadFile options={options} uploadFileButton={<FontAwesome name='upload' fixedWidth/>} />
-    // );
+  exportUsersToJSON() {
+    fileDownload(JSON.stringify(this.props.users, null, 2), 'sealog_userExport.json');
   }
 
   renderAddUserButton() {
@@ -129,6 +111,9 @@ class Users extends Component {
     return (
       <div>
         { Label }
+        <div className="pull-right">
+          <Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.exportUsersToJSON() }><OverlayTrigger placement="top" overlay={exportTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger></Button>
+        </div>
       </div>
     );
   }
@@ -149,7 +134,6 @@ class Users extends Component {
       return (
         <Grid fluid>
           <DeleteUserModal />
-          <ImportUsersModal />
           <Row>
             <Col sm={6} mdOffset= {1} md={5} lgOffset= {2} lg={4}>
               <Panel header={this.renderUserHeader()}>

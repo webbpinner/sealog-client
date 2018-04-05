@@ -64,6 +64,14 @@ import {
   CREATE_EVENT_TEMPLATE_SUCCESS,
   CREATE_EVENT_TEMPLATE_ERROR,
   LEAVE_CREATE_EVENT_TEMPLATE_FORM,
+  INIT_EVENT_EXPORT,
+  EVENT_EXPORT_FETCHING,
+  UPDATE_EVENT_EXPORT_FILTER_FORM,
+  LEAVE_EVENT_EXPORT_FILTER_FORM,
+  UPDATE_EVENT_EXPORT,
+  EVENT_EXPORT_SET_ACTIVE_PAGE,
+  EVENT_EXPORT_SET_ACTIVE_EVENT,
+
 
 } from './types';
 
@@ -1132,6 +1140,36 @@ export function fetchEventTemplates() {
   }
 }
 
+export function initEventExport() {
+  return function (dispatch) {
+    dispatch({ type: EVENT_EXPORT_FETCHING, payload: true})
+    axios.get(`${API_ROOT_URL}/api/v1/event_exports`,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    }).then((response) => {
+      // console.log("Init export:", response.data)
+      dispatch({ type: INIT_EVENT_EXPORT, payload: response.data })
+      dispatch({ type: EVENT_EXPORT_FETCHING, payload: false})
+
+      //console.log("Initialized event template data successfully");
+    }).catch((error)=>{
+      dispatch({ type: EVENT_EXPORT_FETCHING, payload: false})
+      console.log(error);
+    })
+  }
+}
+
+export function updateEventExportFilterForm(formProps) {
+
+  return function (dispatch) {
+
+    dispatch({type: UPDATE_EVENT_EXPORT_FILTER_FORM, payload: formProps})
+    dispatch(eventExportUpdate())
+  }
+}
+
 export function updateEventHistory(update) {
   //console.log(update);
 
@@ -1194,6 +1232,12 @@ export function leaveCreateEventTemplateForm() {
   }
 }
 
+export function leaveEventExportFilterForm() {
+  return function (dispatch) {
+    dispatch({type: LEAVE_EVENT_EXPORT_FILTER_FORM, payload: null})
+  }
+}
+
 export function hideEventHistory() {
   return function (dispatch) {
     dispatch({type: HIDE_EVENT_HISTORY, payload: null})
@@ -1233,5 +1277,65 @@ export function showEventsFullscreen() {
 export function showModal(modal, props) {
   return function(dispatch) {
     dispatch(show(modal, props));
+  }
+}
+
+export function eventExportUpdate() {
+  // console.log("event export update")
+  return function (dispatch, getState) {
+    let startTS = (getState().event_export.eventExportFilter.startTS)? `startTS=${getState().event_export.eventExportFilter.startTS}` : ''
+    let stopTS = (getState().event_export.eventExportFilter.stopTS)? `&stopTS=${getState().event_export.eventExportFilter.stopTS}` : ''
+    let value = (getState().event_export.eventExportFilter.value)? `&value=${getState().event_export.eventExportFilter.value.split(',').join("&value=")}` : ''
+    let author = (getState().event_export.eventExportFilter.author)? `&author=${getState().event_export.eventExportFilter.author.split(',').join("&author=")}` : ''
+    let freetext = (getState().event_export.eventExportFilter.freetext)? `&freetext=${getState().event_export.eventExportFilter.freetext}` : ''
+    let datasource = (getState().event_export.eventExportFilter.datasource)? `&datasource=${getState().event_export.eventExportFilter.datasource}` : ''
+
+    dispatch({ type: EVENT_EXPORT_FETCHING, payload: true})
+    axios.get(`${API_ROOT_URL}/api/v1/event_exports?${startTS}${stopTS}${value}${author}${freetext}${datasource}`,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    }).then((response) => {
+      // console.log("search results:", response.data)
+      dispatch({ type: UPDATE_EVENT_EXPORT, payload: response.data })
+      dispatch({ type: EVENT_EXPORT_FETCHING, payload: false})
+    }).catch((error)=>{
+      console.log(error);
+      if(error.response.data.statusCode == 404){
+        dispatch({type: UPDATE_EVENT_EXPORT, payload: []})
+      } else {
+        console.log(error.response);
+      }
+      dispatch({ type: EVENT_EXPORT_FETCHING, payload: false})
+    });
+  }
+}
+
+export function eventExportSetActivePage(page) {
+  return function(dispatch) {
+    dispatch({type: EVENT_EXPORT_SET_ACTIVE_PAGE, payload: page})
+  }
+}
+
+export function eventExportSetActiveEvent(id) {
+  return function(dispatch) {
+    // console.log("set active event to:", id)
+    axios.get(`${API_ROOT_URL}/api/v1/event_exports/${id}`,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    }).then((response) => {
+      dispatch({ type: EVENT_EXPORT_SET_ACTIVE_EVENT, payload: response.data})
+    }).catch((error)=>{
+      console.log(error.response);
+
+      if(error.response.data.statusCode == 404){
+        dispatch({type: EVENT_EXPORT_SET_ACTIVE_EVENT, payload: {} })
+      } else {
+        console.log(error.response);
+      }
+    });
   }
 }
