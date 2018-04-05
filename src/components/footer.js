@@ -18,7 +18,7 @@ class Footer extends Component {
       <Grid fluid>
         <hr/>
         <div className="pull-right">
-          <a href={github} target="_blank">Sea Log Client</a> is licensed under the <a href={license} target="_blank">GPLv3</a> public license
+          <a href={github} target="_blank">Sealog</a> is licensed under the <a href={license} target="_blank">GPLv3</a> public license
         </div>
         <ThemeChooser/>
       </Grid>
