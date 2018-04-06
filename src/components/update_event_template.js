@@ -30,11 +30,12 @@ class UpdateEventTemplate extends Component {
     this.props.updateEventTemplate(formProps);
   }
 
-  renderField({ input, label, type, meta: { touched, error, warning } }) {
+  renderField({ input, label, placeholder, type, meta: { touched, error, warning } }) {
+    let placeholder_txt = (placeholder)? placeholder: label
     return (
       <FormGroup>
         <label>{label}</label>
-        <FormControl {...input} placeholder={label} type={type}/>
+        <FormControl {...input} placeholder={placeholder_txt} type={type}/>
         {touched && ((error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>))}
       </FormGroup>
     )
@@ -64,9 +65,26 @@ class UpdateEventTemplate extends Component {
 
 
   renderEventOptionsDropdown(prefix, index) {
-    //console.log(this.props.event_options[index]);
 
-    if(this.props.initialValues.event_options[index].event_option_type == 'dropdown') {
+    if(this.props.initialValues.event_options.length >= index + 1 && this.props.initialValues.event_options[index].event_option_type == 'dropdown') {
+      return (
+        <ul>
+          <li>
+            <Field
+              name={`${prefix}.event_option_values`}
+              type="text"
+              component={this.renderField}
+              label="Dropdown Options"
+            />
+            <Field
+              name={`${prefix}.event_option_default_value`}
+              type="text"
+              component={this.renderField}
+              label="Default Value"/>
+          </li>
+        </ul>
+      );
+    } else if(this.props.event_options && this.props.event_options.length > 0 && this.props.event_options[index].event_option_type == 'dropdown') {
       return (
         <ul>
           <li>
