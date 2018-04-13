@@ -87,9 +87,8 @@ class EventFilteredList extends Component {
     if(this.props.eventList && this.props.eventList.length > 0){
       return this.props.eventList.map((event) => {
 
-        let freeText = '';
-        event.event_free_text ? freeText = ` --> "${event.event_free_text}"` : freeText = '';
-
+        let freeText = (event.event_free_text.length > 0)? ` --> "${event.event_free_text}"` : ''
+        
         let eventOptions = '';
         if (event.event_options.length > 0 ) {
           let eventOptionsObj = {};
@@ -99,7 +98,7 @@ class EventFilteredList extends Component {
           eventOptions = JSON.stringify(eventOptionsObj)
         }
 
-        return (<ListGroupItem key={event.id}>{event.ts} {`<${event.event_author}>`}: {event.event_value} {eventOptions} {freeText}</ListGroupItem>);
+        return (<ListGroupItem key={event.id}>{`${event.ts} <${event.event_author}>: ${event.event_value} ${eventOptions} ${freeText}`}</ListGroupItem>);
       })      
     }
 

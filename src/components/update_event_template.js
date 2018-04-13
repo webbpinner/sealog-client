@@ -239,10 +239,6 @@ function validate(formProps) {
     errors.event_value = 'Required'
   }
 
-  // if (!formProps.event_options || !formProps.event_options.length) {
-  //   errors.event_options = { _error: 'There must be at least one option' }
-  // } else {
-
   if (formProps.event_options && formProps.event_options.length) {
     const event_optionsArrayErrors = []
     formProps.event_options.forEach((event_option, event_optionIndex) => {
@@ -276,25 +272,6 @@ function validate(formProps) {
           }
         }
       }
-      // if (option && option.hobbies && option.hobbies.length) {
-      //   const hobbyArrayErrors = []
-      //   option.hobbies.forEach((hobby, hobbyIndex) => {
-      //     if (!hobby || !hobby.length) {
-      //       hobbyArrayErrors[hobbyIndex] =  'Required'
-      //     }
-      //   })
-      //   if(hobbyArrayErrors.length) {
-      //     optionErrors.hobbies = hobbyArrayErrors
-      //     optionsArrayErrors[optionIndex] = optionErrors
-      //   }
-      //   if (option.hobbies.length > 5) {
-      //     if(!optionErrors.hobbies) {
-      //       optionErrors.hobbies = []
-      //     }
-      //     optionErrors.hobbies._error = 'No more than five hobbies allowed'
-      //     optionsArrayErrors[optionIndex] = optionErrors
-      //   }
-      // }
     })
     if(event_optionsArrayErrors.length) {
       errors.event_options = event_optionsArrayErrors
