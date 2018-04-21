@@ -5,6 +5,7 @@ import { ConnectedRouter } from 'react-router-redux';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import { ThemeSwitcher } from 'react-bootstrap-theme-switcher';
+import "typeface-roboto";
 
 import { AUTH_USER } from './actions/types';
 
@@ -46,6 +47,7 @@ if (token) {
   store.dispatch({ type: AUTH_USER });
 
 }
+
 
 ReactDOM.render(
   <Provider store={store}>
