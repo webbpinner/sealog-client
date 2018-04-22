@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { ThemeChooser } from 'react-bootstrap-theme-switcher';
+//import { ThemeChooser } from 'react-bootstrap-theme-switcher';
 
 import { connect } from 'react-redux';
 import { Grid } from 'react-bootstrap';
@@ -20,11 +20,12 @@ class Footer extends Component {
         <div className="pull-right">
           <a href={github} target="_blank">Sealog</a> is licensed under the <a href={license} target="_blank">GPLv3</a> public license
         </div>
-        <ThemeChooser/>
       </Grid>
     );
   }
 }
+
+//        <ThemeChooser/>
 
 function mapStateToProps(state){
   return {
