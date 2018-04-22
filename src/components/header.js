@@ -73,9 +73,9 @@ class Header extends Component {
   }
 
   renderUserDropdown() {
-    if(this.props.fullname){
+    if(this.props.authenticated){
       return (
-      <NavDropdown eventKey={3} title={<FontAwesome name='user' />} id="basic-nav-dropdown">
+      <NavDropdown eventKey={3} title={<span>{this.props.fullname} <FontAwesome name='user' /></span>} id="basic-nav-dropdown">
         <LinkContainer to={ `/profile` }>
           <MenuItem key="profile" eventKey={3.1} >User Profile</MenuItem>
         </LinkContainer>
