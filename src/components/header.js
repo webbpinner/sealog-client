@@ -101,7 +101,7 @@ class Header extends Component {
       <Navbar fluid collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <Link to={ `/` }>Sealog</Link>
+            <Link to={ `/` }>Sealog - Alvin Edition</Link>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
