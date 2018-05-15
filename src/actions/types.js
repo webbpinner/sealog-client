@@ -83,4 +83,7 @@ export const UPDATE_EVENT_EXPORT = 'update_event_export';
 export const EVENT_EXPORT_SET_ACTIVE_PAGE = 'event_export_set_active_page';
 export const EVENT_EXPORT_SET_ACTIVE_EVENT = 'event_export_set_active_event';
 
+export const FETCH_CUSTOM_VARS = 'fetch_custom_vars';
+export const UPDATE_CUSTOM_VAR = 'update_custom_var';
+
 

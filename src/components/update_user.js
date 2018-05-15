@@ -1,11 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { reduxForm, Field, initialize } from 'redux-form';
+import { reduxForm, Field, initialize, Form } from 'redux-form';
 import { Alert, Button, Checkbox, Col, FormGroup, FormControl, FormGroupItem, Grid, Panel, Row, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import * as actions from '../actions';
 import { userRoleOptions } from '../user_role_options';
 
+    // 
+    // console.log(disabled)
+
+
 class UpdateUser extends Component {
+
+  constructor (props) {
+    super(props);
+
+  }
 
   componentWillMount() {
     //console.log(this.props.match);
@@ -23,17 +32,17 @@ class UpdateUser extends Component {
     this.props.updateUser(formProps);
   }
 
-  renderField({ input, label, type, meta: { touched, error, warning } }) {
+  renderField({ input, label, type, disabled, meta: { touched, error, warning } }) {
     return (
       <FormGroup>
         <label>{label}</label>
-        <FormControl {...input} placeholder={label} type={type}/>
+        <FormControl {...input} placeholder={label} type={type} disabled={disabled}/>
         {touched && ((error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>))}
       </FormGroup>
     )
   }
 
-  renderCheckboxGroup({ label, required, name, options, input, meta: { dirty, error, warning } }) {    
+  renderCheckboxGroup({ label, required, name, options, input, disabled, meta: { dirty, error, warning } }) {    
 
     let checkboxList = options.map((option, index) => {
 
@@ -46,6 +55,7 @@ class UpdateUser extends Component {
             key={`${label}.${index}`}
             value={option.value}
             checked={input.value.indexOf(option.value) !== -1}
+            disabled={disabled}
             onChange={event => {
               const newValue = [...input.value];
               if(event.target.checked) {
@@ -95,11 +105,10 @@ class UpdateUser extends Component {
     const { handleSubmit, pristine, reset, submitting, valid } = this.props;
     const updateUserFormHeader = (<div>User Profile</div>);
 
-
     if (this.props.roles && this.props.roles.includes("admin")) {
       return (
         <Panel bsStyle="default" header={updateUserFormHeader}>
-          <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
+          <Form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
             <Field
               name="username"
               component={this.renderField}
@@ -142,8 +151,8 @@ class UpdateUser extends Component {
               <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
               <Button bsStyle="primary" type="submit" disabled={submitting || !valid}>Update</Button>
             </div>
-          </form>
-        </Panel>
+          </Form>
+       </Panel>
       )
     } else {
       return (
@@ -162,6 +171,10 @@ function validate(formProps) {
     errors.username = 'Required'
   } else if (formProps.username.length > 15) {
     errors.username = 'Must be 15 characters or less'
+  } else if (formProps.username.match(/[A-Z]/)) {
+    errors.username = 'Username must be all lowercase'
+  } else if (formProps.username.match(/[ ]/)) {
+    errors.username = 'Username can not include whitespace'
   }
 
   if (!formProps.fullname) {

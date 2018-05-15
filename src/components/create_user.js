@@ -155,6 +155,10 @@ function validate(formProps) {
     errors.username = 'Required'
   } else if (formProps.username.length > 15) {
     errors.username = 'Must be 15 characters or less'
+  } else if (formProps.username.match(/[A-Z]/)) {
+    errors.username = 'Username must be all lowercase'
+  } else if (formProps.username.match(/[ ]/)) {
+    errors.username = 'Username can not include whitespace'
   }
 
   if (!formProps.fullname) {

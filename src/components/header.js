@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown, NavItem, MenuItem } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome'
 import { LinkContainer } from 'react-router-bootstrap';
+import { ROOT_PATH } from '../url_config';
 import * as actions from '../actions';
 
 class Header extends Component {
@@ -15,6 +16,16 @@ class Header extends Component {
   componentWillMount() {
     if (this.props.authenticated) {
       this.props.updateProfileState();
+    }
+  }
+
+  handleASNAPToggle() {
+    if(this.props.asnapStatus) {
+      if(this.props.asnapStatus[0].custom_var_value == 'Off') {
+        this.props.updateCustomVars(this.props.asnapStatus[0].id, {custom_var_value: 'On'})
+      } else {
+        this.props.updateCustomVars(this.props.asnapStatus[0].id, {custom_var_value: 'Off'})
+      }
     }
   }
 
@@ -34,7 +45,7 @@ class Header extends Component {
     if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_logger') || this.props.roles.includes('event_watcher'))) {
       return (
         <LinkContainer to={ `/event_exports` }>
-          <NavItem>Event Export</NavItem>
+          <NavItem>Event Review/Export</NavItem>
         </LinkContainer>
       );
     }
@@ -60,12 +71,21 @@ class Header extends Component {
     }
   }
 
+  renderToggleASNAP() {
+    if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager')) {
+      return (
+        <MenuItem onClick={ () => this.handleASNAPToggle() }>Toggle ASNAP</MenuItem>
+      );
+    }
+  }
+
   renderSystemManagerDropdown() {
-    if(this.props.roles && (this.props.roles.includes('admin'))) {
+    if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager'))) {
       return (
         <NavDropdown eventKey={3} title={'System Management'} id="basic-nav-dropdown">
           {this.renderEventTemplateOptions()}
           {this.renderTaskOptions()}
+          {this.renderToggleASNAP()}
           {this.renderUserOptions()}
         </NavDropdown>
       );
@@ -80,14 +100,10 @@ class Header extends Component {
           <MenuItem key="profile" eventKey={3.1} >User Profile</MenuItem>
         </LinkContainer>
         <MenuItem key="logout" eventKey={3.3} onClick={ () => this.handleLogout() } >Log Out</MenuItem>
+        {(this.props.fullname != 'Pilot')? (<MenuItem key="switch2Pilot" eventKey={3.3} onClick={ () => this.handleSwitchToPilot() } >Switch to Pilot</MenuItem>) : null }
+        {(this.props.fullname != 'Starboard Obs')? (<MenuItem key="switch2StbdObs" eventKey={3.3} onClick={ () => this.handleSwitchToStbdObs() } >Switch to Stbd Obs</MenuItem>) : null }
+        {(this.props.fullname != 'Port Obs')? (<MenuItem key="switch2PortObs" eventKey={3.3} onClick={ () => this.handleSwitchToPortObs() } >Switch to Port Obs</MenuItem>) : null }
       </NavDropdown>
-      );
-    } else {
-      // show a link to sign in or sign up
-      return (
-        <LinkContainer to={ `/login` }>
-          <NavItem>Login</NavItem>
-        </LinkContainer>
       );
     }
   }
@@ -96,12 +112,24 @@ class Header extends Component {
     this.props.logout();
   }
 
+  handleSwitchToPilot() {
+    this.props.switch2Pilot();
+  }
+
+  handleSwitchToPortObs() {
+    this.props.switch2PortObs();
+  }
+
+  handleSwitchToStbdObs() {
+    this.props.switch2StbdObs();
+  }
+
   render () {
     return (
       <Navbar fluid collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <Link to={ `/` }>Sealog - Alvin Edition</Link>
+            <Link to={ `/` }>Sealog<img height={40} src={`${ROOT_PATH}/images/Alvin_Front.png`} />Alvin Edition</Link>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
@@ -118,10 +146,13 @@ class Header extends Component {
 }
 
 function mapStateToProps(state){
+  let asnapStatus = (state.custom_var)? state.custom_var.custom_vars.filter(custom_var => custom_var.custom_var_name == "asnapStatus") : []
+
   return {
     authenticated: state.auth.authenticated,
     fullname: state.user.profile.fullname,
-    roles: state.user.profile.roles
+    roles: state.user.profile.roles,
+    asnapStatus: (asnapStatus.length > 0)? asnapStatus : null,
   };
 }
 

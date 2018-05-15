@@ -71,7 +71,8 @@ import {
   UPDATE_EVENT_EXPORT,
   EVENT_EXPORT_SET_ACTIVE_PAGE,
   EVENT_EXPORT_SET_ACTIVE_EVENT,
-
+  FETCH_CUSTOM_VARS,
+  UPDATE_CUSTOM_VAR,
 
 } from './types';
 
@@ -869,10 +870,27 @@ export function logout() {
   return function(dispatch) {
     cookies.remove('token', { path: '/' });
     cookies.remove('id', { path: '/' });
-    dispatch({type: UNAUTH_USER });
+    return dispatch({type: UNAUTH_USER });
   }
 }
 
+export function switch2Pilot() {
+  return function(dispatch) {
+    dispatch(login( { username:"pilot", password: "" } ) );
+  }
+}
+
+export function switch2StbdObs() {
+  return function(dispatch) {
+    dispatch(login( { username:"stbd_obs", password: "" } ) );
+  }
+}
+
+export function switch2PortObs() {
+  return function(dispatch) {
+    dispatch(login( { username:"port_obs", password: "" } ) );
+  }
+}
 
 export function authError(error) {
   return {
@@ -977,6 +995,48 @@ export function fetchUsers() {
     
     request.then(({data}) => {
       dispatch({type: FETCH_USERS, payload: data})
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+}
+
+export function fetchCustomVars() {
+
+  const request = axios.get(API_ROOT_URL + '/api/v1/custom_vars', {
+    headers: {
+      authorization: cookies.get('token')
+    }
+  });
+
+  return function (dispatch) {
+    
+    request.then(({data}) => {
+
+      // console.log("custom_vars_data:", data)
+      dispatch({type: FETCH_CUSTOM_VARS, payload: data})
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+}
+
+export function updateCustomVars(id, value) {
+  
+  return function(dispatch) {
+    axios.patch(`${API_ROOT_URL}/api/v1/custom_vars/${id}`,
+      value,
+      {
+        headers: {
+        authorization: cookies.get('token')
+        }
+      }      
+    )
+    .then((response) => {
+
+      dispatch(fetchCustomVars());
     })
     .catch((error) => {
       console.log(error);
@@ -1096,7 +1156,11 @@ export function fetchEvents() {
       dispatch({type: FETCH_EVENTS, payload: data})
     })
     .catch((error) => {
-      console.log(error);
+      if(error.response.status !== 404) {
+        console.log(error);
+      } else {
+        dispatch({type: FETCH_EVENTS, payload: []});
+      }
     });
   }
 }
@@ -1115,7 +1179,11 @@ export function fetchEventHistory() {
       dispatch({type: FETCH_EVENT_HISTORY, payload: data})
     })
     .catch((error) => {
-      console.log(error);
+      if(error.response.status !== 404) {
+        console.log(error);
+      } else {
+        dispatch({type: FETCH_EVENT_HISTORY, payload: []});
+      }
     });
   }
 }
@@ -1336,6 +1404,22 @@ export function eventExportSetActiveEvent(id) {
       } else {
         console.log(error.response);
       }
+    });
+  }
+}
+
+export function deleteAllEvents() {
+  return function(dispatch) {
+    // console.log("set active event to:", id)
+    axios.delete(`${API_ROOT_URL}/api/v1/events/all`,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    }).then((response) => {
+      dispatch(fetchEventHistory())
+    }).catch((error)=>{
+      console.log(error.response);
     });
   }
 }

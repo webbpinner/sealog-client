@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import FontAwesome from 'react-fontawesome';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 import { connect } from 'react-redux';
 import Cookies from 'universal-cookie';
 import { Button, Grid, Row, Col, Panel, Accordion, ListGroup, DropdownButton, ButtonToolbar, ButtonGroup, MenuItem, ListGroupItem, Pagination, Tooltip, OverlayTrigger } from 'react-bootstrap';
@@ -11,6 +12,9 @@ import { ROOT_PATH, API_ROOT_URL } from '../url_config';
 
 let converter = require('json-2-csv');
 let fileDownload = require('js-file-download');
+
+const dateFormat = "YYYYMMDD"
+const timeFormat = "HHmm"
 
 const options = {
   checkSchemaDifferences: false
@@ -97,18 +101,19 @@ class EventExport extends Component {
     // console.log("Pre-Export:", this.props.event_export.events)
     let exportData = this.props.event_export.events.map((event) => {
       var copiedEvent = jQuery.extend(true, {}, event)
-      copiedEvent.aux_data.map((data) => {
-        data.data_array.map((data2) => {
+      if(copiedEvent.aux_data) {
+        copiedEvent.aux_data.map((data) => {
+          data.data_array.map((data2) => {
 
-          let elementName = `${data.data_source}_${data2.data_name}_value`
-          let elementUOM = `${data.data_source}_${data2.data_name}_uom`
-         // console.log(elementName, data2.data_value, elementUOM, data2.data_uom)
-          copiedEvent[elementName] = data2.data_value
-          copiedEvent[elementUOM] = data2.data_uom
-        })  
-      })
-      delete copiedEvent.aux_data
-
+            let elementName = `${data.data_source}_${data2.data_name}_value`
+            let elementUOM = `${data.data_source}_${data2.data_name}_uom`
+           // console.log(elementName, data2.data_value, elementUOM, data2.data_uom)
+            copiedEvent[elementName] = data2.data_value
+            copiedEvent[elementUOM] = data2.data_uom
+          })  
+        })
+        delete copiedEvent.aux_data
+      }
 
       copiedEvent.event_options.map((data) => {
         let elementName = `event_option_${data.event_option_name}`
@@ -122,7 +127,12 @@ class EventExport extends Component {
 
     })
 
-    converter.json2csv(exportData, json2csvAllCallback, options);
+    converter.json2csv(exportData, (err, csv) => {
+      if (err) throw err;
+      // console.log(csv);
+      let prefix = moment.utc(this.props.event_export.events[0].ts).format(dateFormat + "_" + timeFormat)
+      fileDownload(csv, `${prefix}.sealog_export.csv`);
+    }, options);
    // console.log("Post-Export:", exportData)
   }
 
@@ -146,7 +156,12 @@ class EventExport extends Component {
 
     })
 
-    converter.json2csv(exportData, json2csvEventsCallback, options);
+    converter.json2csv(exportData, (err, csv) => {
+      if (err) throw err;
+      // console.log(csv);
+      let prefix = moment.utc(this.props.event_export.events[0].ts).format(dateFormat + "_" + timeFormat)
+      fileDownload(csv, `${prefix}.sealog_eventExport.csv`);
+    }, options);
    // console.log("Post-Export:", exportData)
   }
 
@@ -167,29 +182,39 @@ class EventExport extends Component {
         return copiedAuxData
       })
 
-      converter.json2csv(exportData, json2csvAuxDataCallback, options);
+      converter.json2csv(exportData, (err, csv) => {
+        if (err) throw err;
+        // console.log(csv);
+        let prefix = moment.utc(this.props.event_export.events[0].ts).format(dateFormat + "_" + timeFormat)
+        fileDownload(csv, `${prefix}.sealog_auxDataExport.csv`);
+      }, options);
     }).catch((error) => {
       console.log(error)
     })
   }
 
   exportAllToJSON() {
-    fileDownload(JSON.stringify(this.props.event_export.events, null, 2), 'sealog_eventExport.json');
+
+    let prefix = moment.utc(this.props.event_export.events[0].ts).format(dateFormat + "_" + timeFormat)
+    fileDownload(JSON.stringify(this.props.event_export.events, null, 2), `${prefix}.sealog_export.json`);
   }
 
   exportEventsToJSON() {
+
     let eventsOnly = this.props.event_export.events.map((event) => {
       delete event.aux_data
       return event
     })
 
-    fileDownload(JSON.stringify(eventsOnly, null, 2), 'sealog_eventOnlyExport.json');
+    let prefix = moment.utc(this.props.event_export.events[0].ts).format(dateFormat + "_" + timeFormat)
+    fileDownload(JSON.stringify(eventsOnly, null, 2), `${prefix}.sealog_eventExport.json`);
   }
 
   exportAuxDataToJSON() {
+
     this.fetchEventAuxData().then((results) => {
-      // console.log("results:", results)
-      fileDownload(JSON.stringify(results, null, 2), 'sealog_auxDataExport.json');
+      let prefix = moment.utc(this.props.event_export.events[0].ts).format(dateFormat + "_" + timeFormat)
+      fileDownload(JSON.stringify(results, null, 2), `${prefix}.sealog_auxDataExport.json`);
     }).catch((error) => {
       console.log(error)
     })

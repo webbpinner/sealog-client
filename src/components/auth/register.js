@@ -5,8 +5,6 @@ import { reduxForm, Field } from 'redux-form';
 import { Link } from 'react-router-dom';
 import { Grid, Row, Col, FormGroup, Panel, Button, Alert } from 'react-bootstrap';
 import * as actions from '../../actions';
-import { ROOT_PATH } from '../../url_config';
-
 
 class Register extends Component {
 
@@ -144,6 +142,10 @@ function validate(formProps) {
     errors.username = 'Required'
   } else if (formProps.username.length > 15) {
     errors.username = 'Must be 15 characters or less'
+  } else if (formProps.username.match(/[A-Z]/)) {
+    errors.username = 'Username must be all lowercase'
+  } else if (formProps.username.match(/[ ]/)) {
+    errors.username = 'Username can not include whitespace'
   }
 
   if (!formProps.fullName) {
