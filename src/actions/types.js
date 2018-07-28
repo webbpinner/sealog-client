@@ -31,17 +31,12 @@ export const FETCH_USERS = 'fetch_users';
 export const FETCH_EVENT_TEMPLATES_FOR_MAIN = 'fetch_event_templates_for_main';
 
 export const FETCH_EVENTS = 'fetch_events';
+export const SET_SELECTED_EVENT = 'set_selected_event';
+export const CLEAR_SELECTED_EVENT = 'clear_selected_event';
 export const FETCH_FILTERED_EVENTS = 'fetch_filtered_events';
-
-export const SHOW_EVENTS_FULLSCREEN = 'show_events_fullscreen';
-export const SHOW_EVENTS = 'show_events';
-export const HIDE_EVENTS = 'hide_events';
 
 export const FETCH_EVENT_HISTORY = 'fetch_event_history';
 export const UPDATE_EVENT_HISTORY = 'update_event_history';
-export const SHOW_EVENT_HISTORY_FULLSCREEN = 'show_event_history_fullscreen';
-export const SHOW_EVENT_HISTORY = 'show_event_history';
-export const HIDE_EVENT_HISTORY = 'hide_event_history';
 
 export const DELETE_USER = 'destory_user';
 
@@ -80,10 +75,19 @@ export const EVENT_EXPORT_FETCHING = 'event_export_fetching';
 export const UPDATE_EVENT_EXPORT_FILTER_FORM = 'update_event_export_filter_form';
 export const LEAVE_EVENT_EXPORT_FILTER_FORM = 'leave_event_export_filter_form';
 export const UPDATE_EVENT_EXPORT = 'update_event_export';
-export const EVENT_EXPORT_SET_ACTIVE_PAGE = 'event_export_set_active_page';
-export const EVENT_EXPORT_SET_ACTIVE_EVENT = 'event_export_set_active_event';
 
 export const FETCH_CUSTOM_VARS = 'fetch_custom_vars';
 export const UPDATE_CUSTOM_VAR = 'update_custom_var';
+
+export const INIT_LOWERING = 'init_lowering';
+export const FETCH_LOWERINGS = 'fetch_lowerings';
+export const CREATE_LOWERING_SUCCESS = 'create_lowering_success';
+export const CREATE_LOWERING_ERROR = 'create_lowering_error';
+export const LEAVE_CREATE_LOWERING_FORM = 'leave_create_lowering_form';
+export const UPDATE_LOWERING_SUCCESS = 'update_lowering_success';
+export const UPDATE_LOWERING_ERROR = 'update_lowering_error';
+export const LEAVE_UPDATE_LOWERING_FORM = 'leave_update_lowering_form';
+
+
 
 

@@ -147,8 +147,8 @@ class ImportUsersModal extends Component {
     }
 
     return (
-      <Modal show={show}>
-        <Modal.Header>
+      <Modal show={show} onHide={handleHide}>
+        <Modal.Header closeButton>
           <Modal.Title>Import Users</Modal.Title>
         </Modal.Header>
 

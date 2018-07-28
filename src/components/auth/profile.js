@@ -50,10 +50,13 @@ class Profile extends Component {
     this.props.updateProfile(formProps);
   }
 
-  renderField({ input, label, type, meta: { touched, error, warning } }) {
+  renderField({ input, label, type, required, meta: { touched, error, warning } }) {
+
+    let requiredField = (required)? (<span className='text-danger'> *</span>) : ''
+
     return (
       <FormGroup>
-        <label>{label}</label>
+        <label>{label}{requiredField}</label>
         <FormControl {...input} placeholder={label} type={type}/>
         {touched && ((error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>))}
       </FormGroup>
@@ -96,18 +99,21 @@ class Profile extends Component {
                   component={this.renderField}
                   type="text"
                   label="Username"
+                  required={true}
                 />
                 <Field
                   name="fullname"
                   type="text"
                   component={this.renderField}
                   label="Full Name"
+                  required={true}
                 />
                 <Field
                   name="email"
                   component={this.renderField}
                   type="text"
                   label="Email"
+                  required={true}
                 />
                 <Field
                   name="password"

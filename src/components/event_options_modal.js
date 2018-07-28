@@ -131,11 +131,13 @@ class EventOptionsModal extends Component {
 
     const { show, handleHide, handleSubmit, eventDefinition, pristine, submitting, valid } = this.props
 
+    console.log(eventDefinition.event_value)
+
     return (
-      <Modal show={show}>
+      <Modal show={show} onHide={handleHide}>
         <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
-          <Modal.Header>
-            <Modal.Title>Event Options</Modal.Title>
+          <Modal.Header closeButton>
+            <Modal.Title>Event Options - {eventDefinition.event_value}</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>

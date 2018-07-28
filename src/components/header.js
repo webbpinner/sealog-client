@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Navbar, Nav, NavDropdown, NavItem, MenuItem } from 'react-bootstrap';
+import { Navbar, Nav, NavDropdown, NavItem, MenuItem, Image } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome'
 import { LinkContainer } from 'react-router-bootstrap';
 import { ROOT_PATH } from '../url_config';
@@ -17,6 +17,7 @@ class Header extends Component {
     if (this.props.authenticated) {
       this.props.updateProfileState();
     }
+    this.props.fetchCustomVars()
   }
 
   handleASNAPToggle() {
@@ -30,7 +31,7 @@ class Header extends Component {
   }
 
   renderUserOptions() {
-    if(this.props.roles.includes('admin')) {
+    if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager')) {
       return (
         <LinkContainer to={ `/users` }>
           <NavItem>Users</NavItem>
@@ -46,6 +47,18 @@ class Header extends Component {
       return (
         <LinkContainer to={ `/event_exports` }>
           <NavItem>Event Review/Export</NavItem>
+        </LinkContainer>
+      );
+    }
+  }
+
+  renderDiveSummaryOptions() {
+
+    // console.log(this.props.roles)
+    if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_logger') || this.props.roles.includes('event_watcher'))) {
+      return (
+        <LinkContainer to={ `/lowerings` }>
+          <NavItem>Dive Metadata</NavItem>
         </LinkContainer>
       );
     }
@@ -72,7 +85,7 @@ class Header extends Component {
   }
 
   renderToggleASNAP() {
-    if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager')) {
+    if(this.props.roles.includes('admin') || this.props.roles.includes('event_logger')) {
       return (
         <MenuItem onClick={ () => this.handleASNAPToggle() }>Toggle ASNAP</MenuItem>
       );
@@ -80,13 +93,14 @@ class Header extends Component {
   }
 
   renderSystemManagerDropdown() {
-    if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager'))) {
+    if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_manager'))) {
       return (
         <NavDropdown eventKey={3} title={'System Management'} id="basic-nav-dropdown">
+          {this.renderDiveSummaryOptions()}
           {this.renderEventTemplateOptions()}
           {this.renderTaskOptions()}
-          {this.renderToggleASNAP()}
           {this.renderUserOptions()}
+          {this.renderToggleASNAP()}
         </NavDropdown>
       );
     }
@@ -129,7 +143,7 @@ class Header extends Component {
       <Navbar fluid collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <Link to={ `/` }>Sealog<img height={40} src={`${ROOT_PATH}/images/Alvin_Front.png`} />Alvin Edition</Link>
+            <Link to={ `/` }>Sealog<Image src={`${ROOT_PATH}/images/Alvin_Front_brand.png`} />Alvin Edition</Link>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>

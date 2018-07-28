@@ -6,6 +6,7 @@ import queryString from 'querystring';
 import { push } from 'react-router-redux';
 import { bindActionCreators } from 'redux';
 import { show, destroy } from 'redux-modal';
+import {change, untouch} from 'redux-form';
 
 import { API_ROOT_URL} from '../url_config';
 
@@ -28,17 +29,13 @@ import {
   FETCH_USERS,
   FETCH_EVENT_TEMPLATES_FOR_MAIN,
   FETCH_EVENTS,
+  SET_SELECTED_EVENT,
+  CLEAR_SELECTED_EVENT,
   FETCH_FILTERED_EVENTS,
   CREATE_EVENT,
   LEAVE_AUTH_LOGIN_FORM,
   FETCH_EVENT_HISTORY,
   UPDATE_EVENT_HISTORY,
-  HIDE_EVENT_HISTORY,
-  SHOW_EVENT_HISTORY,
-  SHOW_EVENT_HISTORY_FULLSCREEN,
-  HIDE_EVENTS,
-  SHOW_EVENTS,
-  SHOW_EVENTS_FULLSCREEN,
   INIT_PROFILE,
   UPDATE_PROFILE,
   UPDATE_PROFILE_SUCCESS,
@@ -73,6 +70,14 @@ import {
   EVENT_EXPORT_SET_ACTIVE_EVENT,
   FETCH_CUSTOM_VARS,
   UPDATE_CUSTOM_VAR,
+  INIT_LOWERING,
+  FETCH_LOWERINGS,
+  CREATE_LOWERING_SUCCESS,
+  CREATE_LOWERING_ERROR,
+  LEAVE_CREATE_LOWERING_FORM,
+  UPDATE_LOWERING_SUCCESS,
+  UPDATE_LOWERING_ERROR,
+  LEAVE_UPDATE_LOWERING_FORM,
 
 } from './types';
 
@@ -105,6 +110,18 @@ export function validateJWT() {
       console.log("JWT is invalid, logging out");
       dispatch(logout());
     });
+  }
+}
+
+export function resetFields(formName, fieldsObj) {
+  return function (dispatch) {
+    Object.keys(fieldsObj).forEach(fieldKey => {
+      //reset the field's value
+      dispatch(change(formName, fieldKey, fieldsObj[fieldKey]));
+
+     //reset the field's error
+      dispatch(untouch(formName, fieldKey));
+    })
   }
 }
 
@@ -216,15 +233,24 @@ export function login({username, password = ''}) {
   }
 }
 
-export function createEvent(eventValue, eventFreeText = '', eventOptions = []) {
+export function createEvent(eventValue, eventFreeText = '', eventOptions = [], eventTS = '') {
+
+  let payload = {
+    event_value: eventValue,
+    event_free_text: eventFreeText,
+    event_options: eventOptions
+  }
+
+  // console.log("eventTS:", eventTS)
+  if(eventTS.length > 0){
+    payload.ts = eventTS
+  }
+
+  // console.log("payload:", payload)
 
   return function (dispatch) {
     axios.post(`${API_ROOT_URL}/api/v1/events`,
-    {
-      event_value: eventValue,
-      event_free_text: eventFreeText,
-      event_options: eventOptions
-    },
+    payload,
     {
       headers: {
         authorization: cookies.get('token')
@@ -262,7 +288,7 @@ export function registerUser({username, fullname, password = '', email}) {
   }
 }
 
-export function createUser({username, fullname, password = '', email, roles}) {
+export function createUser({username, fullname, password = '', email, roles, system_user = false}) {
   return function (dispatch) {
     axios.post(`${API_ROOT_URL}/api/v1/users`,
     {username, fullname, password, email, roles},
@@ -531,6 +557,12 @@ export function updateUser(formProps) {
 
   if(formProps.roles) {
     fields.roles = formProps.roles;
+  }
+
+  if(formProps.system_user) {
+    fields.system_user = formProps.system_user;
+  } else {
+    fields.system_user = false;
   }
 
   return function (dispatch) {
@@ -1116,6 +1148,27 @@ export function fetchEventTemplatesForMain() {
   }
 }
 
+export function updateEventComment(id, comment){
+  // const request = axios.patch(API_ROOT_URL + '/api/v1/events/' + id, {
+  //   headers: {
+  //     authorization: cookies.get('token')
+  //   }
+  // });
+
+  // return function (dispatch) {
+    
+  //   request.then(({data}) => {
+  //     //console.log(data);
+  //     dispatch({type: FETCH_EVENT_TEMPLATES_FOR_MAIN, payload: data})
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
+  // }
+
+  console.log("Update event:", id, "Comment:", comment);
+}
+
 export function fetchFilteredEvents(filterParams={}) {
 
   let params = queryString.stringify(filterParams);
@@ -1165,9 +1218,43 @@ export function fetchEvents() {
   }
 }
 
-export function fetchEventHistory() {
+export function fetchSelectedEvent(id) {
 
-  const request = axios.get(API_ROOT_URL + '/api/v1/events', {
+  return function(dispatch) {
+
+    axios.get(`${API_ROOT_URL}/api/v1/events/${id}`,
+      {
+        headers: {
+        authorization: cookies.get('token')
+        }
+      }      
+    )
+    .then((response) => {
+      // console.log("response:", response.data)
+      dispatch({type: SET_SELECTED_EVENT, payload: response.data})
+    })
+    .catch((error) => {
+      console.log(error);
+      dispatch({type: SET_SELECTED_EVENT, payload: {}})
+    });
+  }
+}
+
+export function clearSelectedEvent() {
+  return function(dispatch) {
+    dispatch({type: CLEAR_SELECTED_EVENT, payload: null})
+  }
+}
+
+
+export function fetchEventHistory(asnap = false) {
+
+  let url = API_ROOT_URL + '/api/v1/events'
+  if(!asnap) {
+    url = url + '?value=!ASNAP'
+  }
+
+  const request = axios.get(url, {
     headers: {
       authorization: cookies.get('token')
     },
@@ -1211,7 +1298,7 @@ export function fetchEventTemplates() {
 export function initEventExport() {
   return function (dispatch) {
     dispatch({ type: EVENT_EXPORT_FETCHING, payload: true})
-    axios.get(`${API_ROOT_URL}/api/v1/event_exports`,
+    axios.get(`${API_ROOT_URL}/api/v1/events`,
     {
       headers: {
         authorization: cookies.get('token')
@@ -1306,42 +1393,6 @@ export function leaveEventExportFilterForm() {
   }
 }
 
-export function hideEventHistory() {
-  return function (dispatch) {
-    dispatch({type: HIDE_EVENT_HISTORY, payload: null})
-  }
-}
-
-export function showEventHistory() {
-  return function (dispatch) {
-    dispatch({type: SHOW_EVENT_HISTORY, payload: null})
-  }
-}
-
-export function showEventHistoryFullscreen() {
-  return function (dispatch) {
-    dispatch({type: SHOW_EVENT_HISTORY_FULLSCREEN, payload: null})
-  }
-}
-
-export function hideEvents() {
-  return function (dispatch) {
-    dispatch({type: HIDE_EVENTS, payload: null})
-  }
-}
-
-export function showEvents() {
-  return function (dispatch) {
-    dispatch({type: SHOW_EVENTS, payload: null})
-  }
-}
-
-export function showEventsFullscreen() {
-  return function (dispatch) {
-    dispatch({type: SHOW_EVENTS_FULLSCREEN, payload: null})
-  }
-}
-
 export function showModal(modal, props) {
   return function(dispatch) {
     dispatch(show(modal, props));
@@ -1359,7 +1410,7 @@ export function eventExportUpdate() {
     let datasource = (getState().event_export.eventExportFilter.datasource)? `&datasource=${getState().event_export.eventExportFilter.datasource}` : ''
 
     dispatch({ type: EVENT_EXPORT_FETCHING, payload: true})
-    axios.get(`${API_ROOT_URL}/api/v1/event_exports?${startTS}${stopTS}${value}${author}${freetext}${datasource}`,
+    axios.get(`${API_ROOT_URL}/api/v1/events?${startTS}${stopTS}${value}${author}${freetext}${datasource}`,
     {
       headers: {
         authorization: cookies.get('token')
@@ -1398,7 +1449,6 @@ export function eventExportSetActiveEvent(id) {
       dispatch({ type: EVENT_EXPORT_SET_ACTIVE_EVENT, payload: response.data})
     }).catch((error)=>{
       console.log(error.response);
-
       if(error.response.data.statusCode == 404){
         dispatch({type: EVENT_EXPORT_SET_ACTIVE_EVENT, payload: {} })
       } else {
@@ -1423,3 +1473,165 @@ export function deleteAllEvents() {
     });
   }
 }
+
+export function fetchLowerings() {
+
+  const request = axios.get(API_ROOT_URL + '/api/v1/lowerings', {
+    headers: {
+      authorization: cookies.get('token')
+    }
+  });
+
+  return function (dispatch) {
+    
+    request.then(({data}) => {
+      dispatch({type: FETCH_LOWERINGS, payload: data})
+    })
+    .catch((error) => {
+      if(error.response.data.statusCode == 404){
+        dispatch({type: FETCH_LOWERINGS, payload: []})
+      } else {
+        console.log(error.response);
+      }
+    });
+  }
+}
+
+export function initLowering(id) {
+  return function (dispatch) {
+    return axios.get(`${API_ROOT_URL}/api/v1/lowerings/${id}`,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    })
+    .then((response) => {
+      return dispatch({ type: INIT_LOWERING, payload: response.data })
+      //console.log("Initialized lowering data successfully");
+    })
+    .catch((error)=>{
+      console.log(error);
+    });
+  }
+}
+
+
+export function createLowering({lowering_id = '', lowering_description = '', lowering_location = '', lowering_pilot = '', lowering_observers = []}) {
+  return function (dispatch) {
+    axios.post(`${API_ROOT_URL}/api/v1/lowerings`,
+    {lowering_id, lowering_description, lowering_location, lowering_pilot, lowering_observers},
+    {
+      headers: {
+        authorization: cookies.get('token'),
+        'content-type': 'application/json'
+      }
+    })
+    .then((response) => {
+
+      //console.log("New user successfully created");
+      dispatch(createLoweringSuccess('Lowering created'));
+      dispatch(fetchLowerings());
+    })
+    .catch((error) => {
+
+      // If request is unauthenticated
+      console.log(error);
+      dispatch(createLoweringError(error.response.data.message));
+
+    });
+  }
+}
+
+export function updateLowering(formProps) {
+
+  let fields = {}
+
+  if(formProps.lowering_id) {
+    fields.lowering_id = formProps.lowering_id;
+  }
+
+  if(formProps.lowering_name) {
+    fields.lowering_name = formProps.lowering_name;
+  }
+
+  if(formProps.lowering_description) {
+    fields.lowering_description = formProps.lowering_description;
+  }
+
+  if(formProps.lowering_location) {
+    fields.lowering_location = formProps.lowering_location;
+  }
+
+  if(formProps.lowering_pilot) {
+    fields.lowering_pilot = formProps.lowering_pilot;
+  }
+
+  if(formProps.lowering_observers) {
+    fields.lowering_observers = formProps.lowering_observers;
+  }
+
+  return function (dispatch) {
+    axios.patch(`${API_ROOT_URL}/api/v1/lowerings/${formProps.id}`,
+      fields,
+      {
+        headers: {
+        authorization: cookies.get('token')
+        }
+      }      
+    )
+    .then((response) => {
+
+      dispatch(fetchLowerings());
+      dispatch(updateLoweringSuccess('Lowering updated'));
+    })
+    .catch((error) => {
+
+      console.log(error);
+
+      // If request is unauthenticated
+      dispatch(updateLoweringError(error.response.data.message));
+
+    });
+  }
+}
+
+export function createLoweringSuccess(message) {
+  return {
+    type: CREATE_LOWERING_SUCCESS,
+    payload: message
+  }
+}
+
+export function createLoweringError(message) {
+  return {
+    type: CREATE_LOWERING_ERROR,
+    payload: message
+  }
+}
+
+export function leaveCreateLoweringForm() {
+  return function (dispatch) {
+    dispatch({type: LEAVE_CREATE_LOWERING_FORM, payload: null})
+  }
+}
+
+export function updateLoweringSuccess(message) {
+  return {
+    type: UPDATE_LOWERING_SUCCESS,
+    payload: message
+  }
+}
+
+export function updateLoweringError(message) {
+  return {
+    type: UPDATE_LOWERING_ERROR,
+    payload: message
+  }
+}
+
+export function leaveUpdateLoweringForm() {
+  return function (dispatch) {
+    dispatch({type: LEAVE_UPDATE_LOWERING_FORM, payload: null})
+  }
+}
+

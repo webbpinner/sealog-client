@@ -13,14 +13,15 @@ class Footer extends Component {
     this.state = {
       intervalID: null
     }
+
+    this.handleASNAPNotification = this.handleASNAPNotification.bind(this);
   }
 
   componentWillMount() {
-    this.props.fetchCustomVars()
   }
 
   componentDidMount() {
-    let intervalId = setInterval(this.props.fetchCustomVars, 5000);
+    let intervalId = setInterval(this.handleASNAPNotification, 5000);
     this.setState({intervalId: intervalId})
   }
 
@@ -28,26 +29,29 @@ class Footer extends Component {
     clearInterval(this.state.intervalId);
   }
 
-  render () {
+  handleASNAPNotification() {
+    if(this.props.authenticated) {
+      this.props.fetchCustomVars()
+    }
+  }
 
-    const github = "https://github.com/webbpinner/sealog-client";
-    const license = "http://www.gnu.org/licenses/gpl-3.0.html";
+  render () {
 
     let asnapStatus = null
 
-    if(this.props.asnapStatus && this.props.asnapStatus == "Off") {
+    if(this.props.authenticated && this.props.asnapStatus && this.props.asnapStatus == "Off") {
       asnapStatus =  (
         <span>
           ASNAP: <span className="text-danger">Off</span>
         </span>
       )
-    } else if(this.props.asnapStatus && this.props.asnapStatus == "On") {
+    } else if(this.props.authenticated && this.props.asnapStatus && this.props.asnapStatus == "On") {
       asnapStatus =  (
         <span>
           ASNAP: <span className="text-success">On</span>
         </span>
       )
-    } else if(this.props.roles) {
+    } else if(this.props.authenticated) {
       asnapStatus =  (
         <span>
           ASNAP: <span className="text-warning">Unknown</span>
@@ -61,7 +65,7 @@ class Footer extends Component {
         <div>
           {asnapStatus}
           <span className="pull-right">
-            <a href={github} target="_blank">Sealog</a> is licensed under the <a href={license} target="_blank">GPLv3</a> public license
+            <a href={`/github`} target="_blank">Sealog</a> is licensed under the <a href={`/license`} target="_blank">GPLv3</a> public license
           </span>
         </div>
       </Grid>
@@ -77,7 +81,7 @@ function mapStateToProps(state) {
 
   return {
     asnapStatus: (asnapStatus.length > 0)? asnapStatus[0].custom_var_value : "Unknown",
-    roles: state.user.profile.roles
+    authenticated: state.auth.authenticated,
 
   }
 }

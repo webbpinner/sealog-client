@@ -17,10 +17,13 @@ class Register extends Component {
     this.props.registerUser(formProps);
   }
 
-  renderField({ input, label, type, meta: { touched, error, warning } }) {
+  renderField({ input, label, type, required, meta: { touched, error, warning } }) {
+
+    let requiredField = (required)? (<span className='text-danger'> *</span>) : ''    
+
     return (
       <div className="form-group">
-        <label>{label}</label>
+        <label>{label}{requiredField}</label>
         <div>
           <input className="form-control" {...input} placeholder={label} type={type}/>
           {touched && ((error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>))}
@@ -73,6 +76,7 @@ class Register extends Component {
                 component={this.renderField}
                 type="text"
                 label="Username"
+                required={true}
               />
             </div>
             <div className="form-group">
@@ -81,6 +85,7 @@ class Register extends Component {
                 type="text"
                 component={this.renderField}
                 label="Full Name"
+                required={true}
               />
             </div>
             <div className="form-group">
@@ -89,6 +94,7 @@ class Register extends Component {
                 component={this.renderField}
                 type="text"
                 label="Email"
+                required={true}
               />
             </div>
             <div className="form-group">

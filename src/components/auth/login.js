@@ -100,7 +100,7 @@ class Login extends Component {
             {(this.state.stdUsers)? quickLogin : customLogin }
           </Col>
           <Col sm={6} md={6}>
-            <Image className="text-center" src={`${ROOT_PATH}/images/Alvin_Profile.png`} />
+            <Image responsive src={`/images/Alvin_Profile.png`} />
           </Col>
         </Row>
       </Grid>

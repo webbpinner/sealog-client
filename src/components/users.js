@@ -12,7 +12,7 @@ import DisplayUserTokenModal from './display_user_token_modal';
 import DeleteUserModal from './delete_user_modal';
 import * as actions from '../actions';
 
-const disabledAccounts = ['pilot', 'stbd_obs', 'port_obs']
+const disabledAccounts = ['pilot', 'stbd_obs', 'port_obs', 'alvin']
 
 let fileDownload = require('js-file-download');
 
@@ -73,7 +73,7 @@ class Users extends Component {
             <td>{user.fullname}</td>
             <td>
               <Link key={`edit_${user.id}`} to="#" onClick={ () => this.handleUserSelect(user.id) }><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>{' '}
-              <Link key={`token_${user.id}`} to="#" onClick={ () => this.handleDisplayUserToken(user.id) }><OverlayTrigger placement="top" overlay={tokenTooltip}><FontAwesome name='eye' fixedWidth/></OverlayTrigger></Link>{' '}
+              {(this.props.roles.includes('admin'))? <Link key={`token_${user.id}`} to="#" onClick={ () => this.handleDisplayUserToken(user.id) }><OverlayTrigger placement="top" overlay={tokenTooltip}><FontAwesome name='eye' fixedWidth/></OverlayTrigger></Link> : ''}{' '}
               {(user.id != this.props.profileid && !disabledAccounts.includes(user.username))? <Link key={`delete_${user.id}`} to="#" onClick={ () => this.handleUserDelete(user.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link> : ''}
             </td>
           </tr>
@@ -133,7 +133,7 @@ class Users extends Component {
         )
     }
 
-    if (this.props.roles.includes("admin")) {
+    if (this.props.roles.includes("admin") || this.props.roles.includes("event_manager")) {
 
       // console.log("userid:", this.props.userid)
 

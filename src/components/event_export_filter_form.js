@@ -16,6 +16,7 @@ class EventExportFilterForm extends Component {
     super(props);
 
     this.renderDatePicker = this.renderDatePicker.bind(this);
+    this.clearForm = this.clearForm.bind(this);
   }
 
   componentWillMount() {
@@ -36,6 +37,17 @@ class EventExportFilterForm extends Component {
     }
 
     this.props.updateEventExportFilterForm(formProps);
+  }
+
+  clearForm() {
+    this.props.resetFields('eventExportFilterForm', {
+      value: '',
+      author: '',
+      startTS: '',
+      stopTS: '',
+      freetext: '',
+      datasource: ''
+    });
   }
 
   renderField({ input, label, type, placeholder, disabled, meta: { touched, error, warning } }) {
@@ -139,7 +151,7 @@ class EventExportFilterForm extends Component {
           {this.renderAlert()}
           {this.renderMessage()}
           <div className="pull-right">
-            <Button bsStyle="default" bsSize="sm" type="button" disabled={pristine || submitting || this.props.disabled} onClick={reset}>Reset</Button>
+            <Button bsStyle="default" bsSize="sm" type="button" disabled={submitting || this.props.disabled} onClick={this.clearForm}>Reset</Button>
             <Button bsStyle="primary" bsSize="sm" type="submit" disabled={submitting || !valid || this.props.disabled}>Update</Button>
           </div>
         </form>

@@ -3,13 +3,11 @@ import {
   UPDATE_EVENT_EXPORT,
   UPDATE_EVENT_EXPORT_FILTER_FORM,
   LEAVE_EVENT_EXPORT_FILTER_FORM,
-  EVENT_EXPORT_FETCHING,
-  EVENT_EXPORT_SET_ACTIVE_PAGE,
-  EVENT_EXPORT_SET_ACTIVE_EVENT,
+  EVENT_EXPORT_FETCHING
 
 } from '../actions/types';
 
-export default function( state={ eventExportMoment: {}, events: [], eventExportFilter: {}, fetching: false, activePage: 1}, action) {
+export default function( state={ eventExportMoment: {}, events: [], eventExportFilter: {}, fetching: false}, action) {
   switch(action.type){
 
     case INIT_EVENT_EXPORT:
@@ -19,7 +17,7 @@ export default function( state={ eventExportMoment: {}, events: [], eventExportF
       // console.log("huh?", action.payload[0])
       // let updateeventExportMoment = (action.payload.length > 0)? action.payload[0] : {}
       let updateEvents = action.payload
-      return { ...state, eventExportMoment: {}, events: updateEvents, activePage: 1 };
+      return { ...state, eventExportMoment: {}, events: updateEvents };
 
     case UPDATE_EVENT_EXPORT_FILTER_FORM:
       // console.log("Update Filter")
@@ -32,13 +30,7 @@ export default function( state={ eventExportMoment: {}, events: [], eventExportF
     case EVENT_EXPORT_FETCHING:
       // console.log("Set fetch flag to:", action.payload)
       return { ...state, fetching: action.payload }
-
-    case EVENT_EXPORT_SET_ACTIVE_PAGE:
-      // console.log("Set active page to:", action.payload)
-      return { ...state, activePage: action.payload }
-
-    case EVENT_EXPORT_SET_ACTIVE_EVENT:
-      return { ...state, eventExportMoment: action.payload }
-  }    
+  }
+  
   return state;
 }
