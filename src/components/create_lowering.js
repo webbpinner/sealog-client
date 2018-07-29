@@ -158,7 +158,7 @@ class CreateLowering extends Component {
 
     if (this.props.roles) {
 
-      if(this.props.roles.includes("admin")) {
+      if(this.props.roles.includes("admin") || this.props.roles.includes("cruise_manager")) {
 
         return (
           <Panel bsStyle="default" header={createLoweringFormHeader}>

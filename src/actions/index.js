@@ -1219,7 +1219,7 @@ export function fetchEvents() {
 }
 
 export function fetchSelectedEvent(id) {
-
+  
   return function(dispatch) {
 
     axios.get(`${API_ROOT_URL}/api/v1/events/${id}`,

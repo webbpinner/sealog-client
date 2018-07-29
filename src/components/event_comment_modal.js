@@ -36,6 +36,7 @@ class EventCommentModal extends Component {
   };
 
   componentWillMount() {
+
     this.props.fetchSelectedEvent(this.props.id)
   }
 
@@ -226,9 +227,9 @@ EventCommentModal = reduxForm({
 
 function mapStateToProps(state) {
 
-  if (state.event.selected_event.event_options) {
+  if (state.event_export.selected_event.event_options) {
     let options = {}
-    state.event.selected_event.event_options.forEach((option) => {
+    state.event_export.selected_event.event_options.forEach((option) => {
       options[option.event_option_name] = option.event_option_value
     })
     return {
