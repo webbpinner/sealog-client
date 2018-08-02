@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Navbar, Nav, NavDropdown, NavItem, MenuItem } from 'react-bootstrap';
+import { Navbar, Nav, NavDropdown, NavItem, MenuItem, Image } from 'react-bootstrap';
 import FontAwesome from 'react-fontawesome'
 import { LinkContainer } from 'react-router-bootstrap';
+import { ROOT_PATH } from '../url_config';
 import * as actions from '../actions';
 
 class Header extends Component {
@@ -15,6 +16,17 @@ class Header extends Component {
   componentWillMount() {
     if (this.props.authenticated) {
       this.props.updateProfileState();
+    }
+    this.props.fetchCustomVars()
+  }
+
+  handleASNAPToggle() {
+    if(this.props.asnapStatus) {
+      if(this.props.asnapStatus[0].custom_var_value == 'Off') {
+        this.props.updateCustomVars(this.props.asnapStatus[0].id, {custom_var_value: 'On'})
+      } else {
+        this.props.updateCustomVars(this.props.asnapStatus[0].id, {custom_var_value: 'Off'})
+      }
     }
   }
 
@@ -29,7 +41,7 @@ class Header extends Component {
   }
 
   renderUserOptions() {
-    if(this.props.roles.includes('admin')) {
+    if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager')) {
       return (
         <LinkContainer to={ `/users` }>
           <NavItem>Users</NavItem>
@@ -44,7 +56,19 @@ class Header extends Component {
     if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_logger') || this.props.roles.includes('event_watcher'))) {
       return (
         <LinkContainer to={ `/event_exports` }>
-          <NavItem>Event Export</NavItem>
+          <NavItem>Event Review/Export</NavItem>
+        </LinkContainer>
+      );
+    }
+  }
+
+  renderDiveSummaryOptions() {
+
+    // console.log(this.props.roles)
+    if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_logger') || this.props.roles.includes('event_watcher'))) {
+      return (
+        <LinkContainer to={ `/lowerings` }>
+          <NavItem>Dive Metadata</NavItem>
         </LinkContainer>
       );
     }
@@ -82,6 +106,7 @@ class Header extends Component {
     if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_manager'))) {
       return (
         <NavDropdown eventKey={3} title={'System Management'} id="basic-nav-dropdown">
+          {this.renderDiveSummaryOptions()}
           {this.renderEventTemplateOptions()}
           {this.renderTaskOptions()}
           {this.renderUserOptions()}
@@ -109,8 +134,8 @@ class Header extends Component {
     this.props.logout();
   }
 
-  handleSwitchToPilot() {
-    this.props.switch2Pilot();
+  handleSwitchToGuest() {
+    this.props.switch2Guest();
   }
 
   render () {

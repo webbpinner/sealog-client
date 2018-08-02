@@ -5,8 +5,6 @@ import { reduxForm, Field } from 'redux-form';
 import { Link } from 'react-router-dom';
 import { Grid, Row, Col, FormGroup, Panel, Button, Alert } from 'react-bootstrap';
 import * as actions from '../../actions';
-import { ROOT_PATH } from '../../url_config';
-
 
 class Register extends Component {
 
@@ -19,10 +17,13 @@ class Register extends Component {
     this.props.registerUser(formProps);
   }
 
-  renderField({ input, label, type, meta: { touched, error, warning } }) {
+  renderField({ input, label, type, required, meta: { touched, error, warning } }) {
+
+    let requiredField = (required)? (<span className='text-danger'> *</span>) : ''    
+
     return (
       <div className="form-group">
-        <label>{label}</label>
+        <label>{label}{requiredField}</label>
         <div>
           <input className="form-control" {...input} placeholder={label} type={type}/>
           {touched && ((error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>))}
@@ -75,6 +76,7 @@ class Register extends Component {
                 component={this.renderField}
                 type="text"
                 label="Username"
+                required={true}
               />
             </div>
             <div className="form-group">
@@ -83,6 +85,7 @@ class Register extends Component {
                 type="text"
                 component={this.renderField}
                 label="Full Name"
+                required={true}
               />
             </div>
             <div className="form-group">
@@ -91,6 +94,7 @@ class Register extends Component {
                 component={this.renderField}
                 type="text"
                 label="Email"
+                required={true}
               />
             </div>
             <div className="form-group">
@@ -144,6 +148,10 @@ function validate(formProps) {
     errors.username = 'Required'
   } else if (formProps.username.length > 15) {
     errors.username = 'Must be 15 characters or less'
+  } else if (formProps.username.match(/[A-Z]/)) {
+    errors.username = 'Username must be all lowercase'
+  } else if (formProps.username.match(/[ ]/)) {
+    errors.username = 'Username can not include whitespace'
   }
 
   if (!formProps.fullName) {

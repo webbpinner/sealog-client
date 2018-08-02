@@ -79,5 +79,3 @@ export const UPDATE_EVENT_EXPORT = 'update_event_export';
 export const FETCH_CUSTOM_VARS = 'fetch_custom_vars';
 export const UPDATE_CUSTOM_VAR = 'update_custom_var';
 
-
-

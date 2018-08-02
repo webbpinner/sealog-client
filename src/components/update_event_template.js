@@ -30,21 +30,23 @@ class UpdateEventTemplate extends Component {
     this.props.updateEventTemplate(formProps);
   }
 
-  renderField({ input, label, placeholder, type, meta: { touched, error, warning } }) {
+  renderField({ input, label, placeholder, required, type, meta: { touched, error, warning } }) {
+    let requiredField = (required)? <span className='text-danger'> *</span> : ''
     let placeholder_txt = (placeholder)? placeholder: label
+
     return (
       <FormGroup>
-        <label>{label}</label>
+        <label>{label}{requiredField}</label>
         <FormControl {...input} placeholder={placeholder_txt} type={type}/>
         {touched && ((error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>))}
       </FormGroup>
     )
   }
 
-  renderSelectField({ input, label, type, options, meta: { touched, error, warning } }) {
+  renderSelectField({ input, label, required, type, options, meta: { touched, error, warning } }) {
 
+    let requiredField = (required)? <span className='text-danger'> *</span> : ''
     let defaultOption = ( <option key={`${input.name}.default`} value=""></option> );
-
     let optionList = options.map((option, index) => {
       return (
         <option key={`${input.name}.${index}`} value={`${option}`}>{ `${option}`}</option>
@@ -53,7 +55,7 @@ class UpdateEventTemplate extends Component {
 
     return (
       <FormGroup controlId="formControlsSelect">
-        <ControlLabel>{label}</ControlLabel>
+        <ControlLabel>{label}{requiredField}</ControlLabel>
         <FormControl {...input} componentClass={type} placeholder={label}>
           { defaultOption }
           { optionList }
@@ -125,13 +127,16 @@ class UpdateEventTemplate extends Component {
                 name={`${options}.event_option_name`}
                 type="text"
                 component={this.renderField}
-                label="Name"/>
+                label="Name"
+                required={true}
+              />
               <Field
                 name={`${options}.event_option_type`}
                 type="select"
                 component={this.renderSelectField}
                 options={EventTemplateOptionTypes}
                 label="Type"
+                required={true}
               />
               { this.renderEventOptionsDropdown(options, index) }
               <div>
@@ -177,7 +182,7 @@ class UpdateEventTemplate extends Component {
   render() {
 
     const { handleSubmit, pristine, reset, submitting, valid } = this.props;
-    const formHeader = (<div>Event EventTemplate Profile</div>);
+    const formHeader = (<div>Update Event Template</div>);
 
     if (this.props.roles && (this.props.roles.includes("admin") || this.props.roles.includes("event_manager"))) {
       return (
@@ -188,12 +193,14 @@ class UpdateEventTemplate extends Component {
               component={this.renderField}
               type="text"
               label="Name"
+              required={true}
             />
             <Field
               name="event_value"
               type="text"
               component={this.renderField}
               label="Event Value"
+              required={true}
             />
             <div>
               <label>Free text Required?</label>
