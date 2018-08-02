@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { reduxForm, Field, initialize } from 'redux-form';
-import { Alert, Button, Checkbox, Col, FormGroup, FormControl, FormGroupItem, Grid, Panel, Row, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { reduxForm, Field, initialize, reset } from 'redux-form';
+import { Alert, Button, Checkbox, Radio, Col, FormGroup, FormControl, FormGroupItem, Grid, Panel, Row, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import * as actions from '../actions';
-import { userRoleOptions } from '../user_role_options';
+import { standardUserRoleOptions } from '../standard_user_role_options';
+import { systemUserRoleOptions } from '../system_user_role_options';
 
 class CreateUser extends Component {
 
@@ -12,27 +13,29 @@ class CreateUser extends Component {
   }
 
   handleFormSubmit(formProps) {
-    //console.log(formProps);
+    // console.log(formProps);
     this.props.createUser(formProps);
   }
 
-  renderField({ input, label, type, meta: { touched, error, warning } }) {
+  renderField({ input, label, type, required, meta: { touched, error, warning } }) {
+    let requiredField = (required)? <span className='text-danger'> *</span> : ''
     return (
       <FormGroup>
-        <label>{label}</label>
+        <label>{label}{requiredField}</label>
         <FormControl {...input} placeholder={label} type={type}/>
-        {(error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
+        {touched && (error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
       </FormGroup>
     )
   }
 
-  renderCheckboxGroup({ label, name, options, input, meta: { dirty, error, warning } }) {    
+  renderCheckboxGroup({ label, name, options, input, required, meta: { dirty, error, warning } }) {    
 
+    let requiredField = (required)? (<span className='text-danger'> *</span>) : ''
     let checkboxList = options.map((option, index) => {
-  
+
       let tooltip = (option.description)? (<Tooltip id={`${option.value}_Tooltip`}>{option.description}</Tooltip>) : null
       let overlay = (tooltip != null)? (<OverlayTrigger placement="right" overlay={tooltip}><span>{option.label}</span></OverlayTrigger>) : option.label
-  
+
       return (
         <Checkbox
           name={`${option.label}[${index}]`}
@@ -56,11 +59,49 @@ class CreateUser extends Component {
 
     return (
       <FormGroup>
-        <label>{label}</label>
+        <label>{label}{requiredField}</label>
         {checkboxList}
+        {dirty && (error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
+      </FormGroup>
+    );
+  }
+
+
+  renderCheckbox({ input, label, meta: { dirty, error, warning } }) {    
+
+    return (
+      <FormGroup>
+        <Checkbox
+          checked={input.value ? true : false}
+          onChange={(e) => input.onChange(e.target.checked)}
+        >
+          {label}
+        </Checkbox>
         {(error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
       </FormGroup>
     );
+  }
+
+
+  renderAdminOptions() {
+    if(this.props.roles.includes('admin')) {
+      return (
+        <div>
+          <label>Additional Options:</label>
+          {this.renderSystemUserOption()}
+        </div>
+      )
+    }
+  }
+
+  renderSystemUserOption() {
+    return (
+      <Field
+        name="system_user"
+        label="System User?"
+        component={this.renderCheckbox}
+      />
+    )
   }
 
   renderAlert() {
@@ -86,9 +127,11 @@ class CreateUser extends Component {
   render() {
 
     const { handleSubmit, pristine, reset, submitting, valid } = this.props;
-    const createUserFormHeader = (<div>User Profile</div>);
+    const createUserFormHeader = (<div>Create New User</div>);
 
-    if (this.props.roles && this.props.roles.includes("admin")) {
+    if (this.props.roles && (this.props.roles.includes("admin") || this.props.roles.includes('event_manager'))) {
+
+      let userRoleOptions = this.props.roles.includes('admin')? systemUserRoleOptions.concat(standardUserRoleOptions): standardUserRoleOptions;
 
       return (
         <Panel bsStyle="default" header={createUserFormHeader}>
@@ -98,18 +141,21 @@ class CreateUser extends Component {
               component={this.renderField}
               type="text"
               label="Username"
+              required={true}
             />
             <Field
               name="fullname"
               type="text"
               component={this.renderField}
               label="Full Name"
+              required={true}
             />
             <Field
               name="email"
               component={this.renderField}
               type="text"
               label="Email"
+              required={true}
             />
             <Field
               name="password"
@@ -128,7 +174,9 @@ class CreateUser extends Component {
               component={this.renderCheckboxGroup}
               label="Roles"
               options={userRoleOptions}
+              required={true}
             />
+            {this.renderAdminOptions()}
             {this.renderAlert()}
             {this.renderMessage()}
             <div className="pull-right">
@@ -155,6 +203,10 @@ function validate(formProps) {
     errors.username = 'Required'
   } else if (formProps.username.length > 15) {
     errors.username = 'Must be 15 characters or less'
+  } else if (formProps.username.match(/[A-Z]/)) {
+    errors.username = 'Username must be all lowercase'
+  } else if (formProps.username.match(/[ ]/)) {
+    errors.username = 'Username can not include whitespace'
   }
 
   if (!formProps.fullname) {
@@ -189,10 +241,15 @@ function mapStateToProps(state) {
 
 }
 
+const afterSubmit = (result, dispatch) =>
+  dispatch(reset('createUser'));
+
+
 CreateUser = reduxForm({
   form: 'createUser',
   enableReinitialize: true,
-  validate: validate
+  validate: validate,
+  onSubmitSuccess: afterSubmit
 })(CreateUser);
 
 export default connect(mapStateToProps, actions)(CreateUser);

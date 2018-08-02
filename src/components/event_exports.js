@@ -1,43 +1,30 @@
 import React, { Component } from 'react';
 import FontAwesome from 'react-fontawesome';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 import { connect } from 'react-redux';
 import Cookies from 'universal-cookie';
 import { Button, Grid, Row, Col, Panel, Accordion, ListGroup, DropdownButton, ButtonToolbar, ButtonGroup, MenuItem, ListGroupItem, Pagination, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import axios from 'axios';
 import EventExportFilterForm from './event_export_filter_form';
+import EventCommentModal from './event_comment_modal';
 import * as actions from '../actions';
 import { ROOT_PATH, API_ROOT_URL } from '../url_config';
 
-let converter = require('json-2-csv');
 let fileDownload = require('js-file-download');
 
-const options = {
-  checkSchemaDifferences: false
-}
-
-const json2csvAllCallback = function (err, csv) {
-  if (err) throw err;
-  // console.log(csv);
-  fileDownload(csv, 'sealog_eventExport.csv');
-};
-
-const json2csvEventsCallback = function (err, csv) {
-  if (err) throw err;
-  // console.log(csv);
-  fileDownload(csv, 'sealog_eventOnlyExport.csv');
-};
-
-const json2csvAuxDataCallback = function (err, csv) {
-  if (err) throw err;
-  // console.log(csv);
-  fileDownload(csv, 'sealog_auxDataExport.csv');
-};
+const dateFormat = "YYYYMMDD"
+const timeFormat = "HHmm"
 
 class EventExport extends Component {
 
   constructor (props) {
     super(props);
+
+    this.state = {
+      hideASNAP: true,
+      activePage: 1
+    }
 
     this.handleEventClick = this.handleEventClick.bind(this);
     this.handlePageSelect = this.handlePageSelect.bind(this);
@@ -57,12 +44,17 @@ class EventExport extends Component {
 
   handlePageSelect(eventKey) {
     // console.log("eventKey:", eventKey)
-    this.props.eventExportSetActivePage(eventKey);
+    this.setState({activePage: eventKey});
   }
 
   handleEventClick(id) {
     this.props.eventExportSetActiveEvent(id);
   }
+
+  handleEventComment(id) {
+    this.props.showModal('eventComment', { id: id, handleUpdateEventComment: this.props.updateEventComment, handleHide: this.props.fetchEventHistory });
+  }
+
 
   fetchEventAuxData() {
 
@@ -93,132 +85,141 @@ class EventExport extends Component {
     );
   }
 
-  exportAllToCSV() {
-    // console.log("Pre-Export:", this.props.event_export.events)
-    let exportData = this.props.event_export.events.map((event) => {
-      var copiedEvent = jQuery.extend(true, {}, event)
-      copiedEvent.aux_data.map((data) => {
-        data.data_array.map((data2) => {
+  fetchEventsWithAuxData(format = 'json') {
 
-          let elementName = `${data.data_source}_${data2.data_name}_value`
-          let elementUOM = `${data.data_source}_${data2.data_name}_uom`
-         // console.log(elementName, data2.data_value, elementUOM, data2.data_uom)
-          copiedEvent[elementName] = data2.data_value
-          copiedEvent[elementUOM] = data2.data_uom
-        })  
-      })
-      delete copiedEvent.aux_data
+    const cookies = new Cookies();
+    // console.log("event export update")
+    format = `format=${format}`
+    let startTS = (this.props.event_export.eventExportFilter.startTS)? `&startTS=${this.props.event_export.eventExportFilter.startTS}` : ''
+    let stopTS = (this.props.event_export.eventExportFilter.stopTS)? `&stopTS=${this.props.event_export.eventExportFilter.stopTS}` : ''
+    let value = (this.props.event_export.eventExportFilter.value)? `&value=${this.props.event_export.eventExportFilter.value.split(',').join("&value=")}` : ''
+    let author = (this.props.event_export.eventExportFilter.author)? `&author=${this.props.event_export.eventExportFilter.author.split(',').join("&author=")}` : ''
+    let freetext = (this.props.event_export.eventExportFilter.freetext)? `&freetext=${this.props.event_export.eventExportFilter.freetext}` : ''
+    let datasource = (this.props.event_export.eventExportFilter.datasource)? `&datasource=${this.props.event_export.eventExportFilter.datasource}` : ''
 
+    return axios.get(`${API_ROOT_URL}/api/v1/event_exports?${format}${startTS}${stopTS}${value}${author}${freetext}${datasource}`,
+      {
+        headers: {
+          authorization: cookies.get('token')
+        }
+      }).then((response) => {
+        return response.data
+      }).catch((error)=>{
+        if(error.response.data.statusCode == 404){
+          return []
+        } else {
+          console.log(error.response);
+          return []
+        }
+      }
+    );
+  }
 
-      copiedEvent.event_options.map((data) => {
-        let elementName = `event_option_${data.event_option_name}`
-       // console.log(elementName, data.event_option_value)
-        copiedEvent[elementName] = data.event_option_value
-      })
+  fetchEvents(format = 'json') {
 
-      delete copiedEvent.event_options
+    const cookies = new Cookies();
+    // console.log("event export update")
+    format = `format=${format}`
+    let startTS = (this.props.event_export.eventExportFilter.startTS)? `&startTS=${this.props.event_export.eventExportFilter.startTS}` : ''
+    let stopTS = (this.props.event_export.eventExportFilter.stopTS)? `&stopTS=${this.props.event_export.eventExportFilter.stopTS}` : ''
+    let value = (this.props.event_export.eventExportFilter.value)? `&value=${this.props.event_export.eventExportFilter.value.split(',').join("&value=")}` : ''
+    let author = (this.props.event_export.eventExportFilter.author)? `&author=${this.props.event_export.eventExportFilter.author.split(',').join("&author=")}` : ''
+    let freetext = (this.props.event_export.eventExportFilter.freetext)? `&freetext=${this.props.event_export.eventExportFilter.freetext}` : ''
+    let datasource = (this.props.event_export.eventExportFilter.datasource)? `&datasource=${this.props.event_export.eventExportFilter.datasource}` : ''
 
-      return copiedEvent
+    return axios.get(`${API_ROOT_URL}/api/v1/events?${format}${startTS}${stopTS}${value}${author}${freetext}${datasource}`,
+      {
+        headers: {
+          authorization: cookies.get('token')
+        }
+      }).then((response) => {
+        return response.data
+      }).catch((error)=>{
+        if(error.response.data.statusCode == 404){
+          return []
+        } else {
+          console.log(error.response);
+          return []
+        }
+      }
+    );
+  }
 
+  exportEventsWithAuxDataToCSV() {
+    this.fetchEventsWithAuxData('csv').then((results) => {
+      let prefix = moment.utc(this.props.event_export.events[0].ts).format(dateFormat + "_" + timeFormat)
+      fileDownload(results, `${prefix}.sealog_export.csv`);
+    }).catch((error) => {
+      console.log(error)
     })
-
-    converter.json2csv(exportData, json2csvAllCallback, options);
-   // console.log("Post-Export:", exportData)
   }
 
   exportEventsToCSV() {
-    // console.log("Pre-Export:", this.props.event_export.events)
-    let exportData = this.props.event_export.events.map((event) => {
-      
-      var copiedEvent = jQuery.extend(true, {}, event)
-
-      delete copiedEvent.aux_data
-
-      copiedEvent.event_options.map((data) => {
-        let elementName = `event_option_${data.event_option_name}`
-       // console.log(elementName, data.event_option_value)
-        copiedEvent[elementName] = data.event_option_value
-      })
-
-      delete copiedEvent.event_options
-
-      return copiedEvent
-
-    })
-
-    converter.json2csv(exportData, json2csvEventsCallback, options);
-   // console.log("Post-Export:", exportData)
-  }
-
-  exportAuxDataToCSV() {
-    this.fetchEventAuxData().then((results) => {
-      // console.log("results:", results)
-      let exportData = results.map((auxData) => {
-        var copiedAuxData = jQuery.extend(true, {}, auxData)
-        copiedAuxData.data_array.map((data) => {
-          let elementName = `${auxData.data_source}_${data.data_name}_value`
-          let elementUOM = `${auxData.data_source}_${data.data_name}_uom`
-         // console.log(elementName, data2.data_value, elementUOM, data2.data_uom)
-          copiedAuxData[elementName] = data.data_value
-          copiedAuxData[elementUOM] = data.data_uom
-        })
-
-        delete copiedAuxData.data_array
-        return copiedAuxData
-      })
-
-      converter.json2csv(exportData, json2csvAuxDataCallback, options);
+    this.fetchEvents('csv').then((results) => {
+      let prefix = moment.utc(this.props.event_export.events[0].ts).format(dateFormat + "_" + timeFormat)
+      fileDownload(results, `${prefix}.sealog_eventExport.csv`);
     }).catch((error) => {
       console.log(error)
     })
   }
 
-  exportAllToJSON() {
-    fileDownload(JSON.stringify(this.props.event_export.events, null, 2), 'sealog_eventExport.json');
+  exportEventsWithAuxDataToJSON() {
+
+    this.fetchEventsWithAuxData().then((results) => {
+      let prefix = moment.utc(this.props.event_export.events[0].ts).format(dateFormat + "_" + timeFormat)
+      fileDownload(JSON.stringify(results, null, 2), `${prefix}.sealog_export.json`);
+    }).catch((error) => {
+      console.log(error)
+    })
   }
 
   exportEventsToJSON() {
-    let eventsOnly = this.props.event_export.events.map((event) => {
-      delete event.aux_data
-      return event
-    })
 
-    fileDownload(JSON.stringify(eventsOnly, null, 2), 'sealog_eventOnlyExport.json');
-  }
-
-  exportAuxDataToJSON() {
-    this.fetchEventAuxData().then((results) => {
-      // console.log("results:", results)
-      fileDownload(JSON.stringify(results, null, 2), 'sealog_auxDataExport.json');
+    this.fetchEvents().then((results) => {
+      let prefix = moment.utc(this.props.event_export.events[0].ts).format(dateFormat + "_" + timeFormat)
+      fileDownload(JSON.stringify(results, null, 2), `${prefix}.sealog_eventExport.json`);
     }).catch((error) => {
       console.log(error)
     })
+  }
+
+  exportAuxDataToJSON() {
+
+    this.fetchEventAuxData().then((results) => {
+      let prefix = moment.utc(this.props.event_export.events[0].ts).format(dateFormat + "_" + timeFormat)
+      fileDownload(JSON.stringify(results, null, 2), `${prefix}.sealog_auxDataExport.json`);
+    }).catch((error) => {
+      console.log(error)
+    })
+  }
+
+  toggleASNAP() {
+    this.setState( prevState => ({hideASNAP: !prevState.hideASNAP, activePage: 1}))
   }
 
   renderEventListHeader() {
 
     const Label = "Filtered Events"
     const exportTooltip = (<Tooltip id="deleteTooltip">Export these events</Tooltip>)
+    const toggleASNAPTooltip = (<Tooltip id="toggleASNAPTooltip">Show/Hide ASNAP Events</Tooltip>)
 
-
-        // <div className="pull-right">
-          // <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleExportEventList } disabled={this.props.event_export.fetching} ><OverlayTrigger placement="top" overlay={exportTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger></Button>
-        // </div>
+    const ASNAPToggleIcon = (this.state.hideASNAP)? "Show ASNAP" : "Hide ASNAP"
+    const ASNAPToggle = (<Button disabled={this.props.event_export.fetching} bsSize="xs" onClick={() => this.toggleASNAP()}>{ASNAPToggleIcon}</Button>)
 
     return (
       <div>
         { Label }
         <ButtonToolbar className="pull-right" >
+          {ASNAPToggle}
           <DropdownButton disabled={this.props.event_export.fetching} bsSize="xs" key={1} title={<OverlayTrigger placement="top" overlay={exportTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger>} id="export-dropdown" pullRight>
             <MenuItem key="toJSONHeader" eventKey={1.1} header>JSON format</MenuItem>
-            <MenuItem key="toJSONAll" eventKey={1.2} onClick={ () => this.exportAllToJSON()}>Events w/aux data</MenuItem>
+            <MenuItem key="toJSONAll" eventKey={1.2} onClick={ () => this.exportEventsWithAuxDataToJSON()}>Events w/aux data</MenuItem>
             <MenuItem key="toJSONEvents" eventKey={1.2} onClick={ () => this.exportEventsToJSON()}>Events Only</MenuItem>
             <MenuItem key="toJSONAuxData" eventKey={1.2} onClick={ () => this.exportAuxDataToJSON()}>Aux Data Only</MenuItem>
             <MenuItem divider />
             <MenuItem key="toCSVHeader" eventKey={1.5} header>CSV format</MenuItem>
-            <MenuItem key="toCSVAll" eventKey={1.6} onClick={ () => this.exportAllToCSV()}>Events w/aux data</MenuItem>
+            <MenuItem key="toCSVAll" eventKey={1.6} onClick={ () => this.exportEventsWithAuxDataToCSV()}>Events w/aux data</MenuItem>
             <MenuItem key="toCSVEvents" eventKey={1.6} onClick={ () => this.exportEventsToCSV()}>Events Only</MenuItem>
-            <MenuItem key="toCSVAuxData" eventKey={1.6} onClick={ () => this.exportAuxDataToCSV()}>Aux Data Only</MenuItem>
           </DropdownButton>
         </ButtonToolbar>
       </div>
@@ -236,23 +237,42 @@ class EventExport extends Component {
         </Panel>
       )
     } else if(this.props.event_export && this.props.event_export.events.length > 0) {
+
+      let eventList = (this.state.hideASNAP)? this.props.event_export.events.filter(event => (event.event_value != "ASNAP")) : this.props.event_export.events
+//      console.log("eventList:", eventList)
+
+      if(eventList.length == 0){
+        return (
+          <Panel header={ this.renderEventListHeader() }>
+            <ListGroup fill>
+              <ListGroupItem>No events found!</ListGroupItem>
+            </ListGroup>
+          </Panel>
+        )
+      }
+
       return (          
         <Panel header={ this.renderEventListHeader() }>
           <ListGroup fill>
             {
-              this.props.event_export.events.map((event, index) => {
-                if(index >= (this.props.event_export.activePage-1) * 15 && index < (this.props.event_export.activePage * 15)) {
-                  let eventOptions = '';
-                  if (event.event_options.length > 0 ) {
-                    let eventOptionsObj = {};
-                    event.event_options.map((option) => {
-                      eventOptionsObj[option.event_option_name] = option.event_option_value;
-                    })
-                    eventOptions = JSON.stringify(eventOptionsObj)
-                  }
-                  let freetext = (event.event_free_text.length > 0)? `--> ${event.event_free_text}`: ''
+              eventList.map((event, index) => {
+                if(index >= (this.state.activePage-1) * 15 && index < (this.state.activePage * 15)) {
+                  let eventOptionsArray = [];
+                  event.event_options.map((option) => {
+                    if (option.event_option_name != 'event_comment') {
+                      eventOptionsArray.push(option.event_option_name.replace(/\s+/g, "_") + ": \"" + option.event_option_value + "\"");
+                    }
+                  })
+                  
+                  if (event.event_free_text) {
+                    eventOptionsArray.push("text: \"" + event.event_free_text + "\"")
+                  } 
+
+                  let eventOptions = (eventOptionsArray.length > 0)? '--> ' + eventOptionsArray.join(', '): ''
+                  let commentTooltip = (<Tooltip id={`commentTooltip_${event.id}`}>Add Comment</Tooltip>)
+
                   return (
-                    <ListGroupItem key={event.id} onClick={() => this.handleEventClick(event.id)} >{`${event.ts} ${event.event_author}: ${event.event_value} ${eventOptions} ${freetext}`}</ListGroupItem>
+                    <ListGroupItem key={event.id} >{`${event.ts} <${event.event_author}>: ${event.event_value} ${eventOptions}`}<span className="pull-right" onClick={() => this.handleEventComment(event.id)}><OverlayTrigger placement="top" overlay={commentTooltip}><FontAwesome name='comment' fixedWidth/></OverlayTrigger></span></ListGroupItem>
                   )
                 }
               })
@@ -273,6 +293,9 @@ class EventExport extends Component {
 
   renderPagination() {
     if(!this.props.event_export.fetching && this.props.event_export.events.length > 0) {
+
+      let eventCount = (this.state.hideASNAP)? this.props.event_export.events.filter(event => event.event_value != "ASNAP").length : this.props.event_export.events.length
+
       return (
         <Pagination
           prev
@@ -281,9 +304,9 @@ class EventExport extends Component {
           last
           ellipsis
           boundaryLinks
-          items={ Math.ceil(this.props.event_export.events.length/15) }
+          items={ Math.ceil(eventCount/15) }
           maxButtons={5}
-          activePage={this.props.event_export.activePage}
+          activePage={this.state.activePage}
           onSelect={this.handlePageSelect}
         />
       )
@@ -294,6 +317,7 @@ class EventExport extends Component {
     // console.log(this.props.event_export)
     return (
       <Grid fluid>
+        <EventCommentModal />
         <Row>
           <Col sm={6} md={4} lg={3}>
             <EventExportFilterForm disabled={this.props.event_export.fetching} />

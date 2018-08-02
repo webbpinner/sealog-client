@@ -11,26 +11,17 @@ import { AUTH_USER } from './actions/types';
 
 import Header from './components/header';
 import Footer from './components/footer';
-import Feature from './components/feature';
 import Login from './components/auth/login';
 import Logout from './components/auth/logout';
 import Profile from './components/auth/profile';
 import Register from './components/auth/register';
 import RequireAuth from './components/auth/require_auth';
 import RequireUnauth from './components/auth/require_unauth';
-import Welcome from './components/welcome';
 import Main from './components/main';
 import Users from './components/users';
 import Tasks from './components/tasks';
-import Events from './components/events';
-import UpdateUser from './components/update_user';
-import CreateUser from './components/create_user';
 import EventExports from './components/event_exports';
-import UpdateEventExportTemplate from './components/update_event_export';
-import CreateEventExportTemplate from './components/create_event_export';
 import EventTemplates from './components/event_templates';
-import UpdateEventTemplate from './components/update_event_template';
-import CreateEventTemplate from './components/create_event_template';
 
 require("font-awesome-webpack");
 
@@ -55,11 +46,9 @@ ReactDOM.render(
       <ConnectedRouter history={history}>
           <div>
             <Header />
-            <Route path='/github' component={() => window.location = 'https://github.com/webbpinner/sealog-client'}/>
-            <Route path='/license' component={() => window.location = 'http://www.gnu.org/licenses/gpl-3.0.html'}/>
+            <Route path={`/github`} exact={true} component={() => window.location = 'https://github.com/webbpinner/sealog-client'}/>
+            <Route path={`/license`} exact={true} component={() => window.location = 'http://www.gnu.org/licenses/gpl-3.0.html'}/>
             <Route path={ `/` } exact={true} component={RequireAuth(Main)}/>
-            <Route path={ `/feature` } exact={true} component={RequireAuth(Feature)} />
-            <Route path={ `/events` } exact={true} component={RequireAuth(Events)} />
             <Route path={ `/tasks` } exact={true} component={RequireAuth(Tasks)} />
             <Route path={ `/users` } exact={true} component={RequireAuth(Users)} />
             <Route path={ `/profile` } exact={true} component={RequireAuth(Profile)} />

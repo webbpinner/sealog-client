@@ -24,19 +24,23 @@ class CreateEventTemplate extends Component {
     this.props.createEventTemplate(formProps);
   }
 
-  renderField({ input, label, placeholder, type, meta: { touched, error, warning } }) {
+  renderField({ input, label, placeholder, required, type, meta: { touched, error, warning } }) {
+    let requiredField = (required)? <span className='text-danger'> *</span> : ''
     let placeholder_txt = (placeholder)? placeholder: label
+
     return (
       <FormGroup>
-        <label>{label}</label>
+        <label>{label}{requiredField}</label>
         <FormControl {...input} placeholder={placeholder_txt} type={type}/>
-        {(error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
+        {touched && (error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
       </FormGroup>
     )
   }
 
-  renderSelectField({ input, label, type, options, meta: { touched, error, warning } }) {
+  renderSelectField({ input, label, type, required, options, meta: { touched, error, warning } }) {
 
+    let requiredField = (required)? <span className='text-danger'> *</span> : ''
+  
     let defaultOption = ( <option key={`${input.name}.default`} value=""></option> );
 
     let optionList = options.map((option, index) => {
@@ -47,12 +51,12 @@ class CreateEventTemplate extends Component {
 
     return (
       <FormGroup controlId="formControlsSelect">
-        <ControlLabel>{label}</ControlLabel>
+        <ControlLabel>{label}{requiredField}</ControlLabel>
         <FormControl {...input} componentClass={type} placeholder={label}>
           { defaultOption }
           { optionList }
         </FormControl>
-        {(error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
+        {touched && (error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
       </FormGroup>
     )
   }
@@ -101,13 +105,16 @@ class CreateEventTemplate extends Component {
                 name={`${options}.event_option_name`}
                 type="text"
                 component={this.renderField}
-                label="Name"/>
+                label="Name"
+                required={true}
+              />
               <Field
                 name={`${options}.event_option_type`}
                 type="select"
                 component={this.renderSelectField}
                 options={EventTemplateOptionTypes}
                 label="Type"
+                required={true}
               />
               { this.renderOptionsDropdown(options, index) }
               <div>
@@ -152,7 +159,7 @@ class CreateEventTemplate extends Component {
   render() {
 
     const { handleSubmit, pristine, reset, submitting, valid } = this.props;
-    const formHeader = (<h3>Event Definition Profile</h3>);
+    const formHeader = (<h3>Create Event Template</h3>);
 
 
     if (this.props.roles && (this.props.roles.includes("admin") || this.props.roles.includes("event_manager"))) {
@@ -164,12 +171,14 @@ class CreateEventTemplate extends Component {
               component={this.renderField}
               type="text"
               label="Name"
+              required={true}
             />
             <Field
               name="event_value"
               type="text"
               component={this.renderField}
               label="Event Value"
+              required={true}
             />
             <div>
               <label>Free text Required?</label>
@@ -215,11 +224,6 @@ function validate(formProps) {
   if (!formProps.event_value) {
     errors.event_value = 'Required'
   }
-
-  // if (!formProps.event_options || !formProps.event_options.length) {
-  //   errors.event_options = { _error: 'There must be at least one option' }
-  // } else {
-
   if (formProps.event_options && formProps.event_options.length) {
     const event_optionsArrayErrors = []
     formProps.event_options.forEach((event_option, event_optionIndex) => {
@@ -253,34 +257,12 @@ function validate(formProps) {
           }
         }
       }
-      // if (option && option.hobbies && option.hobbies.length) {
-      //   const hobbyArrayErrors = []
-      //   option.hobbies.forEach((hobby, hobbyIndex) => {
-      //     if (!hobby || !hobby.length) {
-      //       hobbyArrayErrors[hobbyIndex] =  'Required'
-      //     }
-      //   })
-      //   if(hobbyArrayErrors.length) {
-      //     optionErrors.hobbies = hobbyArrayErrors
-      //     optionsArrayErrors[optionIndex] = optionErrors
-      //   }
-      //   if (option.hobbies.length > 5) {
-      //     if(!optionErrors.hobbies) {
-      //       optionErrors.hobbies = []
-      //     }
-      //     optionErrors.hobbies._error = 'No more than five hobbies allowed'
-      //     optionsArrayErrors[optionIndex] = optionErrors
-      //   }
-      // }
     })
     if(event_optionsArrayErrors.length) {
       errors.event_options = event_optionsArrayErrors
     }
   }
-
-  //console.log(errors);
   return errors;
-
 }
 
 function mapStateToProps(state) {

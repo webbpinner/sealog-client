@@ -11,18 +11,9 @@
 
 .eventHistory, .eventList {
   overflow-y: scroll;
-  height: 204px;
+  height: 200px;
 }
 
 .footer {
   text-align: right;
-}
-
-.navbar-brand {
-  display: flex;
-  align-items: center;
-}
-
-.navbar-brand>img {
-  padding: 3px 6px;
 }

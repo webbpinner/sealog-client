@@ -22,14 +22,14 @@ import {
 
 } from '../actions/types';
 
-export default function(state={ profile: {}, user: {}, users: [] }, action) {
+export default function(state={ profile: {}, profile_error: '', profile_message: '', user: {}, user_error: '', user_message: '', users: [] }, action) {
   switch(action.type){
 
     case UNAUTH_USER:
       return { ...state, profile: {} };
 
     case INIT_PROFILE:
-      return { ...state, profile: action.payload };
+      return { ...state, profile: action.payload, profile_error: '', profile_message: '' };
 
     case UPDATE_PROFILE:
       return { ...state, profile: action.payload };
@@ -44,7 +44,7 @@ export default function(state={ profile: {}, user: {}, users: [] }, action) {
       return { ...state, profile_error: '', profile_message: '' };
 
     case INIT_USER:
-      return { ...state, user: action.payload };
+      return { ...state, user: action.payload, user_error: '', user_message: '' };
 
     case UPDATE_USER:
       return { ...state, user: action.payload };

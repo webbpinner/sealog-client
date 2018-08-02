@@ -1,23 +1,28 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button, Checkbox, ControlLabel, FormGroup, FormControl, FormGroupItem, Modal } from 'react-bootstrap';
 import { connectModal } from 'redux-modal';
 import Datetime from 'react-datetime';
+import Cookies from 'universal-cookie';
 import 'react-datetime/css/react-datetime.css';
 import moment from 'moment';
+import axios from 'axios';
 import { reduxForm, Field, initialize, formValueSelector } from 'redux-form';
+import * as actions from '../actions';
+
+
+import { API_ROOT_URL} from '../url_config';
+
+const cookies = new Cookies();
 
 const dateFormat = "YYYY-MM-DD"
 const timeFormat = "HH:mm:ss"
 
-class EventTemplateOptionsModal extends Component {
+class EventCommentModal extends Component {
 
   constructor (props) {
     super(props);
-
-    // this.state = {
-    //   defaultValues: {}
-    // }
 
     this.renderDatePicker = this.renderDatePicker.bind(this);
 
@@ -25,60 +30,71 @@ class EventTemplateOptionsModal extends Component {
   }
 
   static propTypes = {
-    eventTemplate: PropTypes.object.isRequired,
+    id: PropTypes.string.isRequired,
     handleHide: PropTypes.func.isRequired,
-    handleCreateEvent: PropTypes.func.isRequired
+    handleUpdateEventComment: PropTypes.func.isRequired
   };
 
   componentWillMount() {
-    // this.setState = {defaultValues: this.populateDefaultValues()};
+
+    this.props.fetchSelectedEvent(this.props.id)
   }
 
-  populateDefaultValues() {
-    let eventDefaultValues = {};
-    let hack = this.props.eventTemplate.event_options.map( (option, index) => {
-      if(option.event_option_default_value) {
-        eventDefaultValues[`option_${index}`] = option.event_option_default_value;
-      }
-      return;
-
-    });
-
-    this.props.initialize(eventDefaultValues);
+  componentWillUnmount() {
+    this.props.clearSelectedEvent();
   }
 
   handleFormSubmit(formProps) {
 
-    let temp = JSON.parse(JSON.stringify(formProps));
+    if(formProps.event_comment) {
 
-    delete temp.event_free_text
-    delete temp.event_ts
+      let payload = {
+        event_options: [
+          {
+            event_option_name: 'event_comment',
+            event_option_value: formProps.event_comment
+          }
+        ]
+      }
+      axios.patch(`${API_ROOT_URL}/api/v1/events/${this.props.id}`,
+        payload,
+        {
+          headers: {
+          authorization: cookies.get('token')
+          }
+        }      
+      )
+      // .then((response) => {
 
-    console.log("temp:", temp)
-   
-    //Convert obecjts to arrays
-    let optionValue = []
-    let optionIndex = Object.keys(temp).sort().map( (value, index) => { optionValue.push(temp[value]); return parseInt(value.split('_')[1])});
+      //   dispatch(fetchCustomVars());
+      // })
+      .catch((error) => {
+        console.log(error);
+      });
+    }
 
-    //Remove empty fields
-    optionValue.map( (value, index) => { if(value == "") { console.log("Index", index, "empty"); optionIndex.splice(index, 1); optionValue.splice(index, 1); } });
-
-    //Build event_options array
-    let event_options = optionIndex.map( (value, index) => { return ({ event_option_name: this.props.eventTemplate.event_options[value].event_option_name, event_option_value: optionValue[index]}) });
-
-    let event_ts = (formProps.event_ts)? formProps.event_ts.toISOString() : '';
-
-    //Submit event
-    this.props.handleCreateEvent(this.props.eventTemplate.event_value, formProps.event_free_text, event_options, event_ts);
-    this.props.handleDestroy();
+    this.props.handleHide();
   }
 
   renderTextField({ input, label, type, required, meta: { touched, error, warning } }) {
     let requiredField = (required)? <span className='text-danger'> *</span> : ''
+    let labelElement = (label)? <label>{label}{requiredField}</label> : ''
     return (
       <FormGroup>
-        <label>{label}{requiredField}</label>
+        {labelElement}
         <FormControl {...input} placeholder={label} type={type}/>
+        {touched && (error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
+      </FormGroup>
+    )
+  }
+
+  renderTextArea({ input, label, required, meta: { touched, error, warning } }) {
+    let requiredField = (required)? <span className='text-danger'> *</span> : ''
+    let labelElement = (label)? <label>{label}{requiredField}</label> : ''
+    return (
+      <FormGroup>
+        {labelElement}
+        <FormControl {...input} placeholder={label} componentClass='textarea' rows={4}/>
         {touched && (error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
       </FormGroup>
     )
@@ -172,31 +188,19 @@ class EventTemplateOptionsModal extends Component {
   }
 
   render() {
-
     const { show, handleHide, handleSubmit, eventTemplate, pristine, submitting, valid } = this.props
 
     return (
       <Modal show={show} onHide={handleHide}>
         <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
           <Modal.Header closeButton>
-            <Modal.Title>Event Options - {eventTemplate.event_value}</Modal.Title>
+            <Modal.Title>Add/Update Comment</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
-            {this.renderEventOptions()}
             <Field
-              name="event_free_text"
-              component={this.renderTextField}
-              type="text"
-              label="Additional Text"
-              validate={ value => value || !eventTemplate.event_free_text_required ? undefined : 'Required' }
-            />
-            <Field
-              name="event_ts"
-              label="Custom Time (UTC)"
-              component={this.renderDatePicker}
-              type="text"
-              disabled={this.props.disabled}
+              name="event_comment"
+              component={this.renderTextArea}
             />
           </Modal.Body>
 
@@ -212,27 +216,35 @@ class EventTemplateOptionsModal extends Component {
 
 function validate(formProps) {
   const errors = {};
-
-//  if (this.props.eventTemplate.event_free_text_required && !formProps.event_free_text) {
-//    errors.event_free_text = 'Required'
-//  }
-
   return errors;
 
 }
 
-EventTemplateOptionsModal = reduxForm({
-  form: 'eventTemplateOptionsModal'//,
-  //enableReinitialize: true//,
-  //validate: validate
-})(EventTemplateOptionsModal);
+EventCommentModal = reduxForm({
+  form: 'EventCommentModal',
+  enableReinitialize: true,
+})(EventCommentModal);
 
-//this.defaultValues
-// function mapStateToProps(state, ownProps) {
-//     return {
-//         use_custom_time: selector(state, "use_custom_time")
-//     };
-// }
+function mapStateToProps(state) {
 
+  if (state.event_export.selected_event.event_options) {
+    let options = {}
+    state.event_export.selected_event.event_options.forEach((option) => {
+      options[option.event_option_name] = option.event_option_value
+    })
+    return {
+      initialValues: options
+    }
+  } else {
+    return {
+     initialValues: {}
+    }
+  }
 
-export default connectModal({ name: 'eventOptions' })(EventTemplateOptionsModal)
+}
+
+EventCommentModal = connect(
+  mapStateToProps, actions
+)(EventCommentModal)
+
+export default connectModal({ name: 'eventComment', destroyOnHide: true })(EventCommentModal)
