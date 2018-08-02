@@ -1,1 +1,0 @@
-export const EventOptionTypes = ["text","dropdown"];
