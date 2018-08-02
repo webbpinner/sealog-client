@@ -12,7 +12,7 @@ import DisplayUserTokenModal from './display_user_token_modal';
 import DeleteUserModal from './delete_user_modal';
 import * as actions from '../actions';
 
-const disabledAccounts = ['pilot', 'stbd_obs', 'port_obs', 'alvin']
+const disabledAccounts = ['admin', 'guest']
 
 let fileDownload = require('js-file-download');
 
