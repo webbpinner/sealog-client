@@ -62,18 +62,6 @@ class Header extends Component {
     }
   }
 
-  renderDiveSummaryOptions() {
-
-    // console.log(this.props.roles)
-    if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_logger') || this.props.roles.includes('event_watcher'))) {
-      return (
-        <LinkContainer to={ `/lowerings` }>
-          <NavItem>Dive Metadata</NavItem>
-        </LinkContainer>
-      );
-    }
-  }
-
   renderEventTemplateOptions() {
     if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager')) {
       return (
@@ -106,7 +94,6 @@ class Header extends Component {
     if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_manager'))) {
       return (
         <NavDropdown eventKey={3} title={'System Management'} id="basic-nav-dropdown">
-          {this.renderDiveSummaryOptions()}
           {this.renderEventTemplateOptions()}
           {this.renderTaskOptions()}
           {this.renderUserOptions()}

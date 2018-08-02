@@ -43,7 +43,6 @@
     "react-cookie": "^2.0.7",
     "react-datetime": "^2.14.0",
     "react-dom": "^15.5.4",
-    "react-file-download": "^0.3.4",
     "react-file-reader": "^1.1.4",
     "react-fontawesome": "^1.6.1",
     "react-nes": "^1.0.6",

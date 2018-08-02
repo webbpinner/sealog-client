@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import fileDownload from 'react-file-download';
 import queryString from 'querystring';
 import { push } from 'react-router-redux';
 import { bindActionCreators } from 'redux';
@@ -155,24 +154,6 @@ export function initUser(id) {
   }
 }
 
-export function initEventExportTemplate(id) {
-  return function (dispatch) {
-    axios.get(`${API_ROOT_URL}/api/v1/event_export_templates/${id}`,
-    {
-      headers: {
-        authorization: cookies.get('token')
-      }
-    })
-    .then((response) => {
-      dispatch({ type: INIT_EVENT_EXPORT_TEMPLATE, payload: response.data })
-      //console.log("Initialized export template data successfully");
-    })
-    .catch((error)=>{
-      console.log(error);
-    });
-  }
-}
-
 export function initEventTemplate(id) {
   return function (dispatch) {
     axios.get(`${API_ROOT_URL}/api/v1/event_templates/${id}`,
@@ -305,98 +286,6 @@ export function createUser({username, fullname, password = '', email, roles, sys
       // If request is unauthenticated
       console.log(error);
       dispatch(createUserError(error.response.data.message));
-
-    });
-  }
-}
-
-export function createEventExportTemplate(formProps) {
-
-  let fields = {}
-
-  if(formProps.event_export_template_name) {
-    fields.event_export_template_name = formProps.event_export_template_name;
-  }
-
-  if(formProps.event_export_template_eventvalue_filter) {
-    fields.event_export_template_eventvalue_filter = formProps.event_export_template_eventvalue_filter.split(',');
-  } else {
-    fields.event_export_template_eventvalue_filter = []
-  }
-
-  if(formProps.event_export_template_freetext_filter) {
-    fields.event_export_template_freetext_filter = formProps.event_export_template_freetext_filter;
-  } else {
-    fields.event_export_template_freetext_filter = ""
-  }
-
-  if(formProps.event_export_template_user_filter) {
-    fields.event_export_template_user_filter = formProps.event_export_template_user_filter.split(',');
-  } else {
-    fields.event_export_template_user_filter = []
-  }
-
-  if(formProps.event_export_template_startTS) {
-    fields.event_export_template_startTS = formProps.event_export_template_startTS;
-  } else {
-    fields.event_export_template_startTS = ""
-  }
-
-  if(formProps.event_export_template_stopTS) {
-    fields.event_export_template_stopTS = formProps.event_export_template_stopTS;
-  } else {
-    fields.event_export_template_stopTS = ""
-  }
-
-  if(formProps.event_export_template_limit) {
-    fields.event_export_template_limit = formProps.event_export_template_limit;
-  } else {
-    fields.event_export_template_limit = 0
-  }
-
-  if(formProps.event_export_template_offset) {
-    fields.event_export_template_offset = formProps.event_export_template_offset;
-  } else {
-    fields.event_export_template_offset = 0
-  }
-
-  if(formProps.event_export_template_include_aux_data) {
-    fields.event_export_template_include_aux_data = formProps.event_export_template_include_aux_data;
-
-    if(formProps.event_export_template_datasource_filter) {
-      fields.event_export_template_datasource_filter = formProps.event_export_template_datasource_filter.split(',');
-    } else {
-      fields.event_export_template_datasource_filter = []
-    }
-  } else {
-    fields.event_export_template_include_aux_data = false;
-    fields.event_export_template_datasource_filter = []
-  }
-
-  return function (dispatch) {
-    axios.post(`${API_ROOT_URL}/api/v1/event_export_templates`,
-    fields,
-    {
-      headers: {
-        authorization: cookies.get('token'),
-        'content-type': 'application/json'
-      }
-    })
-    .then((response) => {
-
-      //console.log("New export template successfully created");
-      dispatch(createEventExportTemplateSuccess('Event Export Template created'));
-      dispatch(fetchEventExportTemplates());
-//      dispatch(hideAddNewUserForm());
-
-      // Redirect to login
-      //this.context.router.history.push(`${ROOT_PATH}/login`);
-    })
-    .catch((error) => {
-
-      // If request is unauthenticated
-      console.log(error);
-      dispatch(createEventExportTemplateError(error.response.data.message));
 
     });
   }
@@ -590,104 +479,6 @@ export function updateUser(formProps) {
   }
 }
 
-export function updateEventExportTemplate(formProps) {
-
-  let fields = {}
-  //console.log(formProps);
-
-  if(formProps.event_export_template_name) {
-    fields.event_export_template_name = formProps.event_export_template_name;
-  }
-
-  if(formProps.event_export_template_eventvalue_filter) {
-    //console.log(formProps.event_export_template_eventvalue_filter)
-    fields.event_export_template_eventvalue_filter = formProps.event_export_template_eventvalue_filter.split(',');
-  } else {
-    fields.event_export_template_eventvalue_filter = []
-  }
-
-  if(formProps.event_export_template_freetext_filter) {
-    fields.event_export_template_freetext_filter = formProps.event_export_template_freetext_filter;
-  } else {
-    fields.event_export_template_freetext_filter = ""
-  }
-
-  if(formProps.event_export_template_user_filter) {
-    fields.event_export_template_user_filter = formProps.event_export_template_user_filter.split(',');
-  } else {
-    fields.event_export_template_user_filter = []
-  }
-
-  if(formProps.event_export_template_startTS) {
-    fields.event_export_template_startTS = formProps.event_export_template_startTS;
-  } else {
-    fields.event_export_template_startTS = ""
-  }
-
-  if(formProps.event_export_template_stopTS) {
-    fields.event_export_template_stopTS = formProps.event_export_template_stopTS;
-  } else {
-    fields.event_export_template_stopTS = ""
-  }
-
-  if(formProps.event_export_template_limit) {
-    fields.event_export_template_limit = formProps.event_export_template_limit;
-  } else {
-    fields.event_export_template_limit = 0
-  }
-
-  if(formProps.event_export_template_offset) {
-    fields.event_export_template_offset = formProps.event_export_template_offset;
-  } else {
-    fields.event_export_template_offset = 0
-  }
-
-  if(formProps.event_export_template_include_aux_data) {
-    fields.event_export_template_include_aux_data = formProps.event_export_template_include_aux_data;
-
-    if(formProps.event_export_template_datasource_filter) {
-      fields.event_export_template_datasource_filter = formProps.event_export_template_datasource_filter.split(',');
-    }
-  } else {
-    fields.event_export_template_include_aux_data = false;
-    fields.event_export_template_datasource_filter = []
-  }
-
-  return function (dispatch)
-
-   {
-    axios.patch(`${API_ROOT_URL}/api/v1/event_export_templates/${formProps.id}`,
-      fields,
-      {
-        headers: {
-        authorization: cookies.get('token')
-        }
-      }      
-    )
-    .then((response) => {
-
-      dispatch(fetchEventExportTemplates());
-      dispatch(updateEventExportTemplateSuccess('Event Export Template updated'));
-
-      // if you change yourself, you have to re-login
-      //if(cookies.get('id') === formProps.id) {
-      //  dispatch(logout());
-      //}
-
-      // Redirect to login
-      //this.context.router.history.push(`${ROOT_PATH}/login`);
-    })
-    .catch((error) => {
-
-      console.log(error);
-
-      // If request is unauthenticated
-      dispatch(updateEventExportTemplateError(error.response.data.message));
-
-    });
-  }
-}
-
 export function updateEventTemplate(formProps) {
 
   let fields = {};
@@ -782,68 +573,6 @@ export function deleteUser(id) {
     .then((response) => {
 
       dispatch(fetchUsers());
-//      dispatch(updateUserEditSuccess('Account updated'));
-
-      // Redirect to login
-      //this.context.router.history.push(`${ROOT_PATH}/login`);
-    })
-    .catch((error) => {
-
-      console.log(error);
-
-      // If request is unauthenticated
-      //dispatch(updateUserEditError(error.response.data.message));
-
-    });
-  }
-}
-
-export function runEventExportTemplate(id) {
-
-  return function (dispatch) {
-    axios.get(`${API_ROOT_URL}/api/v1/event_export_templates/${id}/run`,
-      {
-        headers: {
-        authorization: cookies.get('token')
-        }
-      }      
-    )
-    .then((response) => {
-
-      //console.log(response);
-
-      fileDownload(JSON.stringify(response.data, null, "\t"), 'export.json');
-
-//      dispatch(fetchTemplates());
-//      dispatch(updateUserEditSuccess('Account updated'));
-
-      // Redirect to login
-      //this.context.router.history.push(`${ROOT_PATH}/login`);
-    })
-    .catch((error) => {
-
-      console.log(error);
-
-      // If request is unauthenticated
-      //dispatch(updateUserEditError(error.response.data.message));
-
-    });
-  }
-}
-
-export function deleteEventExportTemplate(id) {
-
-  return function (dispatch) {
-    axios.delete(`${API_ROOT_URL}/api/v1/event_export_templates/${id}`,
-      {
-        headers: {
-        authorization: cookies.get('token')
-        }
-      }      
-    )
-    .then((response) => {
-
-      dispatch(fetchEventExportTemplates());
 //      dispatch(updateUserEditSuccess('Account updated'));
 
       // Redirect to login
@@ -1056,43 +785,6 @@ export function updateCustomVars(id, value) {
   }
 }
 
-export function updateEventExportTemplateSuccess(message) {
-  return {
-    type: UPDATE_EVENT_EXPORT_TEMPLATE_SUCCESS,
-    payload: message
-  }
-}
-
-export function updateEventExportTemplateError(message) {
-  return {
-    type: UPDATE_EVENT_EXPORT_TEMPLATE_ERROR,
-    payload: message
-  }
-}
-
-export function fetchEventExportTemplates() {
-
-  const request = axios.get(API_ROOT_URL + '/api/v1/event_export_templates', {
-    headers: {
-      authorization: cookies.get('token')
-    }
-  });
-
-  return function (dispatch) {
-    
-    request.then(({data}) => {
-      dispatch({type: FETCH_EVENT_EXPORT_TEMPLATES, payload: data});
-    })
-    .catch((error) => {
-      if(error.response.status !== 404) {
-        console.log(error);
-      } else {
-        dispatch({type: FETCH_EVENT_EXPORT_TEMPLATES, payload: []});
-      }
-    });
-  }
-}
-
 export function updateEventTemplateSuccess(message) {
   return {
     type: UPDATE_EVENT_TEMPLATE_SUCCESS,
@@ -1126,27 +818,6 @@ export function fetchEventTemplatesForMain() {
       console.log(error);
     });
   }
-}
-
-export function updateEventComment(id, comment){
-  // const request = axios.patch(API_ROOT_URL + '/api/v1/events/' + id, {
-  //   headers: {
-  //     authorization: cookies.get('token')
-  //   }
-  // });
-
-  // return function (dispatch) {
-    
-  //   request.then(({data}) => {
-  //     //console.log(data);
-  //     dispatch({type: FETCH_EVENT_TEMPLATES_FOR_MAIN, payload: data})
-  //   })
-  //   .catch((error) => {
-  //     console.log(error);
-  //   });
-  // }
-
-  console.log("Update event:", id, "Comment:", comment);
 }
 
 export function fetchFilteredEvents(filterParams={}) {
