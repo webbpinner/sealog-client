@@ -9,6 +9,7 @@ import ImportEventsModal from './import_events_modal';
 import ImportEventTemplatesModal from './import_event_templates_modal';
 import ImportAuxDataModal from './import_aux_data_modal';
 import ImportUsersModal from './import_users_modal';
+import DataWipeModal from './data_wipe_modal';
 import * as actions from '../actions';
 
 const importEventsDescription = (<div><h5>Import Event Records</h5><p>Add new event data records from a JSON-formated file.</p></div>)
@@ -18,6 +19,8 @@ const importAuxDataDescription = (<div><h5>Import Aux Data Records</h5><p>Add ne
 const importEventTemplatesDescription = (<div><h5>Import Event Templates</h5><p>Add new event templates from a JSON-formated file.</p></div>)
 
 const importUsersDescription = (<div><h5>Import Users</h5><p>Add new user accounts from a JSON-formated file.</p></div>)
+
+const dataResetDescription = (<div><h5>Wipe Local Database</h5><p>Delete all existing events in the local database in preparation for the next dive.</p></div>)
 
 class Tasks extends Component {
 
@@ -53,6 +56,10 @@ class Tasks extends Component {
     this.props.showModal('importEventTemplates');
   }
 
+  handleDataWipe() {
+    this.props.showModal('dataWipe', { handleDelete: this.props.deleteAllEvents });
+  }
+
   handleUserImport() {
     this.props.showModal('importUsers');
   }
@@ -68,6 +75,7 @@ class Tasks extends Component {
         <ListGroupItem onMouseEnter={(e) => this.setState({ description: importEventsDescription })} onMouseLeave={(e) => this.setState({ description: "" })} onClick={ () => this.handleEventImport()}>Import Event Records</ListGroupItem>
         <ListGroupItem onMouseEnter={(e) => this.setState({ description: importAuxDataDescription })} onMouseLeave={(e) => this.setState({ description: "" })} onClick={ () => this.handleAuxDataImport()}>Import Aux Data Records</ListGroupItem>
         <ListGroupItem onMouseEnter={(e) => this.setState({ description: importUsersDescription })} onMouseLeave={(e) => this.setState({ description: "" })} onClick={ () => this.handleUserImport()}>Import Users</ListGroupItem>
+        <ListGroupItem onMouseEnter={(e) => this.setState({ description: dataResetDescription })} onMouseLeave={(e) => this.setState({ description: "" })} onClick={ () => this.handleDataWipe()}>Wipe Local Database</ListGroupItem>
       </ListGroup>
     )
   }
@@ -92,6 +100,7 @@ class Tasks extends Component {
           <ImportEventsModal />
           <ImportAuxDataModal />
           <ImportUsersModal />
+          <DataWipeModal />
           <Row>
             <Col sm={5} mdOffset={1} md={4} lgOffset={2} lg={3}>
                 {this.renderTaskTable()}
@@ -114,8 +123,11 @@ class Tasks extends Component {
 }
 
 function mapStateToProps(state) {
+
+  let asnapStatus = (state.custom_var)? state.custom_var.custom_vars.filter(custom_var => custom_var.custom_var_name == "asnapStatus") : []
+
   return {
-    roles: state.user.profile.roles
+    roles: state.user.profile.roles,
   }
 }
 

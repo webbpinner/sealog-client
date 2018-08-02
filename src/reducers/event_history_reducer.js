@@ -2,14 +2,11 @@ import {
   FETCH_EVENT_TEMPLATES_FOR_MAIN,
   FETCH_EVENT_HISTORY,
   UPDATE_EVENT_HISTORY,
-  HIDE_EVENT_HISTORY,
-  SHOW_EVENT_HISTORY,
-  SHOW_EVENT_HISTORY_FULLSCREEN
 } from '../actions/types';
 
 const historyLimit = 20
 
-export default function(state={event_templates: [], history: [], showEventHistory: true, showEventHistoryFullscreen: false}, action) {
+export default function(state={event_templates: [], history: []}, action) {
   switch(action.type){
     case FETCH_EVENT_TEMPLATES_FOR_MAIN:
       return {...state, event_templates: action.payload };
@@ -27,12 +24,6 @@ export default function(state={event_templates: [], history: [], showEventHistor
         recentHistory = completeHistory
       }
       return {...state, history: recentHistory };
-    case HIDE_EVENT_HISTORY:
-      return {...state, showEventHistory: false, showEventHistoryFullscreen: false };
-    case SHOW_EVENT_HISTORY:
-      return {...state, showEventHistory: true, showEventHistoryFullscreen: false };
-    case SHOW_EVENT_HISTORY_FULLSCREEN:
-      return {...state, showEventHistory: true, showEventHistoryFullscreen: true };
   }
   return state;
 }

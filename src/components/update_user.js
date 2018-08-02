@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, Field, initialize } from 'redux-form';
-import { Alert, Button, Checkbox, Col, FormGroup, FormControl, FormGroupItem, Grid, Panel, Row, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Alert, Button, Checkbox, Col, FormGroup, FormControl, FormGroupItem, Grid, Panel, Row, Tooltip, OverlayTrigger} from 'react-bootstrap';
 import * as actions from '../actions';
-import { userRoleOptions } from '../user_role_options';
+import { standardUserRoleOptions } from '../standard_user_role_options';
+import { systemUserRoleOptions } from '../system_user_role_options';
 
 class UpdateUser extends Component {
 
   componentWillMount() {
-    //console.log(this.props.match);
+    // console.log(this.props);
     if(this.props.userID) {
       this.props.initUser(this.props.userID);
     }
@@ -19,22 +20,24 @@ class UpdateUser extends Component {
   }
 
   handleFormSubmit(formProps) {
-    //console.log(formProps);
+    // console.log(formProps);
     this.props.updateUser(formProps);
   }
 
-  renderField({ input, label, type, meta: { touched, error, warning } }) {
+  renderField({ input, label, type, required, meta: { touched, error, warning } }) {
+    let requiredField = (required)? <span className='text-danger'> *</span> : ''
     return (
       <FormGroup>
-        <label>{label}</label>
+        <label>{label}{requiredField}</label>
         <FormControl {...input} placeholder={label} type={type}/>
         {touched && ((error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>))}
       </FormGroup>
     )
   }
 
-  renderCheckboxGroup({ label, required, name, options, input, meta: { dirty, error, warning } }) {    
+  renderCheckboxGroup({ label, name, options, input, required, meta: { dirty, error, warning } }) {
 
+    let requiredField = (required)? (<span className='text-danger'> *</span>) : ''
     let checkboxList = options.map((option, index) => {
 
       let tooltip = (option.description)? (<Tooltip id={`${option.value}_Tooltip`}>{option.description}</Tooltip>) : null
@@ -55,19 +58,55 @@ class UpdateUser extends Component {
               }
               return input.onChange(newValue);
             }}
-          >
-            { overlay }
+          > 
+            {overlay}
           </Checkbox>
       );
     });
 
     return (
       <FormGroup>
-        <label>{label}</label>
+        <label>{label}{requiredField}</label>
         {checkboxList}
         {dirty && ((error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>))}
       </FormGroup>
     );
+  }
+
+  renderCheckbox({ input, label, meta: { dirty, error, warning } }) {    
+
+    return (
+      <FormGroup>
+        <Checkbox
+          checked={input.value ? true : false}
+          onChange={(e) => input.onChange(e.target.checked)}
+        >
+          {label}
+        </Checkbox>
+        {(error && <div className='text-danger'>{error}</div>) || (warning && <div className='text-danger'>{warning}</div>)}
+      </FormGroup>
+    );
+  }
+
+  renderAdminOptions() {
+    if(this.props.roles.includes('admin')) {
+      return (
+        <div>
+          <label>Additional Options:</label>
+          {this.renderSystemUserOption()}
+        </div>
+      )
+    }
+  }
+
+  renderSystemUserOption() {
+    return (
+      <Field
+        name="system_user"
+        label="System User?"
+        component={this.renderCheckbox}
+      />
+    )
   }
 
   renderAlert() {
@@ -93,10 +132,13 @@ class UpdateUser extends Component {
   render() {
 
     const { handleSubmit, pristine, reset, submitting, valid } = this.props;
-    const updateUserFormHeader = (<div>User Profile</div>);
+    const updateUserFormHeader = (<div>Update User</div>);
 
 
-    if (this.props.roles && this.props.roles.includes("admin")) {
+    if (this.props.roles && (this.props.roles.includes("admin") || this.props.roles.includes('event_manager'))) {
+
+      let userRoleOptions = this.props.roles.includes('admin')? systemUserRoleOptions.concat(standardUserRoleOptions): standardUserRoleOptions;
+
       return (
         <Panel bsStyle="default" header={updateUserFormHeader}>
           <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
@@ -105,18 +147,21 @@ class UpdateUser extends Component {
               component={this.renderField}
               type="text"
               label="Username"
+              required={true}
             />
             <Field
               name="fullname"
               type="text"
               component={this.renderField}
               label="Full Name"
+              required={true}
             />
             <Field
               name="email"
               component={this.renderField}
               type="text"
               label="Email"
+              required={true}
             />
             <Field
               name="password"
@@ -135,7 +180,9 @@ class UpdateUser extends Component {
               component={this.renderCheckboxGroup}
               label="Roles"
               options={userRoleOptions}
+              required={true}
             />
+            {this.renderAdminOptions()}
             {this.renderAlert()}
             {this.renderMessage()}
             <div className="pull-right">
@@ -162,6 +209,10 @@ function validate(formProps) {
     errors.username = 'Required'
   } else if (formProps.username.length > 15) {
     errors.username = 'Must be 15 characters or less'
+  } else if (formProps.username.match(/[A-Z]/)) {
+    errors.username = 'Username must be all lowercase'
+  } else if (formProps.username.match(/[ ]/)) {
+    errors.username = 'Username can not include whitespace'
   }
 
   if (!formProps.fullname) {

@@ -29,8 +29,8 @@ class DeleteUserModal extends Component {
     const { show, handleHide } = this.props
 
     return (
-      <Modal show={show}>
-        <Modal.Header>
+      <Modal show={show} onHide={handleHide}>
+        <Modal.Header closeButton>
           <Modal.Title>Confirm Deletion</Modal.Title>
         </Modal.Header>
 

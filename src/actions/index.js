@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import fileDownload from 'react-file-download';
 import queryString from 'querystring';
 import { push } from 'react-router-redux';
 import { bindActionCreators } from 'redux';
 import { show, destroy } from 'redux-modal';
+import {change, untouch} from 'redux-form';
 
 import { API_ROOT_URL} from '../url_config';
 
@@ -28,17 +28,13 @@ import {
   FETCH_USERS,
   FETCH_EVENT_TEMPLATES_FOR_MAIN,
   FETCH_EVENTS,
+  SET_SELECTED_EVENT,
+  CLEAR_SELECTED_EVENT,
   FETCH_FILTERED_EVENTS,
   CREATE_EVENT,
   LEAVE_AUTH_LOGIN_FORM,
   FETCH_EVENT_HISTORY,
   UPDATE_EVENT_HISTORY,
-  HIDE_EVENT_HISTORY,
-  SHOW_EVENT_HISTORY,
-  SHOW_EVENT_HISTORY_FULLSCREEN,
-  HIDE_EVENTS,
-  SHOW_EVENTS,
-  SHOW_EVENTS_FULLSCREEN,
   INIT_PROFILE,
   UPDATE_PROFILE,
   UPDATE_PROFILE_SUCCESS,
@@ -71,7 +67,8 @@ import {
   UPDATE_EVENT_EXPORT,
   EVENT_EXPORT_SET_ACTIVE_PAGE,
   EVENT_EXPORT_SET_ACTIVE_EVENT,
-
+  FETCH_CUSTOM_VARS,
+  UPDATE_CUSTOM_VAR,
 
 } from './types';
 
@@ -107,6 +104,18 @@ export function validateJWT() {
   }
 }
 
+export function resetFields(formName, fieldsObj) {
+  return function (dispatch) {
+    Object.keys(fieldsObj).forEach(fieldKey => {
+      //reset the field's value
+      dispatch(change(formName, fieldKey, fieldsObj[fieldKey]));
+
+     //reset the field's error
+      dispatch(untouch(formName, fieldKey));
+    })
+  }
+}
+
 export function updateProfileState() {
 
   const id = cookies.get('id')
@@ -138,24 +147,6 @@ export function initUser(id) {
     .then((response) => {
       dispatch({ type: INIT_USER, payload: response.data })
       //console.log("Initialized user data successfully");
-    })
-    .catch((error)=>{
-      console.log(error);
-    });
-  }
-}
-
-export function initEventExportTemplate(id) {
-  return function (dispatch) {
-    axios.get(`${API_ROOT_URL}/api/v1/event_export_templates/${id}`,
-    {
-      headers: {
-        authorization: cookies.get('token')
-      }
-    })
-    .then((response) => {
-      dispatch({ type: INIT_EVENT_EXPORT_TEMPLATE, payload: response.data })
-      //console.log("Initialized export template data successfully");
     })
     .catch((error)=>{
       console.log(error);
@@ -215,15 +206,24 @@ export function login({username, password = ''}) {
   }
 }
 
-export function createEvent(eventValue, eventFreeText = '', eventOptions = []) {
+export function createEvent(eventValue, eventFreeText = '', eventOptions = [], eventTS = '') {
+
+  let payload = {
+    event_value: eventValue,
+    event_free_text: eventFreeText,
+    event_options: eventOptions
+  }
+
+  // console.log("eventTS:", eventTS)
+  if(eventTS.length > 0){
+    payload.ts = eventTS
+  }
+
+  // console.log("payload:", payload)
 
   return function (dispatch) {
     axios.post(`${API_ROOT_URL}/api/v1/events`,
-    {
-      event_value: eventValue,
-      event_free_text: eventFreeText,
-      event_options: eventOptions
-    },
+    payload,
     {
       headers: {
         authorization: cookies.get('token')
@@ -261,7 +261,7 @@ export function registerUser({username, fullname, password = '', email}) {
   }
 }
 
-export function createUser({username, fullname, password = '', email, roles}) {
+export function createUser({username, fullname, password = '', email, roles, system_user = false}) {
   return function (dispatch) {
     axios.post(`${API_ROOT_URL}/api/v1/users`,
     {username, fullname, password, email, roles},
@@ -286,98 +286,6 @@ export function createUser({username, fullname, password = '', email, roles}) {
       // If request is unauthenticated
       console.log(error);
       dispatch(createUserError(error.response.data.message));
-
-    });
-  }
-}
-
-export function createEventExportTemplate(formProps) {
-
-  let fields = {}
-
-  if(formProps.event_export_template_name) {
-    fields.event_export_template_name = formProps.event_export_template_name;
-  }
-
-  if(formProps.event_export_template_eventvalue_filter) {
-    fields.event_export_template_eventvalue_filter = formProps.event_export_template_eventvalue_filter.split(',');
-  } else {
-    fields.event_export_template_eventvalue_filter = []
-  }
-
-  if(formProps.event_export_template_freetext_filter) {
-    fields.event_export_template_freetext_filter = formProps.event_export_template_freetext_filter;
-  } else {
-    fields.event_export_template_freetext_filter = ""
-  }
-
-  if(formProps.event_export_template_user_filter) {
-    fields.event_export_template_user_filter = formProps.event_export_template_user_filter.split(',');
-  } else {
-    fields.event_export_template_user_filter = []
-  }
-
-  if(formProps.event_export_template_startTS) {
-    fields.event_export_template_startTS = formProps.event_export_template_startTS;
-  } else {
-    fields.event_export_template_startTS = ""
-  }
-
-  if(formProps.event_export_template_stopTS) {
-    fields.event_export_template_stopTS = formProps.event_export_template_stopTS;
-  } else {
-    fields.event_export_template_stopTS = ""
-  }
-
-  if(formProps.event_export_template_limit) {
-    fields.event_export_template_limit = formProps.event_export_template_limit;
-  } else {
-    fields.event_export_template_limit = 0
-  }
-
-  if(formProps.event_export_template_offset) {
-    fields.event_export_template_offset = formProps.event_export_template_offset;
-  } else {
-    fields.event_export_template_offset = 0
-  }
-
-  if(formProps.event_export_template_include_aux_data) {
-    fields.event_export_template_include_aux_data = formProps.event_export_template_include_aux_data;
-
-    if(formProps.event_export_template_datasource_filter) {
-      fields.event_export_template_datasource_filter = formProps.event_export_template_datasource_filter.split(',');
-    } else {
-      fields.event_export_template_datasource_filter = []
-    }
-  } else {
-    fields.event_export_template_include_aux_data = false;
-    fields.event_export_template_datasource_filter = []
-  }
-
-  return function (dispatch) {
-    axios.post(`${API_ROOT_URL}/api/v1/event_export_templates`,
-    fields,
-    {
-      headers: {
-        authorization: cookies.get('token'),
-        'content-type': 'application/json'
-      }
-    })
-    .then((response) => {
-
-      //console.log("New export template successfully created");
-      dispatch(createEventExportTemplateSuccess('Event Export Template created'));
-      dispatch(fetchEventExportTemplates());
-//      dispatch(hideAddNewUserForm());
-
-      // Redirect to login
-      //this.context.router.history.push(`${ROOT_PATH}/login`);
-    })
-    .catch((error) => {
-
-      // If request is unauthenticated
-      console.log(error);
-      dispatch(createEventExportTemplateError(error.response.data.message));
 
     });
   }
@@ -532,6 +440,12 @@ export function updateUser(formProps) {
     fields.roles = formProps.roles;
   }
 
+  if(formProps.system_user) {
+    fields.system_user = formProps.system_user;
+  } else {
+    fields.system_user = false;
+  }
+
   return function (dispatch) {
     axios.patch(`${API_ROOT_URL}/api/v1/users/${formProps.id}`,
       fields,
@@ -560,104 +474,6 @@ export function updateUser(formProps) {
 
       // If request is unauthenticated
       dispatch(updateUserError(error.response.data.message));
-
-    });
-  }
-}
-
-export function updateEventExportTemplate(formProps) {
-
-  let fields = {}
-  //console.log(formProps);
-
-  if(formProps.event_export_template_name) {
-    fields.event_export_template_name = formProps.event_export_template_name;
-  }
-
-  if(formProps.event_export_template_eventvalue_filter) {
-    //console.log(formProps.event_export_template_eventvalue_filter)
-    fields.event_export_template_eventvalue_filter = formProps.event_export_template_eventvalue_filter.split(',');
-  } else {
-    fields.event_export_template_eventvalue_filter = []
-  }
-
-  if(formProps.event_export_template_freetext_filter) {
-    fields.event_export_template_freetext_filter = formProps.event_export_template_freetext_filter;
-  } else {
-    fields.event_export_template_freetext_filter = ""
-  }
-
-  if(formProps.event_export_template_user_filter) {
-    fields.event_export_template_user_filter = formProps.event_export_template_user_filter.split(',');
-  } else {
-    fields.event_export_template_user_filter = []
-  }
-
-  if(formProps.event_export_template_startTS) {
-    fields.event_export_template_startTS = formProps.event_export_template_startTS;
-  } else {
-    fields.event_export_template_startTS = ""
-  }
-
-  if(formProps.event_export_template_stopTS) {
-    fields.event_export_template_stopTS = formProps.event_export_template_stopTS;
-  } else {
-    fields.event_export_template_stopTS = ""
-  }
-
-  if(formProps.event_export_template_limit) {
-    fields.event_export_template_limit = formProps.event_export_template_limit;
-  } else {
-    fields.event_export_template_limit = 0
-  }
-
-  if(formProps.event_export_template_offset) {
-    fields.event_export_template_offset = formProps.event_export_template_offset;
-  } else {
-    fields.event_export_template_offset = 0
-  }
-
-  if(formProps.event_export_template_include_aux_data) {
-    fields.event_export_template_include_aux_data = formProps.event_export_template_include_aux_data;
-
-    if(formProps.event_export_template_datasource_filter) {
-      fields.event_export_template_datasource_filter = formProps.event_export_template_datasource_filter.split(',');
-    }
-  } else {
-    fields.event_export_template_include_aux_data = false;
-    fields.event_export_template_datasource_filter = []
-  }
-
-  return function (dispatch)
-
-   {
-    axios.patch(`${API_ROOT_URL}/api/v1/event_export_templates/${formProps.id}`,
-      fields,
-      {
-        headers: {
-        authorization: cookies.get('token')
-        }
-      }      
-    )
-    .then((response) => {
-
-      dispatch(fetchEventExportTemplates());
-      dispatch(updateEventExportTemplateSuccess('Event Export Template updated'));
-
-      // if you change yourself, you have to re-login
-      //if(cookies.get('id') === formProps.id) {
-      //  dispatch(logout());
-      //}
-
-      // Redirect to login
-      //this.context.router.history.push(`${ROOT_PATH}/login`);
-    })
-    .catch((error) => {
-
-      console.log(error);
-
-      // If request is unauthenticated
-      dispatch(updateEventExportTemplateError(error.response.data.message));
 
     });
   }
@@ -773,68 +589,6 @@ export function deleteUser(id) {
   }
 }
 
-export function runEventExportTemplate(id) {
-
-  return function (dispatch) {
-    axios.get(`${API_ROOT_URL}/api/v1/event_export_templates/${id}/run`,
-      {
-        headers: {
-        authorization: cookies.get('token')
-        }
-      }      
-    )
-    .then((response) => {
-
-      //console.log(response);
-
-      fileDownload(JSON.stringify(response.data, null, "\t"), 'export.json');
-
-//      dispatch(fetchTemplates());
-//      dispatch(updateUserEditSuccess('Account updated'));
-
-      // Redirect to login
-      //this.context.router.history.push(`${ROOT_PATH}/login`);
-    })
-    .catch((error) => {
-
-      console.log(error);
-
-      // If request is unauthenticated
-      //dispatch(updateUserEditError(error.response.data.message));
-
-    });
-  }
-}
-
-export function deleteEventExportTemplate(id) {
-
-  return function (dispatch) {
-    axios.delete(`${API_ROOT_URL}/api/v1/event_export_templates/${id}`,
-      {
-        headers: {
-        authorization: cookies.get('token')
-        }
-      }      
-    )
-    .then((response) => {
-
-      dispatch(fetchEventExportTemplates());
-//      dispatch(updateUserEditSuccess('Account updated'));
-
-      // Redirect to login
-      //this.context.router.history.push(`${ROOT_PATH}/login`);
-    })
-    .catch((error) => {
-
-      console.log(error);
-
-      // If request is unauthenticated
-      //dispatch(updateUserEditError(error.response.data.message));
-
-    });
-  }
-}
-
 export function deleteEventTemplate(id) {
 
   return function (dispatch) {
@@ -869,10 +623,15 @@ export function logout() {
   return function(dispatch) {
     cookies.remove('token', { path: '/' });
     cookies.remove('id', { path: '/' });
-    dispatch({type: UNAUTH_USER });
+    return dispatch({type: UNAUTH_USER });
   }
 }
 
+export function switch2Guest() {
+  return function(dispatch) {
+    dispatch(login( { username:"guest", password: "" } ) );
+  }
+}
 
 export function authError(error) {
   return {
@@ -984,23 +743,9 @@ export function fetchUsers() {
   }
 }
 
-export function updateEventExportTemplateSuccess(message) {
-  return {
-    type: UPDATE_EVENT_EXPORT_TEMPLATE_SUCCESS,
-    payload: message
-  }
-}
+export function fetchCustomVars() {
 
-export function updateEventExportTemplateError(message) {
-  return {
-    type: UPDATE_EVENT_EXPORT_TEMPLATE_ERROR,
-    payload: message
-  }
-}
-
-export function fetchEventExportTemplates() {
-
-  const request = axios.get(API_ROOT_URL + '/api/v1/event_export_templates', {
+  const request = axios.get(API_ROOT_URL + '/api/v1/custom_vars', {
     headers: {
       authorization: cookies.get('token')
     }
@@ -1009,14 +754,33 @@ export function fetchEventExportTemplates() {
   return function (dispatch) {
     
     request.then(({data}) => {
-      dispatch({type: FETCH_EVENT_EXPORT_TEMPLATES, payload: data});
+
+      // console.log("custom_vars_data:", data)
+      dispatch({type: FETCH_CUSTOM_VARS, payload: data})
     })
     .catch((error) => {
-      if(error.response.status !== 404) {
-        console.log(error);
-      } else {
-        dispatch({type: FETCH_EVENT_EXPORT_TEMPLATES, payload: []});
-      }
+      console.log(error);
+    });
+  }
+}
+
+export function updateCustomVars(id, value) {
+  
+  return function(dispatch) {
+    axios.patch(`${API_ROOT_URL}/api/v1/custom_vars/${id}`,
+      value,
+      {
+        headers: {
+        authorization: cookies.get('token')
+        }
+      }      
+    )
+    .then((response) => {
+
+      dispatch(fetchCustomVars());
+    })
+    .catch((error) => {
+      console.log(error);
     });
   }
 }
@@ -1096,14 +860,52 @@ export function fetchEvents() {
       dispatch({type: FETCH_EVENTS, payload: data})
     })
     .catch((error) => {
-      console.log(error);
+      if(error.response.status !== 404) {
+        console.log(error);
+      } else {
+        dispatch({type: FETCH_EVENTS, payload: []});
+      }
     });
   }
 }
 
-export function fetchEventHistory() {
+export function fetchSelectedEvent(id) {
+  
+  return function(dispatch) {
 
-  const request = axios.get(API_ROOT_URL + '/api/v1/events', {
+    axios.get(`${API_ROOT_URL}/api/v1/events/${id}`,
+      {
+        headers: {
+        authorization: cookies.get('token')
+        }
+      }      
+    )
+    .then((response) => {
+      // console.log("response:", response.data)
+      dispatch({type: SET_SELECTED_EVENT, payload: response.data})
+    })
+    .catch((error) => {
+      console.log(error);
+      dispatch({type: SET_SELECTED_EVENT, payload: {}})
+    });
+  }
+}
+
+export function clearSelectedEvent() {
+  return function(dispatch) {
+    dispatch({type: CLEAR_SELECTED_EVENT, payload: null})
+  }
+}
+
+
+export function fetchEventHistory(asnap = false) {
+
+  let url = API_ROOT_URL + '/api/v1/events'
+  if(!asnap) {
+    url = url + '?value=!ASNAP'
+  }
+
+  const request = axios.get(url, {
     headers: {
       authorization: cookies.get('token')
     },
@@ -1115,7 +917,11 @@ export function fetchEventHistory() {
       dispatch({type: FETCH_EVENT_HISTORY, payload: data})
     })
     .catch((error) => {
-      console.log(error);
+      if(error.response.status !== 404) {
+        console.log(error);
+      } else {
+        dispatch({type: FETCH_EVENT_HISTORY, payload: []});
+      }
     });
   }
 }
@@ -1143,7 +949,7 @@ export function fetchEventTemplates() {
 export function initEventExport() {
   return function (dispatch) {
     dispatch({ type: EVENT_EXPORT_FETCHING, payload: true})
-    axios.get(`${API_ROOT_URL}/api/v1/event_exports`,
+    axios.get(`${API_ROOT_URL}/api/v1/events`,
     {
       headers: {
         authorization: cookies.get('token')
@@ -1238,42 +1044,6 @@ export function leaveEventExportFilterForm() {
   }
 }
 
-export function hideEventHistory() {
-  return function (dispatch) {
-    dispatch({type: HIDE_EVENT_HISTORY, payload: null})
-  }
-}
-
-export function showEventHistory() {
-  return function (dispatch) {
-    dispatch({type: SHOW_EVENT_HISTORY, payload: null})
-  }
-}
-
-export function showEventHistoryFullscreen() {
-  return function (dispatch) {
-    dispatch({type: SHOW_EVENT_HISTORY_FULLSCREEN, payload: null})
-  }
-}
-
-export function hideEvents() {
-  return function (dispatch) {
-    dispatch({type: HIDE_EVENTS, payload: null})
-  }
-}
-
-export function showEvents() {
-  return function (dispatch) {
-    dispatch({type: SHOW_EVENTS, payload: null})
-  }
-}
-
-export function showEventsFullscreen() {
-  return function (dispatch) {
-    dispatch({type: SHOW_EVENTS_FULLSCREEN, payload: null})
-  }
-}
-
 export function showModal(modal, props) {
   return function(dispatch) {
     dispatch(show(modal, props));
@@ -1291,7 +1061,7 @@ export function eventExportUpdate() {
     let datasource = (getState().event_export.eventExportFilter.datasource)? `&datasource=${getState().event_export.eventExportFilter.datasource}` : ''
 
     dispatch({ type: EVENT_EXPORT_FETCHING, payload: true})
-    axios.get(`${API_ROOT_URL}/api/v1/event_exports?${startTS}${stopTS}${value}${author}${freetext}${datasource}`,
+    axios.get(`${API_ROOT_URL}/api/v1/events?${startTS}${stopTS}${value}${author}${freetext}${datasource}`,
     {
       headers: {
         authorization: cookies.get('token')
@@ -1330,12 +1100,27 @@ export function eventExportSetActiveEvent(id) {
       dispatch({ type: EVENT_EXPORT_SET_ACTIVE_EVENT, payload: response.data})
     }).catch((error)=>{
       console.log(error.response);
-
       if(error.response.data.statusCode == 404){
         dispatch({type: EVENT_EXPORT_SET_ACTIVE_EVENT, payload: {} })
       } else {
         console.log(error.response);
       }
+    });
+  }
+}
+
+export function deleteAllEvents() {
+  return function(dispatch) {
+    // console.log("set active event to:", id)
+    axios.delete(`${API_ROOT_URL}/api/v1/events/all`,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    }).then((response) => {
+      dispatch(fetchEventHistory())
+    }).catch((error)=>{
+      console.log(error.response);
     });
   }
 }

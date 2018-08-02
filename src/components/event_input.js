@@ -7,7 +7,7 @@ import * as actions from '../actions';
 class EventInput extends Component {
 
   handleFormSubmit({eventFreeText}) {
-    this.props.createEvent('free form', eventFreeText);
+    this.props.createEvent('FREE_FORM', eventFreeText);
   }
 
   render() {
