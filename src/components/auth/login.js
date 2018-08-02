@@ -5,15 +5,23 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Grid, Row, Col, FormGroup, Panel, Button, Alert } from 'react-bootstrap';
 import * as actions from '../../actions';
-
+import { ROOT_PATH } from '../../url_config';
 
 class Login extends Component {
  
+ constructor (props) {
+    super(props);
+
+    this.state = { stdUsers: true }
+
+  }
+
   componentWillUnmount() {
     this.props.leaveLoginForm();
   }
 
   handleFormSubmit({ username, password }) {
+    username = username.toLowerCase();
     this.props.login({username, password});
   }
 
@@ -33,13 +41,13 @@ class Login extends Component {
     }
   }
  
-  render() {
+render() {
     const { handleSubmit, pristine, reset, submitting } = this.props;
     const loginPanelHeader = (<h3>Please Sign In</h3>);
     return (
       <Grid>
         <Row>
-          <Col sm={4} smOffset={4} md={4} mdOffset={4}>
+          <Col xs={8} xsOffset={2} sm={4} smOffset={4} md={4} mdOffset={4} lg={4} lgOffset={4}>
             <Panel header={loginPanelHeader}>
               <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
                 <FormGroup>
@@ -67,8 +75,10 @@ class Login extends Component {
               </form>
               <br/>
               <div className="text-right">
-                <Link to={ `/register` }>Register {<FontAwesome name="arrow-right"/>}</Link>
+                <Link to={ `/register` }>Register New User {<FontAwesome name="arrow-right"/>}</Link>
               </div>
+              <br/>
+              <Button bsStyle="success" onClick={() => this.props.switch2Guest()} block>Login as guest</Button>
             </Panel>
           </Col>
         </Row>

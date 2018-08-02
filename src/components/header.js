@@ -18,6 +18,16 @@ class Header extends Component {
     }
   }
 
+  handleASNAPToggle() {
+    if(this.props.asnapStatus) {
+      if(this.props.asnapStatus[0].custom_var_value == 'Off') {
+        this.props.updateCustomVars(this.props.asnapStatus[0].id, {custom_var_value: 'On'})
+      } else {
+        this.props.updateCustomVars(this.props.asnapStatus[0].id, {custom_var_value: 'Off'})
+      }
+    }
+  }
+
   renderUserOptions() {
     if(this.props.roles.includes('admin')) {
       return (
@@ -60,13 +70,22 @@ class Header extends Component {
     }
   }
 
+  renderToggleASNAP() {
+    if(this.props.roles.includes('admin') || this.props.roles.includes('event_logger')) {
+      return (
+        <MenuItem onClick={ () => this.handleASNAPToggle() }>Toggle ASNAP</MenuItem>
+      );
+    }
+  }
+
   renderSystemManagerDropdown() {
-    if(this.props.roles && (this.props.roles.includes('admin'))) {
+    if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_manager'))) {
       return (
         <NavDropdown eventKey={3} title={'System Management'} id="basic-nav-dropdown">
           {this.renderEventTemplateOptions()}
           {this.renderTaskOptions()}
           {this.renderUserOptions()}
+          {this.renderToggleASNAP()}
         </NavDropdown>
       );
     }
@@ -80,14 +99,8 @@ class Header extends Component {
           <MenuItem key="profile" eventKey={3.1} >User Profile</MenuItem>
         </LinkContainer>
         <MenuItem key="logout" eventKey={3.3} onClick={ () => this.handleLogout() } >Log Out</MenuItem>
+        {(this.props.fullname != 'Guest')? (<MenuItem key="switch2Guest" eventKey={3.3} onClick={ () => this.handleSwitchToGuest() } >Switch to Guest</MenuItem>) : null }
       </NavDropdown>
-      );
-    } else {
-      // show a link to sign in or sign up
-      return (
-        <LinkContainer to={ `/login` }>
-          <NavItem>Login</NavItem>
-        </LinkContainer>
       );
     }
   }
@@ -96,12 +109,16 @@ class Header extends Component {
     this.props.logout();
   }
 
+  handleSwitchToPilot() {
+    this.props.switch2Pilot();
+  }
+
   render () {
     return (
       <Navbar fluid collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <Link to={ `/` }>Sealog - Alvin Edition</Link>
+            <Link to={ `/` }>Sealog</Link>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
@@ -118,10 +135,13 @@ class Header extends Component {
 }
 
 function mapStateToProps(state){
+  let asnapStatus = (state.custom_var)? state.custom_var.custom_vars.filter(custom_var => custom_var.custom_var_name == "asnapStatus") : []
+
   return {
     authenticated: state.auth.authenticated,
     fullname: state.user.profile.fullname,
-    roles: state.user.profile.roles
+    roles: state.user.profile.roles,
+    asnapStatus: (asnapStatus.length > 0)? asnapStatus : null,
   };
 }
 

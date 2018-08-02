@@ -33,7 +33,6 @@
     "history": "^4.6.3",
     "js-file-download": "^0.4.1",
     "json-2-csv": "^2.2.0",
-    "lodash": "^4.17.4",
     "moment": "^2.22.0",
     "nes": "^6.4.2",
     "prop-types": "^15.5.8",

@@ -147,8 +147,8 @@ class ImportAuxDataModal extends Component {
     const { show, handleHide } = this.props
 
     return (
-      <Modal show={show}>
-        <Modal.Header>
+      <Modal show={show} onHide={handleHide}>
+        <Modal.Header closeButton>
           <Modal.Title>Import Auxiliary Data</Modal.Title>
         </Modal.Header>
 

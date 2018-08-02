@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import { connectModal } from 'redux-modal';
 
-class DeleteEventExportModal extends Component {
+class DataWipeModal extends Component {
 
   constructor (props) {
     super(props);
@@ -12,13 +12,12 @@ class DeleteEventExportModal extends Component {
   }
 
   static propTypes = {
-    id: PropTypes.string.isRequired,
     handleDelete: PropTypes.func.isRequired,
     handleHide: PropTypes.func.isRequired
   };
 
   handleConfirm() {
-    this.props.handleDelete(this.props.id);
+    this.props.handleDelete();
     this.props.handleDestroy();
   }
 
@@ -27,22 +26,22 @@ class DeleteEventExportModal extends Component {
     const { show, handleHide } = this.props
 
     return (
-      <Modal show={show}>
-        <Modal.Header>
-          <Modal.Title>Confirm Deletion</Modal.Title>
+      <Modal show={show} onHide={handleHide}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Wipe</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          { 'Are you sure you want to delete this event export?' }
+          { 'Are you sure you want to wipe the local database?' }
         </Modal.Body>
 
         <Modal.Footer>
           <Button onClick={handleHide}>Cancel</Button>
-          <Button bsStyle="danger" onClick={this.handleConfirm}>Yup!</Button>
+          <Button bsStyle="success" onClick={this.handleConfirm}>Yup!</Button>
         </Modal.Footer>
       </Modal>
     );
   }
 }
 
-export default connectModal({ name: 'deleteExport' })(DeleteEventExportModal)
+export default connectModal({ name: 'dataWipe' })(DataWipeModal)

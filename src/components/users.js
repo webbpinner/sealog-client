@@ -8,8 +8,11 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { ROOT_PATH } from '../url_config';
 import CreateUser from './create_user';
 import UpdateUser from './update_user';
+import DisplayUserTokenModal from './display_user_token_modal';
 import DeleteUserModal from './delete_user_modal';
 import * as actions from '../actions';
+
+const disabledAccounts = ['pilot', 'stbd_obs', 'port_obs', 'alvin']
 
 let fileDownload = require('js-file-download');
 
@@ -26,6 +29,10 @@ class Users extends Component {
 
   handleUserDelete(id) {
     this.props.showModal('deleteUser', { id: id, handleDelete: this.props.deleteUser });
+  }
+
+  handleDisplayUserToken(id) {
+    this.props.showModal('displayUserToken', { id: id });
   }
 
   handleUserSelect(id) {
@@ -55,6 +62,7 @@ class Users extends Component {
   renderUsers() {
 
     const editTooltip = (<Tooltip id="editTooltip">Edit this user.</Tooltip>)
+    const tokenTooltip = (<Tooltip id="deleteTooltip">Show user's JWT token.</Tooltip>)
     const deleteTooltip = (<Tooltip id="deleteTooltip">Delete this user.</Tooltip>)
 
     if(this.props.users){
@@ -64,9 +72,9 @@ class Users extends Component {
             <td>{user.username}</td>
             <td>{user.fullname}</td>
             <td>
-              <Link key={`edit_${user.id}`} to="#" onClick={ () => this.handleUserSelect(user.id) }><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>
-              {' '}
-              {user.id != this.props.profileid? <Link key={`delete_${user.id}`} to="#" onClick={ () => this.handleUserDelete(user.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link> : ''}
+              <Link key={`edit_${user.id}`} to="#" onClick={ () => this.handleUserSelect(user.id) }><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>{' '}
+              {(this.props.roles.includes('admin'))? <Link key={`token_${user.id}`} to="#" onClick={ () => this.handleDisplayUserToken(user.id) }><OverlayTrigger placement="top" overlay={tokenTooltip}><FontAwesome name='eye' fixedWidth/></OverlayTrigger></Link> : ''}{' '}
+              {(user.id != this.props.profileid && !disabledAccounts.includes(user.username))? <Link key={`delete_${user.id}`} to="#" onClick={ () => this.handleUserDelete(user.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link> : ''}
             </td>
           </tr>
         );
@@ -125,7 +133,7 @@ class Users extends Component {
         )
     }
 
-    if (this.props.roles.includes("admin")) {
+    if (this.props.roles.includes("admin") || this.props.roles.includes("event_manager")) {
 
       // console.log("userid:", this.props.userid)
 
@@ -133,6 +141,7 @@ class Users extends Component {
 
       return (
         <Grid fluid>
+          <DisplayUserTokenModal />
           <DeleteUserModal />
           <Row>
             <Col sm={6} mdOffset= {1} md={5} lgOffset= {2} lg={4}>
