@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { Button, Modal, Grid, Row, Col } from 'react-bootstrap';
 import { connectModal } from 'redux-modal';
-import FontAwesome from 'react-fontawesome';
 import Cookies from 'universal-cookie';
 import { API_ROOT_URL } from '../url_config';
 

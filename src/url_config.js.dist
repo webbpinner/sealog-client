@@ -1,3 +1,14 @@
-export const API_ROOT_URL = `${window.location.protocol}//${window.location.hostname}:8000/sealog-server`;
+
+// Use these settings if connecting to a server using http
+export const API_ROOT_URL = `http://${window.location.hostname}:8000/sealog-server`;
 export const WS_ROOT_URL = `ws://${window.location.hostname}:8001/ws`;
-export const ROOT_PATH = "/sealog";
+
+// Use these settings if connecting to a server using https
+// export const API_ROOT_URL = `https://${window.location.hostname}:8000/sealog-server`;
+// export const WS_ROOT_URL = `wss://${window.location.hostname}:8001/ws`;
+
+// Change this if not hosting the client at the webserver's document root i.e. '/sealog/'
+export const ROOT_PATH = "/";
+
+// Where the images are hosted on the webserver.
+export const IMAGE_PATH = "/sealog-images";

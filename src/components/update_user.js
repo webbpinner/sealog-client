@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, Field, initialize } from 'redux-form';
-import { Alert, Button, Checkbox, Col, FormGroup, FormControl, FormGroupItem, Grid, Panel, Row, Tooltip, OverlayTrigger} from 'react-bootstrap';
+import { Alert, Button, Checkbox, Col, FormGroup, FormControl, FormGroupItem, Panel, Row, Tooltip, OverlayTrigger} from 'react-bootstrap';
 import * as actions from '../actions';
 import { standardUserRoleOptions } from '../standard_user_role_options';
 import { systemUserRoleOptions } from '../system_user_role_options';
@@ -140,56 +140,61 @@ class UpdateUser extends Component {
       let userRoleOptions = this.props.roles.includes('admin')? systemUserRoleOptions.concat(standardUserRoleOptions): standardUserRoleOptions;
 
       return (
-        <Panel bsStyle="default" header={updateUserFormHeader}>
-          <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
-            <Field
-              name="username"
-              component={this.renderField}
-              type="text"
-              label="Username"
-              required={true}
-            />
-            <Field
-              name="fullname"
-              type="text"
-              component={this.renderField}
-              label="Full Name"
-              required={true}
-            />
-            <Field
-              name="email"
-              component={this.renderField}
-              type="text"
-              label="Email"
-              required={true}
-            />
-            <Field
-              name="password"
-              component={this.renderField}
-              type="password"
-              label="Password"
-            />
-            <Field
-              name="confirmPassword"
-              component={this.renderField}
-              type="password"
-              label="Confirm Password"
-            />
-            <Field
-              name="roles"
-              component={this.renderCheckboxGroup}
-              label="Roles"
-              options={userRoleOptions}
-              required={true}
-            />
-            {this.renderAdminOptions()}
-            {this.renderAlert()}
-            {this.renderMessage()}
-            <div className="pull-right">
-              <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
-              <Button bsStyle="primary" type="submit" disabled={submitting || !valid}>Update</Button>
-            </div>
-          </form>
+        <Panel>
+          <Panel.Heading>
+          {updateUserFormHeader}
+          </Panel.Heading>
+          <Panel.Body>
+            <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
+              <Field
+                name="username"
+                component={this.renderField}
+                type="text"
+                label="Username"
+                required={true}
+              />
+              <Field
+                name="fullname"
+                type="text"
+                component={this.renderField}
+                label="Full Name"
+                required={true}
+              />
+              <Field
+                name="email"
+                component={this.renderField}
+                type="text"
+                label="Email"
+                required={true}
+              />
+              <Field
+                name="password"
+                component={this.renderField}
+                type="password"
+                label="Password"
+              />
+              <Field
+                name="confirmPassword"
+                component={this.renderField}
+                type="password"
+                label="Confirm Password"
+              />
+              <Field
+                name="roles"
+                component={this.renderCheckboxGroup}
+                label="Roles"
+                options={userRoleOptions}
+                required={true}
+              />
+              {this.renderAdminOptions()}
+              {this.renderAlert()}
+              {this.renderMessage()}
+              <div className="pull-right">
+                <Button bsStyle="default" type="button" disabled={pristine || submitting} onClick={reset}>Reset Values</Button>
+                <Button bsStyle="primary" type="submit" disabled={submitting || !valid}>Update</Button>
+              </div>
+            </form>
+          </Panel.Body>
         </Panel>
       )
     } else {

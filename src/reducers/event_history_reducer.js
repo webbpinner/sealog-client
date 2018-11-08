@@ -16,10 +16,10 @@ export default function(state={event_templates: [], history: []}, action) {
       }
       return { ...state, history: action.payload };
     case UPDATE_EVENT_HISTORY:
-      let completeHistory = [...state.history, action.payload ]
+      let completeHistory = [action.payload, ...state.history ]
       let recentHistory = []
       if(completeHistory.length > historyLimit) {
-        recentHistory = completeHistory.slice(completeHistory.length-historyLimit)
+        recentHistory = completeHistory.slice(0, historyLimit)
       } else {
         recentHistory = completeHistory
       }

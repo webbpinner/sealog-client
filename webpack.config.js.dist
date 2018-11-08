@@ -1,76 +1,50 @@
-let CopyWebpackPlugin = require ("copy-webpack-plugin");
-//let HtmlWebpackPlugin = require('html-webpack-plugin')
-let path = require("path");
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
-  entry: [
-    './src/index.js'
-  ],
+  entry: './src/index.js',
   output: {
-//    path: __dirname,
-    path: path.resolve(__dirname, "dist"),
-    publicPath: '/sealog/',
-    filename: 'bundle.js'
-  },
-  module: {
-    loaders: [
-      { 
-        test: /\.css$/,
-        use: [
-          { loader: "style-loader" },
-          { loader: "css-loader" }
-        ]
-      },
-      {
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-        query: {
-          presets: ['react', 'es2015', 'stage-1']
-        }
-      },
-      {
-        test: /\.(jpe?g|png|gif)$/i,
-        loader: "file-loader",
-        options: {
-          publicPath: 'images/',
-          outputPath: 'images/'
-        }
-      },
-      {
-        test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "url-loader?limit=10000&mimetype=application/font-woff",
-        options: {
-          publicPath: 'fonts/',
-          outputPath: 'fonts/'
-        }
-      },
-      {
-        test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "file-loader",
-        options: {
-          publicPath: 'fonts/',
-          outputPath: 'fonts/'
-        }
-      }
-    ]
-  },
-  resolve: {
-    extensions: ['.js', '.jsx']
+    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'dist')
   },
   devServer: {
-    historyApiFallback: {
-      index:'/index.html'
-    },
     contentBase: './dist',
-    port: 9000,
+    historyApiFallback: true
   },
   plugins: [
-    new CopyWebpackPlugin([
-        {context: 'node_modules/react-bootstrap-theme-switcher/themes/', from: '**/*', to: 'themes/'},
-        {context: 'src/assets/style', from: '**/*', to: 'style/'}
-      ],
-      {copyUnmodified: true}
-    ),
-//    new HtmlWebpackPlugin()
-  ]
+    // new CleanWebpackPlugin(['dist']),
+    // new HtmlWebpackPlugin({
+    //   title: 'Development'
+    // })
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        }
+      },
+      {
+        test: /\.scss$/,
+        loader: 'style-loader!css-loader!sass-loader'
+      },
+      {
+        test: /\.css$/,
+        use: [ 'style-loader','css-loader']
+      },
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [{
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]',
+            outputPath: '/fonts/'
+          }
+        }]
+      }
+    ]
+  }
 };

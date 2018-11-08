@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Navbar, Nav, NavDropdown, NavItem, MenuItem, Image } from 'react-bootstrap';
-import FontAwesome from 'react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Navbar, Nav, NavDropdown, NavItem, MenuItem, Image, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { ROOT_PATH } from '../url_config';
 import * as actions from '../actions';
+
+const heading = "Sealog"
 
 class Header extends Component {
 
@@ -17,17 +19,7 @@ class Header extends Component {
     if (this.props.authenticated) {
       this.props.updateProfileState();
     }
-    this.props.fetchCustomVars()
-  }
-
-  handleASNAPToggle() {
-    if(this.props.asnapStatus) {
-      if(this.props.asnapStatus[0].custom_var_value == 'Off') {
-        this.props.updateCustomVars(this.props.asnapStatus[0].id, {custom_var_value: 'On'})
-      } else {
-        this.props.updateCustomVars(this.props.asnapStatus[0].id, {custom_var_value: 'Off'})
-      }
-    }
+//    this.props.fetchCustomVars()
   }
 
   handleASNAPToggle() {
@@ -41,7 +33,7 @@ class Header extends Component {
   }
 
   renderUserOptions() {
-    if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager')) {
+    if(this.props.roles.includes('admin')) {
       return (
         <LinkContainer to={ `/users` }>
           <NavItem>Users</NavItem>
@@ -50,13 +42,13 @@ class Header extends Component {
     }
   }
 
-  renderEventExportOptions() {
+  renderEventLoggingOptions() {
 
     // console.log(this.props.roles)
     if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_logger') || this.props.roles.includes('event_watcher'))) {
       return (
-        <LinkContainer to={ `/event_exports` }>
-          <NavItem>Event Review/Export</NavItem>
+        <LinkContainer to={ `/replay` }>
+          <NavItem>Review Events</NavItem>
         </LinkContainer>
       );
     }
@@ -83,7 +75,7 @@ class Header extends Component {
   }
 
   renderToggleASNAP() {
-    if(this.props.roles.includes('admin') || this.props.roles.includes('event_logger')) {
+    if(this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_logger')) {
       return (
         <MenuItem onClick={ () => this.handleASNAPToggle() }>Toggle ASNAP</MenuItem>
       );
@@ -91,7 +83,7 @@ class Header extends Component {
   }
 
   renderSystemManagerDropdown() {
-    if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager') || this.props.roles.includes('event_manager'))) {
+    if(this.props.roles && (this.props.roles.includes('admin') || this.props.roles.includes('event_manager'))) {
       return (
         <NavDropdown eventKey={3} title={'System Management'} id="basic-nav-dropdown">
           {this.renderEventTemplateOptions()}
@@ -106,7 +98,7 @@ class Header extends Component {
   renderUserDropdown() {
     if(this.props.authenticated){
       return (
-      <NavDropdown eventKey={3} title={<span>{this.props.fullname} <FontAwesome name='user' /></span>} id="basic-nav-dropdown">
+      <NavDropdown eventKey={3} title={<span>{this.props.fullname} <FontAwesomeIcon icon="user" /></span>} id="basic-nav-dropdown">
         <LinkContainer to={ `/profile` }>
           <MenuItem key="profile" eventKey={3.1} >User Profile</MenuItem>
         </LinkContainer>
@@ -127,21 +119,23 @@ class Header extends Component {
 
   render () {
     return (
+      <Row>
       <Navbar fluid collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <Link to={ `/` }>Sealog</Link>
+            <Link to={ `/` }>{heading}</Link>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav pullRight>
-            {this.renderEventExportOptions()}
+            {this.renderEventLoggingOptions()}
             {this.renderSystemManagerDropdown()}
             {this.renderUserDropdown()}
           </Nav>
         </Navbar.Collapse>
       </Navbar>
+      </Row>
     );
   }
 }

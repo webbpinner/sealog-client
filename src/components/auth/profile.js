@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 import { reduxForm, Field, initialize } from 'redux-form';
-import { Alert, Button, Col, FormGroup, FormControl, Grid, Panel, Row } from 'react-bootstrap';
+import { Alert, Button, Col, FormGroup, FormControl, Panel, Row } from 'react-bootstrap';
 import { API_ROOT_URL } from '../../url_config';
 import * as actions from '../../actions';
 
@@ -23,7 +23,7 @@ class Profile extends Component {
 
   componentDidUpdate() {
 
-    if(this.props.userID && this.state.token == null) {
+    if(this.props.userID && !this.state.token) {
       axios.get(`${API_ROOT_URL}/api/v1/users/${this.props.userID}/token`,
       {
         headers: {
@@ -86,13 +86,14 @@ class Profile extends Component {
   render() {
 
     const { handleSubmit, pristine, reset, submitting, valid } = this.props;
-    const profileFormHeader = (<h3>User Profile</h3>);
+    const profileFormHeader = (<h4>User Profile</h4>);
 
     return (
-      <Grid fluid>
-        <Row>
-          <Col sm={6} smOffset={3} md={4} mdOffset={4}>
-            <Panel header={ profileFormHeader }>
+      <Row>
+        <Col>
+          <Panel className="form-signin">
+            <Panel.Body>
+              { profileFormHeader }
               <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
                 <Field
                   name="username"
@@ -140,10 +141,10 @@ class Profile extends Component {
                   <div style={style}>{this.state.token}</div>
                 </div>
               </form>
-            </Panel>
-          </Col>
-        </Row>
-      </Grid>
+            </Panel.Body>
+          </Panel>
+        </Col>
+      </Row>
     )
   }
 }

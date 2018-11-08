@@ -40,21 +40,6 @@ export const UPDATE_EVENT_HISTORY = 'update_event_history';
 
 export const DELETE_USER = 'destory_user';
 
-export const INIT_EVENT_EXPORT_TEMPLATE = 'init_event_export_template';
-export const UPDATE_EVENT_EXPORT_TEMPLATE = 'update_event_export_template';
-export const UPDATE_EVENT_EXPORT_TEMPLATE_SUCCESS = 'update_event_export_template_success';
-export const UPDATE_EVENT_EXPORT_TEMPLATE_ERROR = 'update_event_export_template_error';
-export const LEAVE_UPDATE_EVENT_EXPORT_TEMPLATE_FORM = 'leave_update_event_export_template_form';
-
-export const CREATE_EVENT_EXPORT_TEMPLATE = 'create_event_export_template';
-export const CREATE_EVENT_EXPORT_TEMPLATE_SUCCESS = 'create_event_export_template_success';
-export const CREATE_EVENT_EXPORT_TEMPLATE_ERROR = 'create_event_export_template_error';
-export const LEAVE_CREATE_EVENT_EXPORT_TEMPLATE_FORM = 'leave_create_event_export_template_form';
-
-export const FETCH_EVENT_EXPORT_TEMPLATES = 'fetch_event_export_templates';
-
-export const DELETE_EVENT_EXPORT_TEMPLATE = 'destory_event_export_template';
-
 export const INIT_EVENT_TEMPLATE = 'init_event_template';
 export const UPDATE_EVENT_TEMPLATE = 'update_event_template';
 export const UPDATE_EVENT_TEMPLATE_SUCCESS = 'update_event_template_success';
@@ -70,12 +55,15 @@ export const FETCH_EVENT_TEMPLATES = 'fetch_event_templates';
 
 export const DELETE_DEFINITION = 'destory_event_template';
 
-export const INIT_EVENT_EXPORT = 'init_event_export';
-export const EVENT_EXPORT_FETCHING = 'event_export_fetching';
-export const UPDATE_EVENT_EXPORT_FILTER_FORM = 'update_event_export_filter_form';
-export const LEAVE_EVENT_EXPORT_FILTER_FORM = 'leave_event_export_filter_form';
-export const UPDATE_EVENT_EXPORT = 'update_event_export';
+export const INIT_EVENT = 'init_event';
+export const EVENT_FETCHING = 'event_fetching';
+export const UPDATE_EVENT_FILTER_FORM = 'update_event_filter_form';
+export const LEAVE_EVENT_FILTER_FORM = 'leave_event_filter_form';
+export const UPDATE_EVENT = 'update_event';
 
 export const FETCH_CUSTOM_VARS = 'fetch_custom_vars';
 export const UPDATE_CUSTOM_VAR = 'update_custom_var';
 
+export const INIT_REPLAY = 'init_replay';
+export const REPLAY_ADVANCE = 'replay_advance';
+export const REPLAY_REVERSE = 'replay_reverse';

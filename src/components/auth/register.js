@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import FontAwesome from 'react-fontawesome';
 import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Link } from 'react-router-dom';
-import { Grid, Row, Col, FormGroup, Panel, Button, Alert } from 'react-bootstrap';
+import { Row, Col, FormGroup, Panel, Button } from 'react-bootstrap';
 import * as actions from '../../actions';
 
 class Register extends Component {
@@ -32,18 +32,29 @@ class Register extends Component {
     )
   }
 
+  renderMessage() {
+    if (this.props.message) {
+      return (
+        <Alert bsStyle="success">
+          <strong>Success!</strong> {this.props.message}
+        </Alert>
+      )
+    }
+  }
+
   renderSuccess() {
     if (this.props.message) {
-      const panelHeader = (<h3>New User Registration</h3>);
+      const panelHeader = (<h4>New User Registration</h4>);
 
       return (
-        <Panel header={panelHeader}>
-          <div className="alert alert-success">
-            <strong>Success!</strong> {this.props.message}
-          </div>
-          <div className="text-right">
-            <Link to={ `/login` }>Proceed to Login {<FontAwesome name="arrow-right"/>}</Link>
-          </div>
+        <Panel className="form-signin">
+          <Panel.Body>
+            {panelHeader}>
+            {this.renderMessage()}
+            <div className="text-right">
+              <Link to={ `/login` }>Proceed to Login {<FontAwesomeIcon icon="arrow-right"/>}</Link>
+            </div>
+          </Panel.Body>
         </Panel>
       )
     }
@@ -63,62 +74,71 @@ class Register extends Component {
 
     if (!this.props.message) {
 
-      const panelHeader = (<h3>New User Registration</h3>);
+      const panelHeader = (<h4>New User Registration</h4>);
       const { handleSubmit, pristine, reset, submitting, valid } = this.props;
       //console.log(this.props);
 
       return (
-        <Panel header={panelHeader}>
-          <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
-            <div className="form-group">
-              <Field
-                name="username"
-                component={this.renderField}
-                type="text"
-                label="Username"
-                required={true}
-              />
-            </div>
-            <div className="form-group">
-              <Field
-                name="fullname"
-                type="text"
-                component={this.renderField}
-                label="Full Name"
-                required={true}
-              />
-            </div>
-            <div className="form-group">
-              <Field
-                name="email"
-                component={this.renderField}
-                type="text"
-                label="Email"
-                required={true}
-              />
-            </div>
-            <div className="form-group">
-              <Field
-                name="password"
-                component={this.renderField}
-                type="password"
-                label="Password"
-              />
-            </div>
-            <div className="form-group">
-              <Field
-                name="confirmPassword"
-                component={this.renderField}
-                type="password"
-                label="Confirm Password"
-              />
-            </div>
+        <Panel className="form-signin">
+          <Panel.Body>
+            {panelHeader}
+            <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
+              <div className="form-group">
+                <Field
+                  name="username"
+                  component={this.renderField}
+                  type="text"
+                  label="Username"
+                  required={true}
+                />
+              </div>
+              <div className="form-group">
+                <Field
+                  name="fullname"
+                  type="text"
+                  component={this.renderField}
+                  label="Full Name"
+                  required={true}
+                />
+              </div>
+              <div className="form-group">
+                <Field
+                  name="email"
+                  component={this.renderField}
+                  type="text"
+                  label="Email"
+                  required={true}
+                />
+              </div>
+              <div className="form-group">
+                <Field
+                  name="password"
+                  component={this.renderField}
+                  type="password"
+                  label="Password"
+                />
+              </div>
+              <div className="form-group">
+                <Field
+                  name="confirmPassword"
+                  component={this.renderField}
+                  type="password"
+                  label="Confirm Password"
+                />
+              </div>
               {this.renderAlert()}
-            <div className="pull-right">
-              <Button bsStyle="default" bsSize="small" type="button" disabled={pristine || submitting} onClick={reset}>Clear Values</Button>
-              <Button bsStyle="primary" bsSize="small" type="submit" disabled={submitting || !valid}>Register</Button>
+              <div className="pull-right">
+                <Button bsStyle="default" bsSize="small" type="button" disabled={pristine || submitting} onClick={reset} >Clear Values</Button>
+                <Button bsStyle="primary" bsSize="small" type="submit" disabled={submitting || !valid} >Register</Button>
+              </div>
+            </form>
+            <br/>
+            <br/>
+            <br/>
+            <div>
+              <Link to={ `/login` }>{<FontAwesomeIcon icon="arrow-left" />} Back to Login</Link>
             </div>
-          </form>
+          </Panel.Body>
         </Panel>
       )
     }
@@ -129,14 +149,12 @@ class Register extends Component {
     const panelHeader = (<h3>New User Registration</h3>);
 
     return(
-      <Grid>
         <Row>
-          <Col sm={4} smOffset={4} md={4} mdOffset={4}>
+          <Col>
             {this.renderSuccess()}
             {this.renderForm()}
           </Col>
         </Row>
-      </Grid>
     )
   }
 }
@@ -154,8 +172,8 @@ function validate(formProps) {
     errors.username = 'Username can not include whitespace'
   }
 
-  if (!formProps.fullName) {
-    errors.fullName = 'Required'
+  if (!formProps.fullname) {
+    errors.fullname = 'Required'
   }
 
   if (!formProps.email) {

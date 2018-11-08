@@ -5,7 +5,6 @@ import { Button, Checkbox, ControlLabel, FormGroup, FormControl, FormGroupItem, 
 import { connectModal } from 'redux-modal';
 import Datetime from 'react-datetime';
 import Cookies from 'universal-cookie';
-import 'react-datetime/css/react-datetime.css';
 import moment from 'moment';
 import axios from 'axios';
 import { reduxForm, Field, initialize, formValueSelector } from 'redux-form';
@@ -30,10 +29,7 @@ class EventCommentModal extends Component {
   }
 
   static propTypes = {
-    id: PropTypes.string.isRequired,
-    handleHide: PropTypes.func.isRequired,
-    handleUpdateEventComment: PropTypes.func.isRequired
-  };
+    id: PropTypes.string.isRequired };
 
   componentWillMount() {
 
@@ -41,37 +37,34 @@ class EventCommentModal extends Component {
   }
 
   componentWillUnmount() {
-    this.props.clearSelectedEvent();
+//    this.props.clearSelectedEvent();
   }
 
-  handleFormSubmit(formProps) {
+  handleFormSubmit({event_comment = ''}) {
 
-    if(formProps.event_comment) {
-
-      let payload = {
-        event_options: [
-          {
-            event_option_name: 'event_comment',
-            event_option_value: formProps.event_comment
-          }
-        ]
-      }
-      axios.patch(`${API_ROOT_URL}/api/v1/events/${this.props.id}`,
-        payload,
+    let payload = {
+      event_options: [
         {
-          headers: {
-          authorization: cookies.get('token')
-          }
-        }      
-      )
-      // .then((response) => {
-
-      //   dispatch(fetchCustomVars());
-      // })
-      .catch((error) => {
-        console.log(error);
-      });
+          event_option_name: 'event_comment',
+          event_option_value: event_comment
+        }
+      ]
     }
+    axios.patch(`${API_ROOT_URL}/api/v1/events/${this.props.id}`,
+      payload,
+      {
+        headers: {
+        authorization: cookies.get('token')
+        }
+      }      
+    )
+    // .then((response) => {
+
+    //   dispatch(fetchCustomVars());
+    // })
+    .catch((error) => {
+      console.log(error);
+    });
 
     this.props.handleHide();
   }
@@ -227,9 +220,9 @@ EventCommentModal = reduxForm({
 
 function mapStateToProps(state) {
 
-  if (state.event_export.selected_event.event_options) {
+  if (state.event.selected_event.event_options) {
     let options = {}
-    state.event_export.selected_event.event_options.forEach((option) => {
+    state.event.selected_event.event_options.forEach((option) => {
       options[option.event_option_name] = option.event_option_value
     })
     return {

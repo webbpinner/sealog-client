@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
-//import { ThemeChooser } from 'react-bootstrap-theme-switcher';
-
 import { connect } from 'react-redux';
-import { Grid } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import * as actions from '../actions';
 
 class Footer extends Component {
@@ -60,21 +58,20 @@ class Footer extends Component {
     }
 
     return (
-      <Grid fluid>
+      <Row>
         <hr/>
-        <div>
+        <Col xs={12}>
           {asnapStatus}
           <span className="pull-right">
             <a href={`/github`} target="_blank">Sealog</a> is licensed under the <a href={`/license`} target="_blank">GPLv3</a> public license
           </span>
-        </div>
-      </Grid>
+        </Col>
+      </Row>
     );
   }
 }
 
 function mapStateToProps(state){
-//        <ThemeChooser/>
 
   let asnapStatus = (state.custom_var)? state.custom_var.custom_vars.filter(custom_var => custom_var.custom_var_name == "asnapStatus") : []
 

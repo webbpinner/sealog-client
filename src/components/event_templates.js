@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import FontAwesome from 'react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { reduxForm, Field, reset } from 'redux-form';
@@ -8,7 +8,9 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { ROOT_PATH } from '../url_config';
 import CreateEventTemplate from './create_event_template';
 import UpdateEventTemplate from './update_event_template';
+import NonSystemEventTemplatesWipeModal from './non_system_event_templates_wipe_modal';
 import DeleteEventTemplateModal from './delete_event_template_modal';
+import ImportEventTemplatesModal from './import_event_templates_modal';
 import * as actions from '../actions';
 
 let fileDownload = require('js-file-download');
@@ -18,6 +20,7 @@ class EventTemplates extends Component {
   constructor (props) {
     super(props);
 
+    this.handleEventTemplateImportClose = this.handleEventTemplateImportClose.bind(this);
   }
 
   componentWillMount() {
@@ -38,8 +41,24 @@ class EventTemplates extends Component {
     this.props.leaveUpdateEventTemplateForm()
   }
 
+  handleEventTemplateImport() {
+    this.props.showModal('importEventTemplates');
+  }
+
+  handleEventTemplateImportClose() {
+    this.props.fetchEventTemplates();
+  }
+
+  handleNonSystemEventTemplatesWipe() {
+    this.props.showModal('nonSystemEventTemplatesWipe', { handleDelete: this.props.deleteAllNonSystemEventTemplates });
+  }
+
   exportTemplatesToJSON() {
-    fileDownload(JSON.stringify(this.props.event_templates, null, 2), 'sealog_eventTemplateExport.json');
+    fileDownload(JSON.stringify(this.props.event_templates.filter(template => template.system_template == false), null, 2), 'sealog_eventTemplateExport.json');
+  }
+
+  exportSystemTemplatesToJSON() {
+    fileDownload(JSON.stringify(this.props.event_templates.filter(template => template.system_template == true), null, 2), 'sealog_systemEventTemplateExport.json');
   }
 
   renderAddEventTemplateButton() {
@@ -52,21 +71,55 @@ class EventTemplates extends Component {
     }
   }
 
+  renderImportEventTemplatesButton() {
+    if(this.props.roles.includes("admin")) {
+      return (
+        <div className="pull-right">
+          <Button bsStyle="primary" bsSize="small" type="button" onClick={ () => this.handleEventTemplateImport()}>Import From File</Button>
+        </div>
+      );
+    }
+  }
+
+
   renderEventTemplates() {
 
     const editTooltip = (<Tooltip id="editTooltip">Edit this template.</Tooltip>)
     const deleteTooltip = (<Tooltip id="deleteTooltip">Delete this template.</Tooltip>)
 
+    return this.props.event_templates.filter(template => template.system_template == false).map((template) => {
+      return (
+        <tr key={template.id}>
+          <td>{template.event_name}</td>
+          <td>{template.event_value}</td>
+          <td>
+            <Link to="#" onClick={ () => this.handleEventTemplateSelect(template.id) }><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesomeIcon icon='pencil-alt' fixedWidth/></OverlayTrigger></Link>{' '}
+            <Link to="#" onClick={ () => this.handleEventTemplateDelete(template.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesomeIcon icon='trash' fixedWidth/></OverlayTrigger></Link>
+          </td>
+        </tr>
+      );
+    })
+  }
+
+  renderSystemEventTemplates() {
+
+    const editTooltip = (<Tooltip id="editTooltip">Edit this template.</Tooltip>)
+    const deleteTooltip = (<Tooltip id="deleteTooltip">Delete this template.</Tooltip>)
+
     if(this.props.event_templates && this.props.event_templates.length > 0) {
-      return this.props.event_templates.map((template) => {
-        //console.log(definition);
+
+      let systemTemplates = this.props.event_templates.filter(template => template.system_template == true)
+      return systemTemplates.map((template) => {
+
+        let edit_icon = (this.props.roles.includes("admin"))? (<Link to="#" onClick={ () => this.handleEventTemplateSelect(template.id) }><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesomeIcon icon='pencil-alt' fixedWidth/></OverlayTrigger></Link>): null
+        let delete_icon = (this.props.roles.includes("admin"))? (<Link to="#" onClick={ () => this.handleEventTemplateDelete(template.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesomeIcon icon='trash' fixedWidth/></OverlayTrigger></Link>): null
         return (
           <tr key={template.id}>
             <td>{template.event_name}</td>
             <td>{template.event_value}</td>
             <td>
-              <Link to="#" onClick={ () => this.handleEventTemplateSelect(template.id) }><OverlayTrigger placement="top" overlay={editTooltip}><FontAwesome name='pencil' fixedWidth/></OverlayTrigger></Link>{' '}
-              <Link to="#" onClick={ () => this.handleEventTemplateDelete(template.id) }><OverlayTrigger placement="top" overlay={deleteTooltip}><FontAwesome name='trash' fixedWidth/></OverlayTrigger></Link>
+              {edit_icon}{' '}
+              {delete_icon}
             </td>
           </tr>
         );
@@ -81,22 +134,49 @@ class EventTemplates extends Component {
   }
 
   renderEventTemplatesTable() {
-    if(this.props.event_templates.length > 0){
+    if(this.props.event_templates && this.props.event_templates.filter(template => template.system_template === false).length > 0){
       return (
-        <Panel>
-          <Table responsive bordered striped fill>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Value</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.renderEventTemplates()}
-            </tbody>
-          </Table>
-        </Panel>
+        <Table responsive bordered striped>
+          <thead>
+            <tr>
+              <th>Button Name</th>
+              <th>Event Value</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.renderEventTemplates()}
+          </tbody>
+        </Table>
+      )
+    } else {
+      return (
+        <Panel.Body>
+          No Event Templates found!
+        </Panel.Body>
+      )
+    }
+  }
+
+  renderSystemEventTemplatesTable() {
+    if(this.props.event_templates && this.props.event_templates.filter(template => template.system_template === true).length > 0){
+      return (
+        <Table responsive bordered striped>
+          <thead>
+            <tr>
+              <th>Button Name</th>
+              <th>Event Value</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.renderSystemEventTemplates()}
+          </tbody>
+        </Table>
+      )
+    } else {
+      return (
+        <Panel.Body>No System Event Templates found!</Panel.Body>
       )
     }
   }
@@ -107,25 +187,43 @@ class EventTemplates extends Component {
 
     // const importTooltip = (<Tooltip id="importTooltip">Import Event Templates</Tooltip>)
     const exportTooltip = (<Tooltip id="exportTooltip">Export Event Templates</Tooltip>)
+    const deleteAllNonSystemTooltip = (<Tooltip id="deleteAllNonSystemTooltip">Delete ALL non-system Event Templates</Tooltip>)
 
-    // <Button bsStyle="default" bsSize="xs" type="button" onClick={ this.handleImportEventTemplateList }><OverlayTrigger placement="top" overlay={importTooltip}><FontAwesome name='upload' fixedWidth/></OverlayTrigger></Button>
+    const disableBtn = (this.props.event_templates.filter(event_template => event_template.system_template === false).length > 0)? false : true
 
     return (
       <div>
         { Label }
         <div className="pull-right">
-          <Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.exportTemplatesToJSON() }><OverlayTrigger placement="top" overlay={exportTooltip}><FontAwesome name='download' fixedWidth/></OverlayTrigger></Button>
+          <OverlayTrigger placement="top" overlay={deleteAllNonSystemTooltip}><Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.handleNonSystemEventTemplatesWipe() } disabled={disableBtn}><FontAwesomeIcon icon='trash' fixedWidth/></Button></OverlayTrigger>
+          <OverlayTrigger placement="top" overlay={exportTooltip}><Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.exportTemplatesToJSON() } disabled={disableBtn}><FontAwesomeIcon icon='download' fixedWidth/></Button></OverlayTrigger>
+        </div>
+      </div>
+    );
+  }
+
+  renderSystemEventTemplatesHeader() {
+
+    const Label = "System Templates (Added/Edited by Admins only)"
+
+    const exportTooltip = (<Tooltip id="exportTooltip">Export System Event Templates</Tooltip>)
+
+    let export_icon = (this.props.roles.includes("admin"))? (<OverlayTrigger placement="top" overlay={exportTooltip}><Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.exportSystemTemplatesToJSON() }><FontAwesomeIcon icon='download' fixedWidth/></Button></OverlayTrigger>) : null
+
+    return (
+      <div>
+        { Label }
+        <div className="pull-right">
+          {export_icon}
         </div>
       </div>
     );
   }
 
   render() {
-
     if (!this.props.roles) {
         return (
-          <div>Loading...
-          </div>
+          <div>Loading...</div>
         )
     }
 
@@ -136,12 +234,20 @@ class EventTemplates extends Component {
       return (
         <Grid fluid>
           <DeleteEventTemplateModal />
+          <NonSystemEventTemplatesWipeModal />
+          <ImportEventTemplatesModal handleExit={this.handleEventTemplateImportClose} />
           <Row>
             <Col sm={8} md={6} lgOffset= {1} lg={5}>
-              <Panel header={this.renderEventTemplatesHeader()}>
+              <Panel>
+               <Panel.Heading>{this.renderSystemEventTemplatesHeader()}</Panel.Heading>
+                {this.renderSystemEventTemplatesTable()}
+              </Panel>
+              <Panel>
+                <Panel.Heading>{this.renderEventTemplatesHeader()}</Panel.Heading>
                 {this.renderEventTemplatesTable()}
               </Panel>
               {this.renderAddEventTemplateButton()}
+              {this.renderImportEventTemplatesButton()}
             </Col>
             <Col sm={8} md={6} lg={5}>
               { eventTemplatesForm }

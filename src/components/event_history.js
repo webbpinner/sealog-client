@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import FontAwesome from 'react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { connect } from 'react-redux';
 import { findDOMNode } from 'react-dom';
 import { Button, ListGroup, ListGroupItem, Panel, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import * as actions from '../actions';
-import $ from 'jquery';
-import { Client } from 'nes';
+// import $ from 'jquery';
+import { Client } from 'nes/client';
 import Cookies from 'universal-cookie';
 import { WS_ROOT_URL } from '../url_config';
 
@@ -23,7 +23,8 @@ class EventHistory extends Component {
     }
 
     this.client = new Client(`${WS_ROOT_URL}`);
-    this.scrollToBottom = this.scrollToBottom.bind(this);
+    this.connectToWS = this.connectToWS.bind(this);
+    // this.scrollToBottom = this.scrollToBottom.bind(this);
     // this.handleHideEventHistory = this.handleHideEventHistory.bind(this);
     // this.handleShowEventHistory = this.handleShowEventHistory.bind(this);
     // this.handleShowEventHistoryFullscreen = this.handleShowEventHistoryFullscreen.bind(this);
@@ -37,35 +38,8 @@ class EventHistory extends Component {
   }
 
   componentDidMount() {
+    this.connectToWS()
     
-    this.client.connect(
-      {
-        auth: {
-          headers: {
-            authorization: cookies.get('token')
-          }
-        } 
-      },
-      (err) => {
-
-        if(err) {
-          console.log(err);
-        }
-
-        let handler = (update, flags) => {
-          //console.log(update);
-          if(!(this.state.hideASNAP && update.event_value == "ASNAP")) {
-            this.props.updateEventHistory(update);
-          }
-        };
-
-        this.client.subscribe('/ws/status/newEvents', handler, (err) => {
-          if(err) {
-            console.log(err);
-          }
-        })
-      }
-    )
   }
 
   componentWillUnmount() {
@@ -76,6 +50,41 @@ class EventHistory extends Component {
 
   componentDidUpdate() {
     // this.scrollToBottom();
+  }
+
+  async connectToWS() {
+
+    try {
+      const result = await this.client.connect(
+      {
+        auth: {
+          headers: {
+            authorization: cookies.get('token')
+          }
+        }
+      })
+
+      // console.log(result)
+
+      const handler = (update, flags) => {
+        // console.log(update)
+        if(!(this.state.hideASNAP && update.event_value == "ASNAP")) {
+          this.props.updateEventHistory(update)
+        }
+      }
+
+      this.client.subscribe('/ws/status/newEvents', handler);
+
+    } catch(error) {
+      console.log(error);
+      throw(error)
+    }
+  }
+
+  handleEventShowDetails(id) {
+    // console.log("id:", id)
+    this.props.advanceReplayTo(id);
+    this.props.showModal('eventShowDetails', { id: id });
   }
 
   handleEventComment(id) {
@@ -103,8 +112,8 @@ class EventHistory extends Component {
             { Label }
             <div className="pull-right">
               {ASNAPToggle}
-              <Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.handleHideEventHistoryFullscreen() }><OverlayTrigger placement="top" overlay={compressTooltip}><FontAwesome name='compress' fixedWidth/></OverlayTrigger></Button>
-              <Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.handleHideEventHistory() }><OverlayTrigger placement="top" overlay={hideTooltip}><FontAwesome name='eye-slash' fixedWidth/></OverlayTrigger></Button>
+              <OverlayTrigger placement="top" overlay={compressTooltip}><Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.handleHideEventHistoryFullscreen() }><FontAwesomeIcon icon='compress' fixedWidth/></Button></OverlayTrigger>
+              <OverlayTrigger placement="top" overlay={hideTooltip}><Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.handleHideEventHistory() }><FontAwesomeIcon icon='eye-slash' fixedWidth/></Button></OverlayTrigger>
             </div>
           </div>
         );
@@ -115,8 +124,8 @@ class EventHistory extends Component {
           { Label }
           <div className="pull-right">
             {ASNAPToggle}
-            <Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.handleShowEventHistoryFullscreen() }><OverlayTrigger placement="top" overlay={expandTooltip}><FontAwesome name='expand' fixedWidth/></OverlayTrigger></Button>
-            <Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.handleHideEventHistory() }><OverlayTrigger placement="top" overlay={hideTooltip}><FontAwesome name='eye-slash' fixedWidth/></OverlayTrigger></Button>
+            <OverlayTrigger placement="top" overlay={expandTooltip}><Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.handleShowEventHistoryFullscreen() }><FontAwesomeIcon icon='expand' fixedWidth/></Button></OverlayTrigger>
+            <OverlayTrigger placement="top" overlay={hideTooltip}><Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.handleHideEventHistory() }><FontAwesomeIcon icon='eye-slash' fixedWidth/></Button></OverlayTrigger>
           </div>
         </div>
       );
@@ -126,7 +135,7 @@ class EventHistory extends Component {
       <div>
         { Label }
         <div className="pull-right">
-          <Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.handleShowEventHistory() }><OverlayTrigger placement="top" overlay={showTooltip}><FontAwesome name='eye' fixedWidth/></OverlayTrigger></Button>
+          <OverlayTrigger placement="top" overlay={showTooltip}><Button bsStyle="default" bsSize="xs" type="button" onClick={ () => this.handleShowEventHistory() }><FontAwesomeIcon icon='eye' fixedWidth/></Button></OverlayTrigger>
         </div>
       </div>
     );
@@ -154,11 +163,11 @@ class EventHistory extends Component {
     this.props.fetchEventHistory(this.state.hideASNAP);
   }
 
-  scrollToBottom() {
-    const eventHistory = findDOMNode(this.refs.eventHistory);
-    let desiredHeight = $(eventHistory).prop('scrollHeight');
-    $(eventHistory).scrollTop(desiredHeight);
-  }
+  // scrollToBottom() {
+  //   const eventHistory = findDOMNode(this.refs.eventHistory);
+  //   let desiredHeight = $(eventHistory).prop('scrollHeight');
+  //   $(eventHistory).scrollTop(desiredHeight);
+  // }
 
   renderEventHistory() {
 
@@ -166,9 +175,10 @@ class EventHistory extends Component {
 
       let eventArray = []
 
-      for (let i = this.props.history.length; i > 0; i--) {
+      // for (let i = this.props.history.length; i > 0; i--) {
+      for (let i = 0; i < this.props.history.length; i++) {
 
-        let event = this.props.history[i-1]
+        let event = this.props.history[i]
         let commentTooltip = (<Tooltip id={`commentTooltip_${event.id}`}>Add Comment</Tooltip>)
 
         // if(this.state.hideASNAP && event.event_value == "ASNAP") {
@@ -188,7 +198,7 @@ class EventHistory extends Component {
 
         let eventOptions = (eventOptionsArray.length > 0)? '--> ' + eventOptionsArray.join(', '): ''
 
-        eventArray.push(<ListGroupItem key={event.id}>{event.ts} {`<${event.event_author}>`}: {event.event_value} {eventOptions}<span className="pull-right" onClick={() => this.handleEventComment(event.id)}><OverlayTrigger placement="top" overlay={commentTooltip}><FontAwesome name='comment' fixedWidth/></OverlayTrigger></span></ListGroupItem>);
+        eventArray.push(<ListGroupItem key={event.id}><span onClick={() => this.handleEventShowDetails(event.id)}>{event.ts} {`<${event.event_author}>`}: {event.event_value} {eventOptions}</span><span className="pull-right" onClick={() => this.handleEventComment(event.id)}><OverlayTrigger placement="top" overlay={commentTooltip}><FontAwesomeIcon icon='comment' fixedWidth/></OverlayTrigger></span></ListGroupItem>);
       }
       return eventArray
     }
@@ -200,8 +210,9 @@ class EventHistory extends Component {
 
     if (!this.props.history) {
       return (
-        <Panel header={ this.renderEventHistoryHeader() }>
-          <div>Loading...</div>
+        <Panel>
+          <Panel.Heading>{ this.renderEventHistoryHeader() }</Panel.Heading>
+          <Panel.Body>Loading...</Panel.Body>
         </Panel>
       )
     }
@@ -209,8 +220,9 @@ class EventHistory extends Component {
     if (this.state.showEventHistory) {
       if (this.state.showEventHistoryFullscreen) {
         return (
-          <Panel header={ this.renderEventHistoryHeader() }>
-            <ListGroup fill ref="eventHistory">
+          <Panel>
+            <Panel.Heading>{ this.renderEventHistoryHeader() }</Panel.Heading>
+            <ListGroup ref="eventHistory">
               {this.renderEventHistory()}
             </ListGroup>
           </Panel>
@@ -218,8 +230,9 @@ class EventHistory extends Component {
       }
     
       return (
-        <Panel header={ this.renderEventHistoryHeader() }>
-          <ListGroup fill className="eventHistory" ref="eventHistory">
+        <Panel>
+          <Panel.Heading>{ this.renderEventHistoryHeader() }</Panel.Heading>
+          <ListGroup className="eventHistory" ref="eventHistory">
             {this.renderEventHistory()}
           </ListGroup>
         </Panel>
@@ -227,7 +240,8 @@ class EventHistory extends Component {
     }
 
     return (
-        <Panel header={ this.renderEventHistoryHeader() }>
+        <Panel>
+          <Panel.Heading>{ this.renderEventHistoryHeader() }</Panel.Heading>
         </Panel>
     );
   }

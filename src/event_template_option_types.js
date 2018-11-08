@@ -1,1 +1,1 @@
-export const EventTemplateOptionTypes = ["text","dropdown"];
+export const EventTemplateOptionTypes = ["text","dropdown","checkboxes"];

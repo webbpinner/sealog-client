@@ -10,7 +10,7 @@
 #### Installing NodeJS/npm on Ubuntu 16.04LTS
 The standard Ubuntu repositories for Ubuntu 16.04 only provide install packages for NodeJS v4.  Sealog-client (and Sealog-Server) require nodeJS >= v8.7
  
-To install nodeJS v8.7 on Ubuntu 16.04LTS run the following commands:
+To install nodeJS v8.11 on Ubuntu 16.04LTS run the following commands:
  ```
 sudo apt-get install curl build-essential
 cd ~
@@ -47,12 +47,6 @@ By default the file assumes the sealog-server is available on ports 8000/8001 on
 cd ~/sealog-client
 cp ./webpack.js.dist ./webpack.js
 ```
-
-### Modify the configuration file
-
-Set the `ROOT_PATH` values in the `./sealog-client/webpack.js` file to meet your specific installation requirements.
-
-The default configuration file also assumes the client will be available from the root of the webserver.  If you want the webclient available at: `http://<serverIP>/sealog` you need to set `ROOT_PATH` to `/sealog/` (notice there is a starting `/` **AND** a trailing `/`).
 
 ### Install the nodeJS modules
 

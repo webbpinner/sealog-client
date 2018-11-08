@@ -2,11 +2,10 @@ import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import queryString from 'querystring';
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 import { bindActionCreators } from 'redux';
 import { show, destroy } from 'redux-modal';
 import {change, untouch} from 'redux-form';
-
 import { API_ROOT_URL} from '../url_config';
 
 import {
@@ -40,16 +39,6 @@ import {
   UPDATE_PROFILE_SUCCESS,
   UPDATE_PROFILE_ERROR,
   LEAVE_UPDATE_PROFILE_FORM,
-  INIT_EVENT_EXPORT_TEMPLATE,
-  UPDATE_EVENT_EXPORT_TEMPLATE,
-  UPDATE_EVENT_EXPORT_TEMPLATE_SUCCESS,
-  UPDATE_EVENT_EXPORT_TEMPLATE_ERROR,
-  LEAVE_UPDATE_EVENT_EXPORT_TEMPLATE_FORM,
-  CREATE_EVENT_EXPORT_TEMPLATE,
-  CREATE_EVENT_EXPORT_TEMPLATE_SUCCESS,
-  CREATE_EVENT_EXPORT_TEMPLATE_ERROR,
-  LEAVE_CREATE_EVENT_EXPORT_TEMPLATE_FORM,
-  FETCH_EVENT_EXPORT_TEMPLATES,
   INIT_EVENT_TEMPLATE,
   FETCH_EVENT_TEMPLATES,
   UPDATE_EVENT_TEMPLATE,
@@ -60,15 +49,16 @@ import {
   CREATE_EVENT_TEMPLATE_SUCCESS,
   CREATE_EVENT_TEMPLATE_ERROR,
   LEAVE_CREATE_EVENT_TEMPLATE_FORM,
-  INIT_EVENT_EXPORT,
-  EVENT_EXPORT_FETCHING,
-  UPDATE_EVENT_EXPORT_FILTER_FORM,
-  LEAVE_EVENT_EXPORT_FILTER_FORM,
-  UPDATE_EVENT_EXPORT,
-  EVENT_EXPORT_SET_ACTIVE_PAGE,
-  EVENT_EXPORT_SET_ACTIVE_EVENT,
+  INIT_EVENT,
+  EVENT_FETCHING,
+  UPDATE_EVENT_FILTER_FORM,
+  LEAVE_EVENT_FILTER_FORM,
+  UPDATE_EVENT,
   FETCH_CUSTOM_VARS,
   UPDATE_CUSTOM_VAR,
+  INIT_REPLAY,
+  REPLAY_ADVANCE,
+  REPLAY_REVERSE,
 
 } from './types';
 
@@ -206,6 +196,27 @@ export function login({username, password = ''}) {
   }
 }
 
+export function gotoHome() {
+
+  return function (dispatch) {
+    dispatch(push(`/`));
+  }
+}
+
+export function gotoReplay(id) {
+
+  return function (dispatch) {
+    dispatch(push(`/replay/${id}`));
+  }
+}
+
+export function gotoSearch(id) {
+
+  return function (dispatch) {
+    dispatch(push(`/search/${id}`));
+  }
+}
+
 export function createEvent(eventValue, eventFreeText = '', eventOptions = [], eventTS = '') {
 
   let payload = {
@@ -264,7 +275,7 @@ export function registerUser({username, fullname, password = '', email}) {
 export function createUser({username, fullname, password = '', email, roles, system_user = false}) {
   return function (dispatch) {
     axios.post(`${API_ROOT_URL}/api/v1/users`,
-    {username, fullname, password, email, roles},
+    {username, fullname, password, email, roles, system_user},
     {
       headers: {
         authorization: cookies.get('token'),
@@ -297,6 +308,7 @@ export function createEventTemplate(formProps) {
 
   fields.event_name = formProps.event_name;
   fields.event_value = formProps.event_value;
+  fields.system_template = formProps.system_template;
 
   if(!formProps.event_free_text_required) {
     fields.event_free_text_required = false;
@@ -323,6 +335,11 @@ export function createEventTemplate(formProps) {
       }
 
       if(event_option.event_option_type == 'dropdown') {
+        event_option.event_option_values = event_option.event_option_values.split(',');
+        event_option.event_option_values = event_option.event_option_values.map(string => {
+          return string.trim();
+        })
+      } else if(event_option.event_option_type == 'checkboxes') {
         event_option.event_option_values = event_option.event_option_values.split(',');
         event_option.event_option_values = event_option.event_option_values.map(string => {
           return string.trim();
@@ -492,6 +509,12 @@ export function updateEventTemplate(formProps) {
     fields.event_free_text_required = formProps.event_free_text_required;
   }
 
+  if(!formProps.system_template) {
+    fields.system_template = false;
+  } else {
+    fields.system_template = formProps.system_template;
+  }
+
   if(!formProps.event_options) {
     fields.event_options = [];
   } else {
@@ -511,6 +534,11 @@ export function updateEventTemplate(formProps) {
       }
 
       if(event_option.event_option_type == 'dropdown') {
+        event_option.event_option_values = event_option.event_option_values.split(',');
+        event_option.event_option_values = event_option.event_option_values.map(string => {
+          return string.trim();
+        })
+      } else if(event_option.event_option_type == 'checkboxes') {
         event_option.event_option_values = event_option.event_option_values.split(',');
         event_option.event_option_values = event_option.event_option_values.map(string => {
           return string.trim();
@@ -664,20 +692,6 @@ export function createEventTemplateSuccess(message) {
 export function createEventTemplateError(message) {
   return {
     type: CREATE_EVENT_TEMPLATE_ERROR,
-    payload: message
-  }
-}
-
-export function createEventExportTemplateSuccess(message) {
-  return {
-    type: CREATE_EVENT_EXPORT_TEMPLATE_SUCCESS,
-    payload: message
-  }
-}
-
-export function createEventExportTemplateError(message) {
-  return {
-    type: CREATE_EVENT_EXPORT_TEMPLATE_ERROR,
     payload: message
   }
 }
@@ -873,7 +887,7 @@ export function fetchSelectedEvent(id) {
   
   return function(dispatch) {
 
-    axios.get(`${API_ROOT_URL}/api/v1/events/${id}`,
+    axios.get(`${API_ROOT_URL}/api/v1/event_exports/${id}`,
       {
         headers: {
         authorization: cookies.get('token')
@@ -900,9 +914,9 @@ export function clearSelectedEvent() {
 
 export function fetchEventHistory(asnap = false) {
 
-  let url = API_ROOT_URL + '/api/v1/events'
+  let url = API_ROOT_URL + '/api/v1/events?sort=newest&limit=20'
   if(!asnap) {
-    url = url + '?value=!ASNAP'
+    url = url + '&value=!ASNAP'
   }
 
   const request = axios.get(url, {
@@ -938,17 +952,23 @@ export function fetchEventTemplates() {
   return function (dispatch) {
     
     request.then(({data}) => {
+      // console.log("data:", data)
       dispatch({type: FETCH_EVENT_TEMPLATES, payload: data})
     })
     .catch((error) => {
-      console.log(error);
+      console.log("error:", error)
+      if(error.response.data.statusCode == 404) {
+        dispatch({type: FETCH_EVENT_TEMPLATES, payload: []})
+      } else {
+        console.log(error);
+      }
     });
   }
 }
 
-export function initEventExport() {
+export function initEvent() {
   return function (dispatch) {
-    dispatch({ type: EVENT_EXPORT_FETCHING, payload: true})
+    dispatch({ type: EVENT_FETCHING, payload: true})
     axios.get(`${API_ROOT_URL}/api/v1/events`,
     {
       headers: {
@@ -967,12 +987,52 @@ export function initEventExport() {
   }
 }
 
-export function updateEventExportFilterForm(formProps) {
+export function initReplay(id, hideASNAP = false) {
+  return function (dispatch) {
+    dispatch({ type: EVENT_FETCHING, payload: true})
+
+    let url = (hideASNAP)? `${API_ROOT_URL}/api/v1/events?value=!ASNAP`: `${API_ROOT_URL}/api/v1/events`
+    axios.get(url,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    }).then((response) => {
+      dispatch({ type: INIT_EVENT, payload: response.data })
+      if (response.data.length > 0){
+        dispatch(advanceReplayTo(response.data[0].id))
+      }
+      dispatch({ type: EVENT_FETCHING, payload: false})
+
+    }).catch((error)=>{
+      console.log(error);
+      dispatch({ type: EVENT_FETCHING, payload: false})
+    })
+  }
+}
+
+export function advanceReplayTo(id) {
+  return function (dispatch) {
+    axios.get(`${API_ROOT_URL}/api/v1/event_exports/${id}`,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    }).then((response) => {
+      dispatch({ type: SET_SELECTED_EVENT, payload: response.data })
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+}
+
+
+export function updateEventFilterForm(formProps, hideASNAP = false) {
 
   return function (dispatch) {
 
-    dispatch({type: UPDATE_EVENT_EXPORT_FILTER_FORM, payload: formProps})
-    dispatch(eventExportUpdate())
+    dispatch({type: UPDATE_EVENT_FILTER_FORM, payload: formProps})
+    dispatch(eventUpdateReplay(hideASNAP))
   }
 }
 
@@ -1014,18 +1074,6 @@ export function leaveRegisterForm() {
   }
 }
 
-export function leaveUpdateEventExportTemplateForm() {
-  return function (dispatch) {
-    dispatch({type: LEAVE_UPDATE_EVENT_EXPORT_TEMPLATE_FORM, payload: null})
-  }
-}
-
-export function leaveCreateEventExportTemplateForm() {
-  return function (dispatch) {
-    dispatch({type: LEAVE_CREATE_EVENT_EXPORT_TEMPLATE_FORM, payload: null})
-  }
-}
-
 export function leaveUpdateEventTemplateForm() {
   return function (dispatch) {
     dispatch({type: LEAVE_UPDATE_EVENT_TEMPLATE_FORM, payload: null})
@@ -1038,9 +1086,9 @@ export function leaveCreateEventTemplateForm() {
   }
 }
 
-export function leaveEventExportFilterForm() {
+export function leaveEventFilterForm() {
   return function (dispatch) {
-    dispatch({type: LEAVE_EVENT_EXPORT_FILTER_FORM, payload: null})
+    dispatch({type: LEAVE_EVENT_FILTER_FORM, payload: null})
   }
 }
 
@@ -1050,17 +1098,17 @@ export function showModal(modal, props) {
   }
 }
 
-export function eventExportUpdate() {
+export function eventUpdate() {
   // console.log("event export update")
   return function (dispatch, getState) {
-    let startTS = (getState().event_export.eventExportFilter.startTS)? `startTS=${getState().event_export.eventExportFilter.startTS}` : ''
-    let stopTS = (getState().event_export.eventExportFilter.stopTS)? `&stopTS=${getState().event_export.eventExportFilter.stopTS}` : ''
-    let value = (getState().event_export.eventExportFilter.value)? `&value=${getState().event_export.eventExportFilter.value.split(',').join("&value=")}` : ''
-    let author = (getState().event_export.eventExportFilter.author)? `&author=${getState().event_export.eventExportFilter.author.split(',').join("&author=")}` : ''
-    let freetext = (getState().event_export.eventExportFilter.freetext)? `&freetext=${getState().event_export.eventExportFilter.freetext}` : ''
-    let datasource = (getState().event_export.eventExportFilter.datasource)? `&datasource=${getState().event_export.eventExportFilter.datasource}` : ''
+    let startTS = (getState().event.eventFilter.startTS)? `startTS=${getState().event.eventFilter.startTS}` : ''
+    let stopTS = (getState().event.eventFilter.stopTS)? `&stopTS=${getState().event.eventFilter.stopTS}` : ''
+    let value = (getState().event.eventFilter.value)? `&value=${getState().event.eventFilter.value.split(',').join("&value=")}` : ''
+    let author = (getState().event.eventFilter.author)? `&author=${getState().event.eventFilter.author.split(',').join("&author=")}` : ''
+    let freetext = (getState().event.eventFilter.freetext)? `&freetext=${getState().event.eventFilter.freetext}` : ''
+    let datasource = (getState().event.eventFilter.datasource)? `&datasource=${getState().event.eventFilter.datasource}` : ''
 
-    dispatch({ type: EVENT_EXPORT_FETCHING, payload: true})
+    dispatch({ type: EVENT_FETCHING, payload: true})
     axios.get(`${API_ROOT_URL}/api/v1/events?${startTS}${stopTS}${value}${author}${freetext}${datasource}`,
     {
       headers: {
@@ -1068,40 +1116,78 @@ export function eventExportUpdate() {
       }
     }).then((response) => {
       // console.log("search results:", response.data)
-      dispatch({ type: UPDATE_EVENT_EXPORT, payload: response.data })
-      dispatch({ type: EVENT_EXPORT_FETCHING, payload: false})
+      dispatch({ type: UPDATE_EVENT, payload: response.data })
+      dispatch({ type: EVENT_FETCHING, payload: false})
     }).catch((error)=>{
       console.log(error);
-      if(error.response.data.statusCode == 404){
-        dispatch({type: UPDATE_EVENT_EXPORT, payload: []})
+      if(error.response.data.statusCode == 404) {
+        dispatch({type: UPDATE_EVENT, payload: []})
       } else {
         console.log(error.response);
       }
-      dispatch({ type: EVENT_EXPORT_FETCHING, payload: false})
+      dispatch({ type: EVENT_FETCHING, payload: false})
     });
   }
 }
 
-export function eventExportSetActivePage(page) {
-  return function(dispatch) {
-    dispatch({type: EVENT_EXPORT_SET_ACTIVE_PAGE, payload: page})
-  }
-}
+export function eventUpdateReplay(hideASNAP = false) {
+  // console.log("event export update")
+  return function (dispatch, getState) {
+    let startTS = (getState().event.eventFilter.startTS)? `startTS=${getState().event.eventFilter.startTS}` : ''
+    let stopTS = (getState().event.eventFilter.stopTS)? `&stopTS=${getState().event.eventFilter.stopTS}` : ''
+    let value = (getState().event.eventFilter.value)? `&value=${getState().event.eventFilter.value.split(',').join("&value=")}` : ''
+    value = (hideASNAP)? `&value=!ASNAP${value}` : value
+    let author = (getState().event.eventFilter.author)? `&author=${getState().event.eventFilter.author.split(',').join("&author=")}` : ''
+    let freetext = (getState().event.eventFilter.freetext)? `&freetext=${getState().event.eventFilter.freetext}` : ''
+    let datasource = (getState().event.eventFilter.datasource)? `&datasource=${getState().event.eventFilter.datasource}` : ''
 
-export function eventExportSetActiveEvent(id) {
-  return function(dispatch) {
-    // console.log("set active event to:", id)
-    axios.get(`${API_ROOT_URL}/api/v1/event_exports/${id}`,
+    dispatch({ type: EVENT_FETCHING, payload: true})
+    axios.get(`${API_ROOT_URL}/api/v1/events?${startTS}${stopTS}${value}${author}${freetext}${datasource}`,
     {
       headers: {
         authorization: cookies.get('token')
       }
     }).then((response) => {
-      dispatch({ type: EVENT_EXPORT_SET_ACTIVE_EVENT, payload: response.data})
+      // console.log("search results:", response.data)
+      dispatch({ type: UPDATE_EVENT, payload: response.data })
+      if(response.data.length > 0) {
+        dispatch(fetchSelectedEvent(response.data[0].id))
+      }
+      dispatch({ type: EVENT_FETCHING, payload: false})
     }).catch((error)=>{
+      console.log(error);
+      if(error.response.data.statusCode == 404) {
+        dispatch({type: UPDATE_EVENT, payload: []})
+        dispatch({ type: SET_SELECTED_EVENT, payload: {} })
+
+      } else {
+        console.log(error.response);
+      }
+      dispatch({ type: EVENT_FETCHING, payload: false})
+    });
+  }
+}
+
+export function eventSetActivePage(page) {
+  return function(dispatch) {
+    dispatch({type: EVENT_SET_ACTIVE_PAGE, payload: page})
+  }
+}
+
+export function eventSetActiveEvent(id) {
+  return function(dispatch) {
+    // console.log("set active event to:", id)
+    axios.get(`${API_ROOT_URL}/api/v1/events/${id}`,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    }).then((response) => {
+      dispatch({ type: EVENT_SET_ACTIVE_EVENT, payload: response.data})
+    }).catch((error)=> {
       console.log(error.response);
       if(error.response.data.statusCode == 404){
-        dispatch({type: EVENT_EXPORT_SET_ACTIVE_EVENT, payload: {} })
+        dispatch({type: EVENT_SET_ACTIVE_EVENT, payload: {} })
       } else {
         console.log(error.response);
       }
@@ -1119,8 +1205,80 @@ export function deleteAllEvents() {
       }
     }).then((response) => {
       dispatch(fetchEventHistory())
-    }).catch((error)=>{
+    }).catch((error)=> {
       console.log(error.response);
     });
   }
 }
+
+export function deleteAllNonSystemUsers() {
+  return function(dispatch) {
+    // console.log("set active event to:", id)
+    axios.get(`${API_ROOT_URL}/api/v1/users`,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    }).then((response) => {
+      let promises = response.data.filter((user) => {
+        // console.log("user:", user)
+        if(!user.system_user) {
+          // console.log("delete")
+          return axios.delete(`${API_ROOT_URL}/api/v1/users/${user.id}`,
+          {
+            headers: {
+              authorization: cookies.get('token')
+            }
+          }).then((respose) => {
+            dispatch(fetchUsers());
+          }).catch((error) => {
+            console.log(error.response);
+          });
+        }
+      });
+
+      // console.log("Promises:", promises)
+      Promise.all(promises).then(()=> {
+        dispatch(fetchUsers());
+      })
+    }).catch((error)=> {
+      console.log(error.response);
+    });
+  }
+}
+
+export function deleteAllNonSystemEventTemplates() {
+  return function(dispatch) {
+    // console.log("set active event to:", id)
+    axios.get(`${API_ROOT_URL}/api/v1/event_templates`,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    }).then((response) => {
+      let promises = response.data.filter((event_template) => {
+        // console.log("event_template:", event_template)
+        if(!event_template.system_template) {
+          // console.log("delete")
+          return axios.delete(`${API_ROOT_URL}/api/v1/event_templates/${event_template.id}`,
+          {
+            headers: {
+              authorization: cookies.get('token')
+            }
+          }).then((response) => {
+            dispatch(fetchEventTemplates());
+          }).catch((error)=> {
+            console.log(error.response);
+          });
+        }
+      });
+      // console.log("Promises:", promises)
+      Promise.all(promises).then(()=> {
+        dispatch(fetchEventTemplates());
+      })
+    }).catch((error)=> {
+      console.log(error.response);
+    });
+  }
+}
+

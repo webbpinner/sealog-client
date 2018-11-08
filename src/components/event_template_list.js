@@ -6,14 +6,14 @@ import { Alert } from 'react-bootstrap';
 import EventTemplateOptionsModal from './event_template_options_modal';
 import store from '../store';
 import * as actions from '../actions';
-import $ from 'jquery';
+// import $ from 'jquery';
 
 class EventTemplateList extends Component {
 
   constructor (props) {
     super(props);
 
-    this.scrollToTop = this.scrollToTop.bind(this);
+    // this.scrollToTop = this.scrollToTop.bind(this);
     this.renderEventTemplates = this.renderEventTemplates.bind(this);
 
   }
@@ -42,14 +42,14 @@ class EventTemplateList extends Component {
   // }
 
   componentDidUpdate() {
-    this.scrollToTop();
+    // this.scrollToTop();
   }
 
-  scrollToTop() {
-    const eventTemplates = findDOMNode(this.refs.eventTemplates);
-    let desiredHeight = 0;
-    $(eventTemplates).scrollTop(desiredHeight);
-  }
+  // scrollToTop() {
+  //   const eventTemplates = findDOMNode(this.refs.eventTemplates);
+  //   let desiredHeight = 0;
+  //   $(eventTemplates).scrollTop(desiredHeight);
+  // }
 
   handleEventSubmit(event_template) {
 

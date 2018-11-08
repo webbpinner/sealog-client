@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import { connectModal } from 'redux-modal';
 
-class DeleteUserModal extends Component {
+class NonSystemUsersWipeModal extends Component {
 
   constructor (props) {
     super(props);
@@ -12,13 +12,12 @@ class DeleteUserModal extends Component {
   }
 
   static propTypes = {
-    id: PropTypes.string.isRequired,
     handleDelete: PropTypes.func.isRequired,
     handleHide: PropTypes.func.isRequired
   };
 
   handleConfirm() {
-    this.props.handleDelete(this.props.id);
+    this.props.handleDelete();
     this.props.handleDestroy();
   }
 
@@ -29,20 +28,20 @@ class DeleteUserModal extends Component {
     return (
       <Modal show={show} onHide={handleHide}>
         <Modal.Header closeButton>
-          <Modal.Title>Confirm Deletion</Modal.Title>
+          <Modal.Title>Confirm Wipe</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          { 'Are you sure you want to delete this user?' }
+          { 'Are you sure you want to wipe the non-system users from the local database?' }
         </Modal.Body>
 
         <Modal.Footer>
           <Button onClick={handleHide}>Cancel</Button>
-          <Button bsStyle="danger" onClick={this.handleConfirm}>Yup!</Button>
+          <Button bsStyle="success" onClick={this.handleConfirm}>Yup!</Button>
         </Modal.Footer>
       </Modal>
     );
   }
 }
 
-export default connectModal({ name: 'deleteUser' })(DeleteUserModal)
+export default connectModal({ name: 'nonSystemUsersWipe' })(NonSystemUsersWipeModal)

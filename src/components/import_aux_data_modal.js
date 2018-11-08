@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { Button, Modal, Grid, Row, Col } from 'react-bootstrap';
+import { Button, Modal, Row, Col } from 'react-bootstrap';
 import { connectModal } from 'redux-modal';
-import FontAwesome from 'react-fontawesome';
 import ReactFileReader from 'react-file-reader';
 import Cookies from 'universal-cookie';
 import { API_ROOT_URL } from '../url_config';
@@ -20,119 +19,90 @@ class ImportAuxDataModal extends Component {
       pending: 0,
       imported: 0,
       errors: 0,
-      skipped: 0
+      updated: 0,
+      quit: false,
     }
 
-    this.handleConfirm = this.handleConfirm.bind(this);
+    this.handleHideCustom = this.handleHideCustom.bind(this);
   }
 
-  // static propTypes = {
-  //   handleImport: PropTypes.func.isRequired,
-  //   handleHide: PropTypes.func.isRequired
-  // };
-
-  handleConfirm() {
-//    this.props.handleImport();
-    this.props.handleDestroy();
+  handleHideCustom() {
+    this.setState({quit: true})
+    this.props.handleHide()
   }
 
-  importAuxDataFromFile = (e) => {
-    let json = [];
+  async insertAuxData({id, event_id, data_source, data_array}) {
 
-    try {
-      json = JSON.parse(e.target.result);
-    } catch (err) {
-      console.log('error when trying to parse json = ' + err);
-      return null
-    }
-
-    this.setState( prevState => (
-      {
-        pending: json.length,
-        imported: 0,
-        errors: 0,
-        skipped: 0
-      }
-    ))
-
-    // console.log(json);
-    let promises = json.map(({id, event_id, data_source, data_array}) => {
-
-      return axios.get(`${API_ROOT_URL}/api/v1/event_aux_data/${id}`,
+    try { 
+      const result = await axios.post(`${API_ROOT_URL}/api/v1/event_aux_data`,
+      {id, event_id, data_source, data_array},
       {
         headers: {
           authorization: cookies.get('token'),
           'content-type': 'application/json'
         }
       })
-      .then((response) => {
 
-        // console.log("AuxData Already Exists");
-        this.setState( prevState => (
-          {
-            skipped: prevState.skipped + 1,
-            pending: prevState.pending - 1
-          }
-        ))
-      })
-      .catch((error) => {
-
-        if(error.response && error.response.data.statusCode == 404) {
-          // console.log("Attempting to add event")
-
-          axios.post(`${API_ROOT_URL}/api/v1/event_aux_data`,
-          {id, event_id, data_source, data_array},
-          {
-            headers: {
-              authorization: cookies.get('token'),
-              'content-type': 'application/json'
-            }
-          })
-          .then((response) => {
-            // console.log("AuxData Imported");
-            this.setState( prevState => (
-              {
-                imported: prevState.imported + 1,
-                pending: prevState.pending - 1
-              }
-            ))
-            return true
-          })
-          .catch((error) => {
-            
-            if(error.response && error.response.data.statusCode == 400) {
-              // console.log("AuxData Data malformed or incomplete");
-            } else {
-              console.log(error);  
-            }
-            
-            this.setState( prevState => (
-              {
-                errors: prevState.errors + 1,
-                pending: prevState.pending - 1
-              }
-            ))
-            return false
-          });
-        } else {
-
-          if(error.response && error.response.data.statusCode != 400) {
-            console.log(error.response);
-          }
+      if(result) {
+        if(result.status === 201) {
           this.setState( prevState => (
             {
-              errors: prevState.errors + 1,
+              imported: prevState.imported + 1,
+              pending: prevState.pending - 1
+            }
+          ))
+        } else {
+          this.setState( prevState => (
+            {
+              updated: prevState.updated + 1,
               pending: prevState.pending - 1
             }
           ))
         }
-      });
-    })
+      }
 
-    // console.log("Promises:", promises)
-    // Promise.all(promises).then(()=> {
-    //   // console.log("done")
-    // })
+    } catch(error) {
+      console.log(error)
+      this.setState( prevState => (
+        {
+          errors: prevState.errors + 1,
+          pending: prevState.pending - 1
+        }
+      ))
+    }
+  }
+
+  importAuxDataFromFile = async (e) => {
+    try {
+
+      // console.log("processing file")
+      let json = JSON.parse(e.target.result);
+        this.setState( prevState => (
+          {
+            pending: json.length,
+            imported: 0,
+            errors: 0,
+            updated: 0
+          }
+        ))
+
+      // console.log("done")
+      let currentAuxData;
+
+      for(let i = 0; i < json.length; i++) {
+        if (this.state.quit) {
+          console.log("quiting")
+          break;
+        }
+        currentAuxData = json[i];
+        // console.log("adding aux data")
+        await this.insertAuxData(currentAuxData);
+      }
+
+    } catch (err) {
+      console.log('error when trying to parse json = ' + err);
+    }
+    this.setState({pending: (this.state.quit)?"Quit Early!":"Complete"})    
   }
 
   handleAuxDataRecordImport = files => {
@@ -144,35 +114,33 @@ class ImportAuxDataModal extends Component {
 
   render() {
 
-    const { show, handleHide } = this.props
+    const { show } = this.props
 
     return (
-      <Modal show={show} onHide={handleHide}>
+      <Modal show={show} onHide={this.handleHideCustom}>
         <Modal.Header closeButton>
           <Modal.Title>Import Auxiliary Data</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          <Grid fluid>
-            <Row>
-              <Col xs={6}>
-                <ReactFileReader fileTypes={[".json"]} handleFiles={this.handleAuxDataRecordImport}>
-                    <Button>Select File</Button>
-                </ReactFileReader>
-              </Col>
-              <Col xs={3}>
-                Pending: {this.state.pending}
-                <hr/>
-                Imported: {this.state.imported}<br/>
-                Skipped: {this.state.skipped}<br/>
-                Errors: {this.state.errors}<br/>
-              </Col>
-            </Row>
-          </Grid>
+          <Row>
+            <Col xs={6}>
+              <ReactFileReader fileTypes={[".json"]} handleFiles={this.handleAuxDataRecordImport}>
+                  <Button>Select File</Button>
+              </ReactFileReader>
+            </Col>
+            <Col xs={6}>
+              Pending: {this.state.pending}
+              <hr/>
+              Imported: {this.state.imported}<br/>
+              Updated: {this.state.updated}<br/>
+              Errors: {this.state.errors}<br/>
+            </Col>
+          </Row>
         </Modal.Body>
 
         <Modal.Footer>
-          <Button onClick={handleHide}>Close</Button>
+          <Button onClick={this.handleHideCustom}>Close</Button>
         </Modal.Footer>
       </Modal>
     );
