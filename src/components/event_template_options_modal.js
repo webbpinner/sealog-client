@@ -13,8 +13,6 @@ import { API_ROOT_URL } from '../url_config';
 const dateFormat = "YYYY-MM-DD"
 const timeFormat = "HH:mm:ss.SSS"
 
-const TIMER_INTERVAL = 1000
-const TIMEOUT = 120 //seconds
 const cookies = new Cookies();
 
 const required =  value => !value ? 'Required' : undefined
@@ -29,42 +27,29 @@ class EventTemplateOptionsModal extends Component {
 
     this.state = {
       ts: "",
-      current_time: moment(),
-      expire_time: moment().add(TIMEOUT, 'seconds'), 
-      timer: null
+      event_id: this.props.event.event_id
     }
 
     this.renderDatePicker = this.renderDatePicker.bind(this);
-    this.updateElapseTime = this.updateElapseTime.bind(this);
+    this.handleFormHide = this.handleFormHide.bind(this);
 
 //    this.handleConfirm = this.handleConfirm.bind(this);
   }
 
   static propTypes = {
     eventTemplate: PropTypes.object.isRequired,
+    event: PropTypes.object.isRequired,
     handleHide: PropTypes.func.isRequired,
-    handleCreateEvent: PropTypes.func.isRequired
+    handleUpdateEvent: PropTypes.func.isRequired,
+    handleDeleteEvent: PropTypes.func.isRequired
   };
 
   componentWillMount() {
     this.getServerTime();
     // console.log("Start Timer")
-    this.setState({timer:setInterval(this.updateElapseTime, TIMER_INTERVAL)});
   }
 
   componentWillUnmount() {
-    clearInterval(this.state.timer);
-    this.setState({timer: null })
-  }
-
-  updateElapseTime() {
-    if(this.state.timer && this.state.current_time.isAfter(this.state.expire_time)) {
-      // console.log("Stop Timer")
-      clearInterval(this.state.timer);
-      this.setState({timer: null })
-    } else {
-      this.setState({current_time: moment()})
-    }
   }
 
   async getServerTime() {
@@ -76,10 +61,7 @@ class EventTemplateOptionsModal extends Component {
       }
     })
     .then((response) => {
-      // console.log(response.data)
       this.setState({ts: moment(response.data.ts).toISOString()});
-      this.setState({expire_time: moment(response.data.ts).add(TIMEOUT, 'seconds')});
-      // console.log("ts:",this.state.ts)
     })
     .catch((err) => {
       console.log(err);
@@ -135,8 +117,13 @@ class EventTemplateOptionsModal extends Component {
     // console.log("event_ts:", event_ts)
 
     //Submit event
-    this.props.handleCreateEvent(this.props.eventTemplate.event_value, formProps.event_free_text, event_options, event_ts);
+    this.props.handleUpdateEvent(this.state.event_id, this.props.eventTemplate.event_value, formProps.event_free_text, event_options, event_ts);
     this.props.handleDestroy();
+  }
+
+  handleFormHide() {
+    this.props.handleDeleteEvent(this.state.event_id)
+    this.props.handleDestroy()
   }
 
   renderTextField({ input, label, type, required, meta: { touched, error, warning } }) {
@@ -300,11 +287,10 @@ class EventTemplateOptionsModal extends Component {
 
   render() {
 
-    let TimerStr = (this.state.timer && this.state.current_time.isBefore(this.state.expire_time))? <span className="pull-right">Timer:{moment.duration(this.state.expire_time.diff(this.state.current_time)).format()}</span> : <span className="pull-right text-danger">Real-time vehicle data and framegrabs will NOT be associated with this event</span>
-    const { show, handleHide, handleSubmit, eventTemplate, pristine, submitting, valid } = this.props
+    const { show, handleSubmit, eventTemplate, pristine, submitting, valid } = this.props
 
     return (
-      <Modal show={show} onHide={handleHide}>
+      <Modal show={show} onHide={this.handleFormHide}>
         <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
           <Modal.Header closeButton>
             <Modal.Title>Event Options - {eventTemplate.event_value}</Modal.Title>
@@ -328,13 +314,10 @@ class EventTemplateOptionsModal extends Component {
               disabled={this.props.disabled}
               defaultValue={this.state.ts}
             />
-            <div>
-              {TimerStr}
-            </div>
           </Modal.Body>
 
           <Modal.Footer>
-            <Button bsStyle="default" bsSize="small" type="button" disabled={submitting} onClick={handleHide}>Cancel</Button>
+            <Button bsStyle="default" bsSize="small" type="button" disabled={submitting} onClick={this.handleFormHide}>Cancel</Button>
             <Button bsStyle="primary" bsSize="small" type="submit" disabled={ submitting || !valid}>Submit</Button>
           </Modal.Footer>
         </form>

@@ -33,6 +33,7 @@ class EventTemplates extends Component {
 
   handleEventTemplateSelect(id) {
     // console.log("Set Event Template:", id)
+    this.props.leaveUpdateEventTemplateForm();
     this.props.initEventTemplate(id);
   }
 

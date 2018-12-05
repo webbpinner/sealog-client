@@ -51,13 +51,12 @@ class EventTemplateList extends Component {
   //   $(eventTemplates).scrollTop(desiredHeight);
   // }
 
-  handleEventSubmit(event_template) {
+  async handleEventSubmit(event_template) {
+
+    let event = await this.props.createEvent(event_template.event_value, '', []);
 
     if( event_template.event_options.length > 0 || event_template.event_free_text_required ) {
-      this.props.showModal('eventOptions', { eventTemplate: event_template, handleCreateEvent: this.props.createEvent });
-    } else {
-      // console.log(event_template.event_value);
-      this.props.createEvent(event_template.event_value, '', []);
+      this.props.showModal('eventOptions', { eventTemplate: event_template, event: event, handleUpdateEvent: this.props.updateEvent, handleDeleteEvent: this.props.deleteEvent });
     }
   }
 

@@ -66,14 +66,21 @@ class EventHistory extends Component {
 
       // console.log(result)
 
-      const handler = (update, flags) => {
+      const updateHandler = (update, flags) => {
         // console.log(update)
         if(!(this.state.hideASNAP && update.event_value == "ASNAP")) {
           this.props.updateEventHistory(update)
         }
       }
 
-      this.client.subscribe('/ws/status/newEvents', handler);
+      const deleteHandler = (update, flags) => {
+        // console.log(update)
+        this.props.fetchEventHistory(this.state.hideASNAP)
+      }
+
+      this.client.subscribe('/ws/status/newEvents', updateHandler);
+      this.client.subscribe('/ws/status/updateEvents', updateHandler);
+      this.client.subscribe('/ws/status/deleteEvents', deleteHandler);
 
     } catch(error) {
       console.log(error);
@@ -83,7 +90,7 @@ class EventHistory extends Component {
 
   handleEventShowDetails(id) {
     // console.log("id:", id)
-    this.props.advanceReplayTo(id);
+    this.props.advanceLoweringReplayTo(id);
     this.props.showModal('eventShowDetails', { id: id });
   }
 

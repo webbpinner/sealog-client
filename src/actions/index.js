@@ -217,7 +217,7 @@ export function gotoSearch(id) {
   }
 }
 
-export function createEvent(eventValue, eventFreeText = '', eventOptions = [], eventTS = '') {
+export async function createEventRequest(eventValue, eventFreeText, eventOptions, eventTS) {
 
   let payload = {
     event_value: eventValue,
@@ -225,15 +225,11 @@ export function createEvent(eventValue, eventFreeText = '', eventOptions = [], e
     event_options: eventOptions
   }
 
-  // console.log("eventTS:", eventTS)
   if(eventTS.length > 0){
     payload.ts = eventTS
   }
 
-  // console.log("payload:", payload)
-
-  return function (dispatch) {
-    axios.post(`${API_ROOT_URL}/api/v1/events`,
+  const response = await axios.post(`${API_ROOT_URL}/api/v1/events`,
     payload,
     {
       headers: {
@@ -241,7 +237,49 @@ export function createEvent(eventValue, eventFreeText = '', eventOptions = [], e
       }
     })
     .then((response) => {
-      //console.log("New event successfully created");
+      return { event_id: response.data.insertedId }
+    })
+    .catch((error)=>{
+      console.log(error);
+    });
+
+  return response
+}
+
+export function createEvent(eventValue, eventFreeText = '', eventOptions = [], eventTS = '') {
+
+  return async dispatch => {
+    try {
+      const event = await createEventRequest(eventValue, eventFreeText, eventOptions, eventTS);
+      return event
+    } catch (e) {
+      console(e)
+    }
+  }
+}
+
+export function updateEvent(event_id, eventValue, eventFreeText = '', eventOptions = [], eventTS = '') {
+
+  let payload = {
+    event_value: eventValue,
+    event_free_text: eventFreeText,
+    event_options: eventOptions
+  }
+
+  if(eventTS.length > 0){
+    payload.ts = eventTS
+  }
+
+  return function (dispatch) {
+    axios.patch(`${API_ROOT_URL}/api/v1/events/${event_id}`,
+    payload,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    })
+    .then((response) => {
+      return { event_id: response.data.insertedId }
     })
     .catch((error)=>{
       console.log(error);
@@ -587,6 +625,25 @@ export function updateEventTemplate(formProps) {
     });
   }
 }
+
+export function deleteEvent(event_id) {
+
+  return function (dispatch) {
+    axios.delete(`${API_ROOT_URL}/api/v1/events/${event_id}`,
+    {
+      headers: {
+        authorization: cookies.get('token')
+      }
+    })
+    .then((response) => {
+      return { event_id: response.data.insertedId }
+    })
+    .catch((error)=>{
+      console.log(error);
+    });
+  }
+}
+
 
 export function deleteUser(id) {
 
