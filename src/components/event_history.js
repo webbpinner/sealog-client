@@ -90,12 +90,12 @@ class EventHistory extends Component {
 
   handleEventShowDetails(id) {
     // console.log("id:", id)
-    this.props.advanceLoweringReplayTo(id);
+    // this.props.advanceLoweringReplayTo(id);
     this.props.showModal('eventShowDetails', { id: id });
   }
 
-  handleEventComment(id) {
-    this.props.showModal('eventComment', { id: id, handleUpdateEventComment: this.props.updateEventComment, handleHide: null });
+  handleEventComment(event) {
+    this.props.showModal('eventComment', { event: event, handleUpdateEvent: this.props.updateEvent });
   }
 
   renderEventHistoryHeader() {
@@ -205,7 +205,7 @@ class EventHistory extends Component {
 
         let eventOptions = (eventOptionsArray.length > 0)? '--> ' + eventOptionsArray.join(', '): ''
 
-        eventArray.push(<ListGroupItem key={event.id}><span onClick={() => this.handleEventShowDetails(event.id)}>{event.ts} {`<${event.event_author}>`}: {event.event_value} {eventOptions}</span><span className="pull-right" onClick={() => this.handleEventComment(event.id)}><OverlayTrigger placement="top" overlay={commentTooltip}><FontAwesomeIcon icon='comment' fixedWidth/></OverlayTrigger></span></ListGroupItem>);
+        eventArray.push(<ListGroupItem key={event.id}><span onClick={() => this.handleEventShowDetails(event.id)}>{event.ts} {`<${event.event_author}>`}: {event.event_value} {eventOptions}</span><span className="pull-right" onClick={() => this.handleEventComment(event)}><OverlayTrigger placement="top" overlay={commentTooltip}><FontAwesomeIcon icon='comment' fixedWidth/></OverlayTrigger></span></ListGroupItem>);
       }
       return eventArray
     }

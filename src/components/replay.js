@@ -95,7 +95,6 @@ class Replay extends Component {
           authorization: cookies.get('token')
         }
       }).then((response) => {
-        console.log(response)
         return response.data
       }).catch((error)=>{
         if(error.response.data.statusCode == 404){
@@ -238,15 +237,13 @@ class Replay extends Component {
   }
 
   handleEventComment(index) {
-    console.log("comment:", index)
     this.handleReplayPause();
     this.setState({replayEventIndex: index})
     this.props.advanceReplayTo(this.props.event.events[index].id)
-    this.props.showModal('eventComment', { id: this.props.event.events[index].id });
+    this.props.showModal('eventComment', { event: this.props.event.events[index], handleUpdateEvent: this.props.updateEvent });
   }
 
   handlePageSelect(eventKey) {
-    // console.log("eventKey:", eventKey)
     this.handleReplayPause();
     this.setState({activePage: eventKey, replayEventIndex: (eventKey-1)*7 });
     this.props.advanceReplayTo(this.props.event.events[(eventKey-1)*7].id)
@@ -322,7 +319,6 @@ class Replay extends Component {
   renderAuxDataPanel() {
 
     let return_aux_data = []
-    console.log(this.props.event)
     if(this.props.event && this.props.event.selected_event && this.props.event.selected_event.aux_data) {
       return this.props.event.selected_event.aux_data.map((aux_data, index) => {
         let return_data = aux_data.data_array.map((data, index) => {

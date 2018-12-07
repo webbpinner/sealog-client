@@ -24,49 +24,39 @@ class EventCommentModal extends Component {
     super(props);
 
     this.renderDatePicker = this.renderDatePicker.bind(this);
-
-//    this.handleConfirm = this.handleConfirm.bind(this);
+    this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
 
   static propTypes = {
-    id: PropTypes.string.isRequired };
+    event: PropTypes.object.isRequired,
+    handleHide: PropTypes.func.isRequired,
+    handleUpdateEvent: PropTypes.func.isRequired
+  };
 
   componentWillMount() {
-
-    this.props.fetchSelectedEvent(this.props.id)
   }
 
   componentWillUnmount() {
-//    this.props.clearSelectedEvent();
   }
 
   handleFormSubmit({event_comment = ''}) {
 
-    let payload = {
-      event_options: [
-        {
-          event_option_name: 'event_comment',
-          event_option_value: event_comment
-        }
-      ]
+    let existing_comment = false;
+    let event_options = this.props.event.event_options = this.props.event.event_options.map(event_option => {
+      if(event_option.event_option_name == 'event_comment') {
+        existing_comment = true;
+        return { event_option_name: 'event_comment', event_option_value: event_comment}
+      } else {
+        return event_option
+      }
+    })
+
+    if(!existing_comment) {
+      event_options.push({ event_option_name: 'event_comment', event_option_value: event_comment})
     }
-    axios.patch(`${API_ROOT_URL}/api/v1/events/${this.props.id}`,
-      payload,
-      {
-        headers: {
-        authorization: cookies.get('token')
-        }
-      }      
-    )
-    // .then((response) => {
 
-    //   dispatch(fetchCustomVars());
-    // })
-    .catch((error) => {
-      console.log(error);
-    });
-
-    this.props.handleHide();
+    this.props.handleUpdateEvent(this.props.event.id, this.props.event.event_value, this.props.event.event_free_text, event_options, this.props.event.ts);
+    this.props.handleDestroy();
   }
 
   renderTextField({ input, label, type, required, meta: { touched, error, warning } }) {
@@ -218,22 +208,16 @@ EventCommentModal = reduxForm({
   enableReinitialize: true,
 })(EventCommentModal);
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
 
-  if (state.event.selected_event.event_options) {
-    let options = {}
-    state.event.selected_event.event_options.forEach((option) => {
-      options[option.event_option_name] = option.event_option_value
-    })
+  let event_option_comment = ownProps.event.event_options.find(event_option => event_option.event_option_name == 'event_comment')
+  if(event_option_comment) {
     return {
-      initialValues: options
-    }
-  } else {
-    return {
-     initialValues: {}
+      initialValues: { event_comment: event_option_comment.event_option_value }
     }
   }
 
+  return {}
 }
 
 EventCommentModal = connect(

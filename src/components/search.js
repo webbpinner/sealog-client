@@ -42,27 +42,23 @@ class Search extends Component {
   }
 
   componentWillUnmount(){
-    // console.log("Leaving event export")
-//    this.props.leaveEventFilterForm();
   }
 
   handlePageSelect(eventKey) {
-    // console.log("eventKey:", eventKey)
     this.setState({activePage: eventKey});
   }
 
   handleEventClick(id) {
-    // console.log("id:", id)
     this.props.advanceReplayTo(id);
   }
 
   handleEventComment(id) {
     this.props.advanceReplayTo(id);
     this.props.showModal('eventComment', { id: id });
+    this.props.showModal('eventComment', { event: this.props.event.selected_event, handleUpdateEvent: this.props.updateEvent });
   }
 
   handleEventShowDetails(id) {
-    // console.log("id:", id)
     this.props.advanceReplayTo(id);
     this.props.showModal('eventShowDetails', { id: id });
   }
@@ -100,7 +96,6 @@ class Search extends Component {
   fetchEventsWithAuxData(format = 'json') {
 
     const cookies = new Cookies();
-    // console.log("event export update")
     format = `format=${format}`
     let startTS = (this.props.event.eventFilter.startTS)? `&startTS=${this.props.event.eventFilter.startTS}` : ''
     let stopTS = (this.props.event.eventFilter.stopTS)? `&stopTS=${this.props.event.eventFilter.stopTS}` : ''
@@ -131,7 +126,6 @@ class Search extends Component {
   fetchEvents(format = 'json') {
 
     const cookies = new Cookies();
-    // console.log("event export update")
     format = `format=${format}`
     let startTS = (this.props.event.eventFilter.startTS)? `&startTS=${this.props.event.eventFilter.startTS}` : ''
     let stopTS = (this.props.event.eventFilter.stopTS)? `&stopTS=${this.props.event.eventFilter.stopTS}` : ''
@@ -265,8 +259,6 @@ class Search extends Component {
         )
       }
 
-      // console.log(this.props.event.selected_event)
-
       return (          
         <Panel>
         <Panel.Heading>{ this.renderEventListHeader() }</Panel.Heading>
@@ -312,7 +304,7 @@ class Search extends Component {
     }
   }
 
-    renderPagination() {
+  renderPagination() {
 
     if(!this.props.event.fetching && this.props.event.events.length > 0) {
       let eventCount = this.props.event.events.length
