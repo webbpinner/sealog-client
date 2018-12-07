@@ -75,7 +75,7 @@ class EventHistory extends Component {
 
       const deleteHandler = (update, flags) => {
         // console.log(update)
-        this.props.fetchEventHistory(this.state.hideASNAP)
+        this.props.fetchEventHistory(!this.state.hideASNAP)
       }
 
       this.client.subscribe('/ws/status/newEvents', updateHandler);
@@ -95,7 +95,7 @@ class EventHistory extends Component {
   }
 
   handleEventComment(id) {
-    this.props.showModal('eventComment', { id: id, handleUpdateEventComment: this.props.updateEventComment, handleHide: this.props.fetchEventHistory });
+    this.props.showModal('eventComment', { id: id, handleUpdateEventComment: this.props.updateEventComment, handleHide: null });
   }
 
   renderEventHistoryHeader() {
