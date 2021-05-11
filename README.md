@@ -1,3 +1,6 @@
+## THIS PROJECT HAS MOVED
+Please goto to https://github.com/OceanDataTools/sealog-client-vehicle and https://github.com/OceanDataTools/sealog-client-vessel for current releases of the sealog-client.
+
 # sealog-client
 React-Redux based front-end to the Sealog event logging server.
 
